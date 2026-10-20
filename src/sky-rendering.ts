@@ -32,7 +32,7 @@ export function renderSky(game:SkyWings){
  ctx.save();ctx.translate(wx,wy);ctx.rotate(r.angle);ctx.filter=tier===1?'saturate(.4) brightness(1.25)':tier===2?'sepia(.8) saturate(1.7)':'';
  ctx.save();ctx.rotate(-Math.PI/8);ctx.drawImage(art[3],-rad,-rad,rad*2,rad*2);ctx.restore();ctx.restore();
  const atlas=art[4],as=atlas.naturalWidth/1280;
- for(const peg of SKY_PEGS){const p=project(peg.x,peg.y,.25);ctx.drawImage(atlas,770*as,230*as,330*as,330*as,p.x-11,p.y-11,22,22);}
+ for(const peg of SKY_PEGS){const p=project(peg.x,peg.y,.25),size=22*peg.radius/.105;ctx.drawImage(atlas,770*as,230*as,330*as,330*as,p.x-size/2,p.y-size/2,size,size);}
  // Treat reward labels as a legible display overlay, above the small pin heads.
  ctx.save();ctx.translate(wx,wy);ctx.rotate(r.angle);
  const rewards=SKY_TIERS[r.phase==='spinning'||r.phase==='result'?r.spinTier:tier].rewards;

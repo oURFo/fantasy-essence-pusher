@@ -7,16 +7,18 @@ export const SKY_TIERS=[
 export const SKY_PEGS:{x:number;y:number;radius:number}[]=[];
 // Fixed staggered round pins cross the wheel's glass face as well as its sides.
 // They share the physical board: the rotating artwork never moves the pins.
+// Lower cascade: broad centre splitter -> offset pair -> reward-lane guards.
 for(const [y,xs] of [
  [9,[-2.9,-1.74,-.58,.58,1.74,2.9]],
  [8.05,[-2.32,-1.16,0,1.16,2.32]],
  [7.1,[-2.9,-1.74,-.58,.58,1.74,2.9]],
  [6.15,[-2.32,-1.16,0,1.16,2.32]],
- [5.2,[-2.9,-1.74,-.58,.58,1.74,2.9]],
- [4.25,[-2.32,-1.16,0,1.16,2.32]],
- [3.4,[-2.9,-1.5,0,1.5,2.9]],
+ [5.2,[-2.9,-1.74,1.74,2.9]],
+ [5.05,[0]],
+ [4.2,[-2.32,-.6,.6,2.32]],
+ [3.5,[-2.9,-1.05,0,1.05,2.9]],
 ] as [number,number[]][]){
- for(const x of xs)SKY_PEGS.push({x,y,radius:.105});
+ for(const x of xs)SKY_PEGS.push({x,y,radius:y===5.05?.24:.105});
 }
 export function selectSkyPrize(tier:SkyTier,unit:number){
  let ticket=Math.min(.999999999,Math.max(0,unit))*10000;

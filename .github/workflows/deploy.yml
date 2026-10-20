@@ -27,6 +27,7 @@ jobs:
       - run: node tests/lobby-session.mjs
       - run: node tests/sky-wings.mjs
       - run: node tests/sky-physics.mjs
+      - run: node tests/sky-balance.mjs
       - run: node tests/slot.mjs
       - run: npm run build
       - uses: actions/configure-pages@v5
