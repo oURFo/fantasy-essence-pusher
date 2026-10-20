@@ -64,14 +64,13 @@ export function renderSky(game:SkyWings){
   const p=coin.body.translation(),s=project(p.x,p.y,p.z),size=coin.entered?42+Math.max(0,p.z)*1.8:44;
   ctx.save();ctx.beginPath();ctx.rect(54,230,916,1220);ctx.clip();
   if(coin.entered&&p.y>=0&&p.y<1.2){ctx.fillStyle='#09231e44';ctx.beginPath();ctx.ellipse(s.x,s.y+size*.38,size*.38,size*.13,0,0,tau);ctx.fill();}
-  ctx.filter=tier===1?'hue-rotate(35deg)':tier===2?'sepia(.65) saturate(1.6)':'';const sz=size/.84;ctx.drawImage(art[5],s.x-sz/2,s.y-sz/2,sz,sz);ctx.restore();
+  ctx.filter=tier===1?'hue-rotate(65deg) saturate(1.35) brightness(1.15)':tier===2?'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.25)':'saturate(.8) brightness(1.15)';const sz=size/.84;ctx.drawImage(art[5],s.x-sz/2,s.y-sz/2,sz,sz);ctx.restore();
  }
  if(!drawn)drawSplitter();
  // Painted front fascia occludes the balls as they enter the collection mouth.
  const bg=art[tier];ctx.drawImage(bg,0,bg.naturalHeight*1100/1536,bg.naturalWidth,bg.naturalHeight*135/1536,0,1100,1024,135);
  if(game.time-game.lastRewardTime<1.3){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=1-(game.time-game.lastRewardTime)/1.3;const halo=ctx.createRadialGradient(512,1170,5,512,1170,100);halo.addColorStop(0,accent);halo.addColorStop(1,'transparent');ctx.fillStyle=halo;ctx.fillRect(412,1070,200,200);ctx.restore();}
  panel(ctx,205,216,614,74);text(ctx,'空 之 翼',512,245,23,accent);text(ctx,r.message,512,275,20);
- panel(ctx,290,744,444,38);text(ctx,tier===0?'浮島初翼 · 向天空出發':`${r.config.name} · ${Math.ceil(r.remaining)} 秒`,512,770,21,accent);
  if(r.phase==='result'){
   const t=r.clock-r.resultAt,large=r.lastAmount>=100,jackpot=r.lastAmount===1000,duration=jackpot?4.5:large?2.4:1.4;
   ctx.save();ctx.shadowColor=accent;ctx.shadowBlur=reducedMotion.matches?0:large?40:15;ctx.strokeStyle=accent;ctx.globalAlpha=Math.max(0,1-t/duration)*(reducedMotion.matches?.3:1);ctx.lineWidth=large?12:5;ctx.strokeRect(22,22,980,1492);ctx.restore();
