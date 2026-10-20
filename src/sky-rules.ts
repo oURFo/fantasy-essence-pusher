@@ -5,14 +5,15 @@ export const SKY_TIERS=[
  {name:'天域聖翼',duration:100,lanes:[3],color:'#ffda79',rewards:[50,200,70,300,100,200,1000,300],weights:[4000,400,2800,250,1800,400,100,250]},
 ] as const;
 export const SKY_PEGS:{x:number;y:number;radius:number}[]=[];
-// Stagger the entry and exit rows; flank the inset wheel so its results stay clear.
+// Fixed staggered round pins cross the wheel's glass face as well as its sides.
+// They share the physical board: the rotating artwork never moves the pins.
 for(const [y,xs] of [
  [9,[-2.9,-1.74,-.58,.58,1.74,2.9]],
- [8.05,[-2.32,-1.16,1.16,2.32]],
- [7.1,[-2.9,-1.74,1.74,2.9]],
- [6.15,[-2.32,2.32]],
- [5.2,[-2.9,-1.74,1.74,2.9]],
- [4.25,[-2.32,-1.16,1.16,2.32]],
+ [8.05,[-2.32,-1.16,0,1.16,2.32]],
+ [7.1,[-2.9,-1.74,-.58,.58,1.74,2.9]],
+ [6.15,[-2.32,-1.16,0,1.16,2.32]],
+ [5.2,[-2.9,-1.74,-.58,.58,1.74,2.9]],
+ [4.25,[-2.32,-1.16,0,1.16,2.32]],
  [3.4,[-2.9,-1.5,0,1.5,2.9]],
 ] as [number,number[]][]){
  for(const x of xs)SKY_PEGS.push({x,y,radius:.105});
