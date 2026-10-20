@@ -30,16 +30,27 @@ export function renderSky(game:SkyWings){
  // The wheel is inset into the backboard; physical beads and pins remain in front.
  const wx=512,wy=520,rad=112;
  ctx.save();ctx.translate(wx,wy);ctx.rotate(r.angle);ctx.filter=tier===1?'saturate(.4) brightness(1.25)':tier===2?'sepia(.8) saturate(1.7)':'';
- ctx.save();ctx.rotate(-Math.PI/8);ctx.drawImage(art[3],-rad,-rad,rad*2,rad*2);ctx.restore();ctx.filter='none';
- const rewards=SKY_TIERS[r.phase==='spinning'||r.phase==='result'?r.spinTier:tier].rewards;
- for(let i=0;i<8;i++){
-  const a=i*Math.PI/4-Math.PI/2;ctx.save();ctx.translate(Math.cos(a)*76,Math.sin(a)*76);ctx.rotate(a+Math.PI/2);
-  if(rewards[i]===0)wings(ctx,Math.min(2,tier+1),0,-6,43);
-  else text(ctx,String(rewards[i]),0,8,22,i%2?'#16392e':'#ffffff');ctx.restore();
- }
- ctx.restore();text(ctx,'▼',wx,wy-rad+9,29,'#fff0a3');
+ ctx.save();ctx.rotate(-Math.PI/8);ctx.drawImage(art[3],-rad,-rad,rad*2,rad*2);ctx.restore();ctx.restore();
  const atlas=art[4],as=atlas.naturalWidth/1280;
  for(const peg of SKY_PEGS){const p=project(peg.x,peg.y,.25);ctx.drawImage(atlas,770*as,230*as,330*as,330*as,p.x-11,p.y-11,22,22);}
+ // Treat reward labels as a legible display overlay, above the small pin heads.
+ ctx.save();ctx.translate(wx,wy);ctx.rotate(r.angle);
+ const rewards=SKY_TIERS[r.phase==='spinning'||r.phase==='result'?r.spinTier:tier].rewards;
+ for(let i=0;i<8;i++){
+  const a=i*Math.PI/4-Math.PI/2;ctx.save();ctx.translate(Math.cos(a)*82,Math.sin(a)*82);ctx.rotate(-r.angle);
+  if(rewards[i]===0)wings(ctx,Math.min(2,tier+1),0,-6,43);
+  else {
+   const label=String(rewards[i]);
+   // Keep each value upright while its sector travels around the wheel.
+   // An opaque outline separates the larger digits from both enamel colors.
+   ctx.font=`900 ${label.length===4?28:34}px "Segoe UI","Microsoft JhengHei",sans-serif`;
+   ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';ctx.lineWidth=6;
+   ctx.strokeStyle='#092a2c';ctx.fillStyle='#fff9da';ctx.shadowColor='#001419';ctx.shadowBlur=3;
+   ctx.strokeText(label,0,0,64);ctx.fillText(label,0,0,64);
+  }
+  ctx.restore();
+ }
+ ctx.restore();text(ctx,'▼',wx,wy-rad+9,29,'#fff0a3');
  const drop=project(game.dropX,10.1,0);ctx.drawImage(atlas,20*as,710*as,520*as,400*as,drop.x-42,drop.y-32,84,64);
  const gs=art[9].naturalWidth/2048,gateLeft=project(-3.65,2.45,.25).x,gw=7.3*87/7;
  for(let i=0;i<=7;i++)ctx.drawImage(art[9],879*gs,160*gs,30*gs,365*gs,gateLeft+i*gw-5,662,10,77);
