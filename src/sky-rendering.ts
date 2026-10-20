@@ -68,7 +68,12 @@ export function renderSky(game:SkyWings){
   const p=project(outlet.x,outlet.y,outlet.z);ctx.save();ctx.translate(p.x,p.y);if(left)ctx.scale(-1,1);
   ctx.filter='brightness(1.4) saturate(.5)';if(game.time-last<.18){ctx.shadowColor=accent;ctx.shadowBlur=24;}ctx.drawImage(art[7],-62,-31,124,62);ctx.restore();
  }
- const depth=(c:typeof game.coins[number])=>{const p=c.body.translation();return c.entered?p.z*44+p.y*25:-p.y*48;};
+ const depth=(c:typeof game.coins[number])=>{
+  const p=c.body.translation();
+  // Front-edge falls belong in front of the bed, even as their world Y drops.
+  if(c.entered&&p.y<0&&p.z>6.65)return 10000+p.z*44-p.y*48;
+  return c.entered?p.z*44+p.y*25:-p.y*48;
+ };
  let drawn=false;const drawSplitter=()=>{const p=project(SPLITTER.x,SPLITTER.height/2,SPLITTER.z);ctx.drawImage(art[8],p.x-35,p.y-33,70,66);drawn=true;};
  for(const coin of [...game.coins].sort((a,b)=>depth(a)-depth(b))){
   if(!drawn&&depth(coin)>=SPLITTER.z*44+SPLITTER.height*12.5)drawSplitter();
@@ -78,8 +83,8 @@ export function renderSky(game:SkyWings){
   ctx.filter=tier===1?'hue-rotate(65deg) saturate(1.35) brightness(1.15)':tier===2?'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.25)':'saturate(.8) brightness(1.15)';const sz=size/.84;ctx.drawImage(art[5],s.x-sz/2,s.y-sz/2,sz,sz);ctx.restore();
  }
  if(!drawn)drawSplitter();
- // Painted front fascia occludes the balls as they enter the collection mouth.
- const bg=art[tier];ctx.drawImage(bg,0,bg.naturalHeight*1100/1536,bg.naturalWidth,bg.naturalHeight*135/1536,0,1100,1024,135);
+ // The fascia is already in the background. Repainting its rectangular crop
+ // here used to cut off beads at the lip and hide the visible fall below it.
  if(game.time-game.lastRewardTime<1.3){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=1-(game.time-game.lastRewardTime)/1.3;const halo=ctx.createRadialGradient(512,1170,5,512,1170,100);halo.addColorStop(0,accent);halo.addColorStop(1,'transparent');ctx.fillStyle=halo;ctx.fillRect(412,1070,200,200);ctx.restore();}
  panel(ctx,205,216,614,74);text(ctx,'空 之 翼',512,245,23,accent);text(ctx,r.message,512,275,20);
  if(r.phase==='result'){
