@@ -1,6 +1,7 @@
 import {CoinPusher} from './physics.ts';
 import {MACHINES,type MachineId} from './machines.ts';
 import {PlayerWallet} from './wallet.ts';
+import {SkyWings} from './sky-game.ts';
 export class ArcadeSession {
   game:CoinPusher|null=null;
   machineId:MachineId|null=null;
@@ -9,7 +10,7 @@ export class ArcadeSession {
   constructor(wallet:PlayerWallet){this.wallet=wallet;}
   enter(id:MachineId) {
     if(this.game||!MACHINES.some(m=>m.id===id))return false;
-    this.game=new CoinPusher(undefined,undefined,this.wallet);this.machineId=id;return true;
+    this.game=id==='sky-wings'?new SkyWings(this.wallet):new CoinPusher(undefined,undefined,this.wallet);this.machineId=id;return true;
   }
   requestLeave(){if(!this.game)return false;this.leaveRequested=true;return true;}
   cancelLeave(){this.leaveRequested=false;}

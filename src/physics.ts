@@ -5,7 +5,9 @@ import {PlayerWallet} from './wallet.ts';
 import { CONFIG, PEGS, OUTLETS, SPLITTER, PRIZE_SLOTS, prizeSlotIndex, classifyFrontExit, type ExitZone } from './config.ts';
 
 export type Coin = { body: RAPIER.RigidBody; entered: boolean; age: number; lowestY: number; stalledFor: number; exitZone: ExitZone | null; kind:'green'|'gold'; source:'player'|'bonus'|'bed'; slotChecked:boolean };
+export type PusherOptions={pegs?:typeof PEGS;dragon?:boolean;rewardHalfWidth?:number;rewardCollectionY?:number};
 export class CoinPusher {
+  protected options:PusherOptions;
   world!: RAPIER.World;
   pusher!: RAPIER.RigidBody;
   coins: Coin[] = [];
@@ -39,7 +41,8 @@ export class CoinPusher {
   splitterCollider!:RAPIER.Collider;
   private launchRandom:()=>number;
   private layoutRandom:()=>number;
-  constructor(launchRandom:()=>number=Math.random,layoutRandom:()=>number=Math.random,wallet?:PlayerWallet) {
+  constructor(launchRandom:()=>number=Math.random,layoutRandom:()=>number=Math.random,wallet?:PlayerWallet,options:PusherOptions={}) {
+    this.options=options;
     this.wallet=wallet??new PlayerWallet();this.ownsWallet=!wallet;
     this.launchRandom=launchRandom;this.layoutRandom=layoutRandom;this.reset();
   }
@@ -80,7 +83,7 @@ export class CoinPusher {
     // Match the visibly closed side rails for the full bed and front chute.
     // Their inner face meets the floor edge, leaving no hidden side gutter.
     this.box(-3.77,.5,3.5,.12,2.5,4.2);this.box(3.77,.5,3.5,.12,2.5,4.2);
-    for(const peg of PEGS) {
+    for(const peg of this.options.pegs??PEGS) {
       const shape=RAPIER.ColliderDesc.cylinder(.32,peg.radius ?? .105)
         .setRotation({x:Math.SQRT1_2,y:0,z:0,w:Math.SQRT1_2});
       this.world.createCollider(shape.setTranslation(peg.x,peg.y,.25)
@@ -89,8 +92,10 @@ export class CoinPusher {
     // Sculpted head crown and cheeks are solid; the lower central mouth stays
     // open. Spawn points sit outside the solids, never inside a collider.
     const dragon=OUTLETS.dragon;
+    if(this.options.dragon!==false){
     this.outletColliders.push(this.world.createCollider(RAPIER.ColliderDesc.ball(.5).setTranslation(dragon.x,dragon.y+.2,dragon.z)));
     for(const x of [-.43,.43]) this.outletColliders.push(this.world.createCollider(RAPIER.ColliderDesc.ball(.23).setTranslation(x,dragon.y-.2,dragon.z)));
+    }
     for(const pipe of [OUTLETS.leftPipe,OUTLETS.pipe]) {
       this.outletColliders.push(this.world.createCollider(RAPIER.ColliderDesc.cuboid(.28,.17,.3).setTranslation(pipe.x,pipe.y+.4,pipe.z)));
       this.outletColliders.push(this.world.createCollider(RAPIER.ColliderDesc.cuboid(.28,.12,.3).setTranslation(pipe.x,pipe.y-.4,pipe.z)));
@@ -121,6 +126,16 @@ export class CoinPusher {
     this.autoDrop=false;this.pendingBonuses=[];this.slot.reset();this.coins=[];
     this.world.free();
   }
+  get inputLocked(){return false;}
+  protected onPrizeLane(lane:number){
+    const prize=PRIZE_SLOTS[lane];
+    if(prize==='green')this.pendingBonuses.push({kind:'green',due:this.time+.15},{kind:'green',due:this.time+.15});
+    else if(prize==='gold')this.pendingBonuses.push({kind:'gold',due:this.time+.2});
+  }
+  protected updateRewards(){
+    const payout=this.slot.update(this.time);
+    for(let i=0;i<payout;i++)this.pendingBonuses.push({kind:'green',due:this.time,slotPayout:true});
+  }
   step() {
     this.time+=CONFIG.fixedStep;
     this.dropX=Math.sin(this.time*this.speed)*3.15;
@@ -133,11 +148,9 @@ export class CoinPusher {
       const p=coin.body.translation();
       if(!coin.slotChecked && p.y<2.05) {
         coin.slotChecked=true;
-        const slot=prizeSlotIndex(p.x),prize=PRIZE_SLOTS[slot];
+        const slot=prizeSlotIndex(p.x);
         this.slotLights[slot]=this.time;
-        if(prize==='green') {
-          this.pendingBonuses.push({kind:'green',due:this.time+.15},{kind:'green',due:this.time+.15});
-        } else if(prize==='gold') this.pendingBonuses.push({kind:'gold',due:this.time+.2});
+        this.onPrizeLane(slot);
       }
       if(!coin.entered && p.y<1.45) {
         coin.entered=true;if(coin.source==='player') this.transferred++;
@@ -162,8 +175,8 @@ export class CoinPusher {
       }
       // Lock the lane when the bead leaves the shelf. Lateral motion during
       // the visible fall must not turn a recovery bead into a reward.
-      if(coin.entered && coin.exitZone===null && p.y<0 && p.z>6.65) coin.exitZone=classifyFrontExit(p.x);
-      const collectionY=coin.exitZone==='recycle'?-6.1:-1.8;
+      if(coin.entered && coin.exitZone===null && p.y<0 && p.z>6.65) coin.exitZone=this.options.rewardHalfWidth===undefined?classifyFrontExit(p.x):Math.abs(p.x)<this.options.rewardHalfWidth?'reward':'recycle';
+      const collectionY=coin.exitZone==='recycle'?-6.1:(this.options.rewardCollectionY??-1.8);
       if(p.y<collectionY || (!coin.entered && coin.age>180)) {
         // Only coins that fell off the front count. Stale cleanup never awards coins.
         if(p.y<collectionY && coin.exitZone!==null) {
@@ -179,8 +192,7 @@ export class CoinPusher {
       }
       return true;
     });
-    const payout=this.slot.update(this.time);
-    for(let i=0;i<payout;i++)this.pendingBonuses.push({kind:'green',due:this.time,slotPayout:true});
+    this.updateRewards();
     // Spawn after filtering so new beads cannot be lost when the active array
     // is replaced. Capacity delays earned prizes instead of discarding them.
     const pending:typeof this.pendingBonuses=[];
