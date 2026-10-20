@@ -83,7 +83,7 @@ export function renderSky(game:SkyWings){
     ctx.save();ctx.translate(x,y);ctx.rotate(a+t);ctx.globalAlpha=Math.max(0,1-t/duration);ctx.fillStyle=accent;ctx.beginPath();ctx.ellipse(0,0,jackpot?12:8,3,0,0,tau);ctx.fill();ctx.restore();
    }
   }
-  panel(ctx,210,815,604,88);text(ctx,r.lastAmount===1000?'天 域 賜 福':`獲得 ${r.lastAmount} 精華`,512,870,38,accent);
+  if(large){panel(ctx,210,815,604,88);text(ctx,r.lastAmount===1000?'天 域 賜 福':`獲得 ${r.lastAmount} 精華`,512,870,38,accent);}
   if(jackpot){panel(ctx,310,910,404,70);text(ctx,'1,000 精華',512,958,40,'#fff1b6');}
  }
  if(r.locked){
