@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';import R from '@dimforge/rapier3d-compat';
+import {SkyRules} from '../src/sky-rules.ts';import {SkyWings} from '../src/sky-game.ts';
+const tick=(r,n,context={})=>{let paid=0;for(let i=0;i<n;i++)paid+=r.update(1/60,context);return paid;};
+let r=new SkyRules(()=>0);r.tier=1;r.remaining=.01;r.trigger();r.trigger();
+assert.equal(tick(r,1800,{pendingPayout:20,upperBeads:1}),10);assert.equal(r.spins,2);assert.equal(r.queue,0);assert.equal(r.tier,1);assert.equal(r.phase,'idle');assert.equal(r.locked,true);
+// Late player balls still use this tier and can add a final spin before return.
+r.trigger();assert.equal(tick(r,360,{pendingPayout:20}),5);assert.equal(r.spinTier,1);assert.equal(r.tier,1);
+tick(r,1200,{pendingPayout:1});assert.equal(r.phase,'idle');assert.equal(r.tier,1,'pending prizes must delay the ten-second countdown');
+tick(r,1);assert.equal(r.phase,'descending');tick(r,599);assert.equal(r.tier,1);tick(r,1);assert.equal(r.tier,0);assert.equal(r.queue,0);
+r=new SkyRules(()=>0);r.tier=2;r.remaining=.01;tick(r,1);assert.equal(r.phase,'descending');tick(r,590);r.trigger();tick(r,1);assert.equal(r.phase,'idle');assert.equal(r.elapsed,0);assert.equal(r.tier,2);assert.equal(tick(r,330),50);assert.equal(r.spinTier,2);assert.equal(r.tier,2);tick(r,900);assert.equal(r.tier,0);
+await R.init();
+let g=new SkyWings(undefined,()=>0,()=>.5);g.sky.tier=2;g.sky.remaining=.01;g.autoDrop=true;
+g.pendingBonuses=Array.from({length:150},()=>({kind:'green',due:0}));
+const net=g.gold-g.earnedGold,start=g.pushZ;
+for(let i=0;i<600;i++)g.step();assert.equal(g.sky.tier,2);assert.equal(g.sky.phase,'idle');assert.ok(g.pendingBonuses.length>0);assert.equal(g.dropped,0);assert.equal(g.gold-g.earnedGold,net);assert.ok(g.time>9.9);assert.notEqual(g.pushZ,start,'pusher must operate while input is paused');assert.ok(g.bonusSpawned>100);
+for(let i=0;i<1200&&g.sky.phase!=='descending';i++)g.step();assert.equal(g.pendingBonuses.length,0);assert.equal(g.bonusSpawned,150);assert.equal(g.sky.phase,'descending');
+for(let i=0;i<598;i++)g.step();assert.equal(g.sky.tier,2);assert.equal(g.dropped,0);for(let i=0;i<5;i++)g.step();assert.equal(g.sky.tier,0);assert.equal(g.autoDrop,true);assert.equal(g.dropped,1,'auto input resumes only in the new tier');g.dispose();
+g=new SkyWings(undefined,()=>0,()=>.5);g.sky.tier=1;g.sky.remaining=.01;g.drop();const bead=g.coins.at(-1);bead.body.setTranslation({x:-1.043,y:2.1,z:.25},true);bead.body.setLinvel({x:0,y:-.1,z:0},true);
+for(let i=0;i<300&&g.sky.spins===0;i++)g.step();assert.equal(g.sky.spins,1);assert.equal(g.sky.spinTier,1);assert.equal(g.sky.tier,1);assert.equal(g.inputLocked,true);
+for(let i=0;i<1800&&g.sky.tier===1;i++)g.step();assert.equal(g.sky.tier,0);assert.equal(g.sky.queue,0);assert.equal(g.pendingBonuses.length,0);g.dispose();
+console.log('Transition passed: old-tier queue drains, upper beads finish, payouts over 10s delay return, 10s moving settlement, no input charges, auto resume, late-spin restart.');

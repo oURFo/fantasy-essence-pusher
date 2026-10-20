@@ -34,7 +34,7 @@ function updateUI(){
   $('slot-status').textContent=`${r.message}${r.queue?` · 待轉 ${r.queue} 次`:''}${game.pendingBonuses.length?` · 待派 ${game.pendingBonuses.length} 精華`:''}`;
   $('sky-stage').textContent=r.config.name;$('sky-timer').textContent=r.locked?r.message:r.tier===0?'不限時':`剩餘 ${Math.ceil(r.remaining)} 秒`;
   $('sky-stage-panel').dataset.tier=String(r.tier);
-  if(r.locked)$('auto-status').textContent='轉換期間暫停投入與扣款，完成後恢復';
+  if(r.locked)$('auto-status').textContent='停止玩家投入與扣款 · 機台持續運作 · 結算後倒數 10 秒';
  }else{
  const message=marqueeMessage(game.slot);if($('machine-announcement').textContent!==message)$('machine-announcement').textContent=message;
  $('slot-status').textContent=game.slot.remaining>0?`SLOT 派珠中 · 尚餘 ${game.slot.remaining} 顆${game.slot.queue>0?` · 待轉 ${game.slot.queue} 次`:''}`:game.slot.phase==='spinning'?`SLOT 旋轉中${game.slot.queue>0?` · 待轉 ${game.slot.queue} 次`:''}`:'龍珠落入中央寶箱可啟動 SLOT';

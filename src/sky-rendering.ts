@@ -23,8 +23,8 @@ export function renderSky(game:SkyWings){
  const canvas=document.getElementById('game') as HTMLCanvasElement,ctx=canvas.getContext('2d')!;
  const r=game.sky,tier=r.tier,accent=r.config.color;
  ctx.clearRect(0,0,1024,1536);ctx.drawImage(art[tier],0,0,1024,1536);
- if(r.locked){
-  const progress=Math.min(1,r.elapsed/(r.phase==='upgrading'?10:2)),next=r.phase==='upgrading'?tier+1:0;
+ if(r.settling){
+  const progress=Math.min(1,r.elapsed/10),next=r.phase==='upgrading'?tier+1:0;
   ctx.save();ctx.globalAlpha=progress;ctx.drawImage(art[next],0,0,1024,1536);ctx.restore();
  }
  // The wheel is inset into the backboard; physical beads and pins remain in front.
@@ -101,8 +101,8 @@ export function renderSky(game:SkyWings){
   if(large){panel(ctx,210,815,604,88);text(ctx,r.lastAmount===1000?'天 域 賜 福':`獲得 ${r.lastAmount} 精華`,512,870,38,accent);}
   if(jackpot){panel(ctx,310,910,404,70);text(ctx,'1,000 精華',512,958,40,'#fff1b6');}
  }
- if(r.locked){
-  const up=r.phase==='upgrading',duration=up?10:2,t=r.elapsed/duration;
+ if(r.settling){
+  const up=r.phase==='upgrading',duration=10,t=r.elapsed/duration;
   ctx.save();ctx.fillStyle='#dff9ff';ctx.globalAlpha=reducedMotion.matches?.08:.12+Math.sin(t*Math.PI)*.2;ctx.fillRect(0,0,1024,1536);ctx.restore();
   // AI-painted wing crown expands while drifting cloud lights travel downward.
   ctx.save();ctx.globalAlpha=.95;const w=reducedMotion.matches?680:680+Math.sin(t*Math.PI)*190;wings(ctx,up?Math.min(2,tier+1):0,512,reducedMotion.matches?365:365-t*55,w);ctx.restore();

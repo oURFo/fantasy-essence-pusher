@@ -15,9 +15,11 @@ export class SkyWings extends CoinPusher {
  protected override onPrizeLane(lane:number){if((this.sky.config.lanes as readonly number[]).includes(lane))this.sky.trigger();}
  protected override updateRewards(){} // This machine has a wheel, never a SLOT.
  override step(){
-  const payout=this.sky.update(CONFIG.fixedStep);
+  const payout=this.sky.update(CONFIG.fixedStep,{pendingPayout:this.pendingBonuses.length,upperBeads:this.coins.filter(c=>!c.entered).length});
   for(let i=0;i<payout;i++)this.pendingBonuses.push({kind:'green',due:this.time});
-  if(!this.sky.locked)super.step();
+  // Input remains locked during settlement; the pusher, beads and prize outlets
+  // keep running to clear the old tier before its ten-second changeover.
+  super.step();
  }
  override dispose(){this.sky.reset();super.dispose();}
 }

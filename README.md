@@ -130,7 +130,7 @@ src/slot.ts 為獎項與狀態機；src/slot-rendering.ts 為動畫；tests/slot
 
 ## 第二機台：空之翼
 
-大廳第二台天空推珠機，三階段為浮島初翼、蒼穹展翼（300 秒）、天域聖翼（100 秒）。獎勵格觸發八格加權輪盤；翅膀總權重基本 3%、二階 1.5%，升階十秒暫停物理與投入。中央三分之一掉落返幣，兩側回收。規格見《空之翼設計規格.md》。
+大廳第二台天空推珠機，三階段為浮島初翼、蒼穹展翼（300 秒）、天域聖翼（100 秒）。獎勵格觸發八格加權輪盤；翅膀總權重基本 3%、二階 1.5%，升階與返航時停止玩家投入，先結算原檯面的輪盤、派珠與上方落珠，再持續運作十秒後換階。中央三分之一掉落返幣，兩側回收。規格見《空之翼設計規格.md》。
 
 規則：src/sky-rules.ts；物理整合：src/sky-game.ts；AI 素材與演出：src/sky-rendering.ts、public/assets/sky-wings/。執行 node tests/sky-wings.mjs 與 node tests/sky-physics.mjs 驗證。三階機殼、輪盤、羽翼為內建 imagegen 製作，提示詞與用途記錄於 public/assets/sky-wings/ARTWORK.md。
 
