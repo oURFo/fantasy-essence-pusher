@@ -31,7 +31,10 @@ export function renderSky(game:SkyWings){
  const drawBay=(theme:number,alpha=1)=>{
   ctx.save();ctx.globalAlpha=alpha;
   ctx.filter=theme===1?'saturate(.15) brightness(1.15)':theme===2?'sepia(.9) saturate(1.5)':'';
-  ctx.drawImage(art[11],edges[0],SKY_FRONT.panelTop,edges[3]-edges[0],SKY_FRONT.panelHeight);ctx.restore();
+  const img=art[11],sourceWidth=img.naturalWidth/3;
+  // Refit the AI-painted shafts to the same quarter/half/quarter boundaries as physics.
+  for(let i=0;i<3;i++)ctx.drawImage(img,i*sourceWidth,0,sourceWidth,img.naturalHeight,edges[i],SKY_FRONT.panelTop,edges[i+1]-edges[i],SKY_FRONT.panelHeight);
+  ctx.restore();
  };
  drawBay(tier);if(r.settling)drawBay(r.phase==='upgrading'?tier+1:0,Math.min(1,r.elapsed/10));
  // The wheel is inset into the backboard; physical beads and pins remain in front.

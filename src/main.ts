@@ -60,7 +60,7 @@ async function enterMachine(id:MachineId){
   const machine=MACHINES.find(m=>m.id===id)!;const sky=id==='sky-wings';
   $('page-title').textContent=machine.name;$('page-subtitle').textContent=machine.description;document.title=`${machine.name} · 推珠冒險`;
   document.querySelectorAll<HTMLElement>('.vault-only').forEach(el=>el.hidden=sky);document.querySelectorAll<HTMLElement>('.sky-only').forEach(el=>el.hidden=!sky);
-  $('front-rule').textContent=sky?'中央 1/3 計入獎勵，左右各 1/3 系統回收':'中央 1/2 計入獎勵，左右各 1/4 系統回收';
+  $('front-rule').textContent='中央 1/2 計入獎勵，左右各 1/4 系統回收';
   $('leave-pending').textContent=sky?'尚未完成的輪盤、升階進度、待轉次數與未派出的精華獎勵也會清除。':'尚未完成的 SLOT、待轉次數與未派出的精華獎勵也會清除。';
   $<HTMLDetailsElement>('adventure-details').open=false;
   $('loading').style.display='none';resetClock();updateUI();renderGame();

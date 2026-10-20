@@ -31,8 +31,8 @@ for(let tier=0;tier<3;tier++)for(let lane=0;lane<7;lane++){
 g=new SkyWings(new PlayerWallet(),()=>.97);g.sky.tier=2;g.sky.remaining=100;g.sky.trigger();for(let i=0;i<200;i++)g.step();assert.equal(g.sky.lastAmount,1000);assert.equal(g.bonusSpawned+g.pendingBonuses.length,1000);
 // Clear active bodies to isolate long payout accounting from physical bed capacity.
 for(let i=0;i<90*60;i++){for(const c of g.coins)g.world.removeRigidBody(c.body);g.coins=[];g.step();}assert.equal(g.bonusSpawned,1000);assert.equal(g.pendingBonuses.length,0);g.dispose();
-for(const [x,reward] of [[0,true],[1,true],[1.5,false],[-1.5,false]]){
+for(const [x,reward] of [[0,true],[1,true],[1.5,true],[-1.5,true],[2,false],[-2,false]]){
  g=new SkyWings();const c=g.coins[0];c.body.setTranslation({x,y:-4.2,z:7.1},true);g.step();assert.equal(c.exitZone,reward?'reward':'recycle');assert.equal(g.gold,1000+(reward?1:0));g.dispose();
 }
 const session=new ArcadeSession(new PlayerWallet());session.enter('sky-wings');assert.ok(session.game instanceof SkyWings);session.game.drop();const balance=session.wallet.gold;session.game.sky.phase='upgrading';session.game.sky.elapsed=5;session.requestLeave();for(let i=0;i<100;i++)session.step();assert.equal(session.game.sky.elapsed,5);session.cancelLeave();session.step();assert.ok(session.game.sky.clock>0);assert.equal(session.game.sky.transition,'upgrade');session.requestLeave();session.confirmLeave();session.enter('essence-vault');assert.equal(session.game.gold,balance);assert.equal(session.game.slot.spins,0);session.requestLeave();session.confirmLeave();session.enter('sky-wings');assert.equal(session.game.sky.tier,0);assert.equal(session.game.sky.queue,0);session.requestLeave();session.confirmLeave();
-console.log('Sky Wings passed: exact weights, eight sectors, upgrades 10s, timers 300/100s, expiry, frozen spending, lane triggers, 1000 payout, thirds, shared-wallet lifecycle.');
+console.log('Sky Wings passed: exact weights, eight sectors, upgrades 10s, timers 300/100s, expiry, frozen spending, lane triggers, 1000 payout, half-width reward zone, shared-wallet lifecycle.');
