@@ -2,10 +2,11 @@ import {CoinPusher} from './physics.ts';
 import {CONFIG} from './config.ts';
 import {PlayerWallet} from './wallet.ts';
 import {SKY_PEGS,SkyRules} from './sky-rules.ts';
+import {SKY_FRONT} from './sky-geometry.ts';
 export class SkyWings extends CoinPusher {
  readonly sky:SkyRules;
  constructor(wallet?:PlayerWallet,random:()=>number=Math.random,physicsRandom:()=>number=Math.random){
-  super(physicsRandom,physicsRandom,wallet,{pegs:SKY_PEGS,dragon:false,rewardHalfWidth:3.65/3,rewardCollectionY:-4});
+  super(physicsRandom,physicsRandom,wallet,{pegs:SKY_PEGS,dragon:false,rewardHalfWidth:SKY_FRONT.rewardHalfWidth,rewardCollectionY:-4});
   this.sky=new SkyRules(random);
  }
  override get inputLocked(){return this.sky.locked;}

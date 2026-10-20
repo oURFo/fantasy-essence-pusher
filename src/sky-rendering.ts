@@ -1,7 +1,8 @@
 import {SkyWings} from './sky-game.ts';
 import {SKY_PEGS,SKY_TIERS} from './sky-rules.ts';
 import {OUTLETS,SPLITTER} from './config.ts';
-const names=['sky-wings/base.png','sky-wings/azure.png','sky-wings/gold.png','sky-wings/wheel.png','sprites.png','green-bead.png','platform.png','side-pipe.png','triangle-splitter.png','prize-gates.png','sky-wings/wings-v2.png'];
+import {SKY_FRONT,skyProject as project,skyExitEdges} from './sky-geometry.ts';
+const names=['sky-wings/base.png','sky-wings/azure.png','sky-wings/gold.png','sky-wings/wheel.png','sprites.png','green-bead.png','platform.png','side-pipe.png','triangle-splitter.png','prize-gates.png','sky-wings/wings-v2.png','sky-wings/collection-bay-v2.png'];
 const art=names.map(()=>new Image());
 let ready:Promise<void>|undefined;
 export function loadSkyArtwork(){
@@ -10,7 +11,6 @@ export function loadSkyArtwork(){
 }
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
 const tau=Math.PI*2;
-function project(x:number,y:number,z:number){return{x:512+x*(z>.8?83+25*Math.max(0,z)/7:87),y:800-y*48+z*44};}
 function text(ctx:CanvasRenderingContext2D,value:string,x:number,y:number,size=22,color='#fff5db'){
  ctx.font=`600 ${size}px "Microsoft JhengHei",sans-serif`;ctx.textAlign='center';ctx.fillStyle=color;ctx.shadowColor='#10282e';ctx.shadowBlur=5;ctx.fillText(value,x,y);ctx.shadowBlur=0;
 }
@@ -27,6 +27,13 @@ export function renderSky(game:SkyWings){
   const progress=Math.min(1,r.elapsed/10),next=r.phase==='upgrading'?tier+1:0;
   ctx.save();ctx.globalAlpha=progress;ctx.drawImage(art[next],0,0,1024,1536);ctx.restore();
  }
+ const edges=skyExitEdges();
+ const drawBay=(theme:number,alpha=1)=>{
+  ctx.save();ctx.globalAlpha=alpha;
+  ctx.filter=theme===1?'saturate(.15) brightness(1.15)':theme===2?'sepia(.9) saturate(1.5)':'';
+  ctx.drawImage(art[11],edges[0],SKY_FRONT.panelTop,edges[3]-edges[0],SKY_FRONT.panelHeight);ctx.restore();
+ };
+ drawBay(tier);if(r.settling)drawBay(r.phase==='upgrading'?tier+1:0,Math.min(1,r.elapsed/10));
  // The wheel is inset into the backboard; physical beads and pins remain in front.
  const wx=512,wy=520,rad=112;
  ctx.save();ctx.translate(wx,wy);ctx.rotate(r.angle);ctx.filter=tier===1?'saturate(.4) brightness(1.25)':tier===2?'sepia(.8) saturate(1.7)':'';
@@ -85,7 +92,7 @@ export function renderSky(game:SkyWings){
  if(!drawn)drawSplitter();
  // The fascia is already in the background. Repainting its rectangular crop
  // here used to cut off beads at the lip and hide the visible fall below it.
- if(game.time-game.lastRewardTime<1.3){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=1-(game.time-game.lastRewardTime)/1.3;const halo=ctx.createRadialGradient(512,1170,5,512,1170,100);halo.addColorStop(0,accent);halo.addColorStop(1,'transparent');ctx.fillStyle=halo;ctx.fillRect(412,1070,200,200);ctx.restore();}
+ if(game.time-game.lastRewardTime<1.3){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=1-(game.time-game.lastRewardTime)/1.3;const halo=ctx.createRadialGradient(512,SKY_FRONT.jewelY,5,512,SKY_FRONT.jewelY,100);halo.addColorStop(0,accent);halo.addColorStop(1,'transparent');ctx.fillStyle=halo;ctx.fillRect(412,SKY_FRONT.jewelY-100,200,200);ctx.restore();}
  panel(ctx,205,216,614,74);text(ctx,'空 之 翼',512,245,23,accent);text(ctx,r.message,512,275,20);
  if(r.phase==='result'){
   const t=r.clock-r.resultAt,large=r.lastAmount>=100,jackpot=r.lastAmount===1000,duration=jackpot?4.5:large?2.4:1.4;

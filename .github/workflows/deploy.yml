@@ -27,6 +27,7 @@ jobs:
       - run: node tests/lobby-session.mjs
       - run: node tests/sky-wings.mjs
       - run: node tests/sky-transition.mjs
+      - run: node tests/sky-front-layout.mjs
       - run: node tests/sky-physics.mjs
       - run: node tests/sky-balance.mjs
       - run: node tests/slot.mjs

@@ -24,3 +24,7 @@ Use case stylized-concept. Production transparent game sprite sheet for SKY WING
 
 Final atlas: wings-v2.png. Repaired with built-in imagegen using wings.png as the edit reference: preserve the three designs and transparency, shrink each emblem into its own row, keep all tips and gems inside, and remove background haze. Runtime crops follow the actual generated bounds (mint y0–300, cyan y295–630, gold y630–1024); no raster recoloring or background removal was used. Original draft retained locally as preview-sky-wings-draft.png.
 
+
+## collection-bay-v2.png — built-in imagegen generation
+
+Production bitmap lower collection bay for an ivory gold sky fantasy coin pusher. Front orthographic view, three equally wide deep rectangular dark shafts. Left recycling hole x0–512, central reward hole x512–1024, right recycling hole x1024–1536 on the requested 1536×768 canvas; very thin straight dividers at x512 and x1024. All openings share their height and width. Central shaft has a small ivory wing and mint crystal above it, wholly within middle third. Side shafts empty. Deep dark metal interiors, thin gold rails, detailed realistic luxury materials. No curved arches, flared thick pillars, text, balls or coins. Render the whole strip behind falling beads. Generated result is 1774×887 and is fitted to the shared three-zone front-edge bounds; theme tint is applied at runtime. Original saved non-destructively as collection-bay-v2.png.
