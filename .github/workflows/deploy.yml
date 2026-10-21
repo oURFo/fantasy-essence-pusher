@@ -28,6 +28,7 @@ jobs:
       - run: node tests/fruit-rules.mjs
       - run: node tests/fruit-paths.mjs
       - run: node tests/fruit-game.mjs
+      - run: node tests/fruit-touch-input.mjs
       - run: node tests/fruit-economy.mjs
       - run: node tests/sky-wings.mjs
       - run: node tests/sky-transition.mjs
