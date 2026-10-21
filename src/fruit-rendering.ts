@@ -35,14 +35,14 @@ export function renderFruit(game:FruitPinball){
  for(const peg of FRUIT_PINS)c.drawImage(pin,peg.x-11,peg.y-11,22,22);
  // Fruits are printed directly above the corresponding physical pocket.
  for(const target of FRUIT_TARGETS){const cell=FRUIT_CELLS[target.id],lit=Boolean(game.mask&(1<<cell.id)),age=game.time-game.hitTimes[cell.id],w=target.right-target.left;
-  c.drawImage(pocket,target.x-(w+12)/2,target.y-18,w+12,90);
+  c.drawImage(pocket,target.x-(w-2)/2,target.y-18,w-2,128);
   if(age>=0&&age<1){c.save();c.globalAlpha=(1-age)*.5;c.strokeStyle='#ffe7a2';c.lineWidth=3;c.beginPath();c.ellipse(target.x,target.y,w/2+9,25,0,0,Math.PI*2);c.stroke();c.restore();}
-  const size=cell.fruits.length===3?40:44,spacing=cell.fruits.length===3?42:48;
-  if(lit){c.fillStyle='#81dba333';c.strokeStyle='#c7edb3';c.lineWidth=1.5;c.beginPath();c.ellipse(target.x,target.y-48,cell.fruits.length*spacing/2+6,27,0,0,Math.PI*2);c.fill();c.stroke();}
-  for(let j=0;j<cell.fruits.length;j++)fruit(c,cell.fruits[j],target.x+(j-(cell.fruits.length-1)/2)*spacing,target.y-48,size,true);
-  const count=game.pocketCounts[cell.id],cols=Math.max(2,Math.floor((w-8)/22)),rows=Math.max(1,Math.ceil(count/cols)),beadSize=Math.min(22,(w-8)/cols,36/rows);
-  for(let n=0;n<count;n++){const bx=target.x+(n%cols-(Math.min(cols,count)-1)/2)*beadSize,by=target.y+35-Math.floor(n/cols)*beadSize;c.drawImage(pearl,bx-beadSize/2,by-beadSize/2,beadSize,beadSize);}
-  label(c,`${lit?'✓ ':''}${String(cell.id+1).padStart(2,'0')} · ${count}顆${count>=6?' ★':''}${game.gifts.includes(cell.id)?' · 贈':''}`,target.x,target.y+68,14,lit?'#ffe38d':'#dbc7a4');
+  const size=28,spacing=27;
+  if(lit){c.fillStyle='#81dba333';c.fillRect(target.left+2,target.y-112,w-4,94);}
+  for(let j=0;j<cell.fruits.length;j++)fruit(c,cell.fruits[j],target.x,target.y-30-(cell.fruits.length-1-j)*spacing,size,true);
+  const count=game.pocketCounts[cell.id],cols=Math.max(2,Math.floor((w-8)/22)),rows=Math.max(1,Math.ceil(count/cols)),beadSize=Math.min(22,(w-8)/cols,66/rows);
+  for(let n=0;n<count;n++){const bx=target.x+(n%cols-(Math.min(cols,count)-1)/2)*beadSize,by=target.y+65-Math.floor(n/cols)*beadSize;c.drawImage(pearl,bx-beadSize/2,by-beadSize/2,beadSize,beadSize);}
+  label(c,`${String(cell.id+1).padStart(2,'0')}${game.gifts.includes(cell.id)?'贈':''}`,target.x,target.y+90,12,lit?'#ffe38d':'#dbc7a4');label(c,`${count}顆${count>=6?'★':''}`,target.x,target.y+109,12,count>=6?'#fff18f':'#dbc7a4');
  }
  // The shooter lane and curved guide use the existing AI-painted gold rail.
  const gates=images[4],gs=gates.naturalWidth/2048;
