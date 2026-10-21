@@ -1,10 +1,10 @@
-import assert from 'node:assert/strict';import {FRUIT_CELLS,FRUIT_NAMES,FRUIT_RECIPES,FRUIT_COST,FRUIT_BALLS,FRUIT_COMPLETION_BONUS,cellFor,completedRecipes,fruitPayout,giftCount,giftCells} from '../src/fruit-rules.ts';
+import assert from 'node:assert/strict';import {FRUIT_CELLS,FRUIT_NAMES,FRUIT_RECIPES,FRUIT_COST,FRUIT_BALLS,FRUIT_PAYOUTS,cellFor,completedRecipes,fruitPayout,giftCount,giftCells} from '../src/fruit-rules.ts';
 assert.equal(FRUIT_COST,20);assert.equal(FRUIT_BALLS,16);assert.equal(FRUIT_CELLS.length,16);assert.equal(FRUIT_CELLS.reduce((s,c)=>s+c.weight,0),10000);assert.equal(new Set(FRUIT_CELLS.map(c=>c.weight)).size,16);
 assert.equal(FRUIT_CELLS.filter(c=>c.fruits.length===3).length,4);for(const c of FRUIT_CELLS)assert.ok(c.fruits.length===3?c.weight>=400&&c.weight<=500:c.weight>=600&&c.weight<=700);
 assert.deepEqual(FRUIT_CELLS.flatMap(c=>c.fruits),Array.from({length:36},(_,i)=>i));assert.equal(FRUIT_NAMES.length,36);
 const counts=Array(16).fill(0);for(let i=0;i<10000;i++)counts[cellFor((i+.5)/10000)]++;assert.deepEqual(counts,FRUIT_CELLS.map(c=>c.weight));assert.equal(cellFor(1),15);
 assert.equal(FRUIT_RECIPES.length,15);const used=new Set();for(const recipe of FRUIT_RECIPES){assert.equal(new Set(recipe.slots).size,3);assert.equal(new Set(recipe.fruits).size,3);recipe.slots.forEach((s,i)=>{assert.ok(FRUIT_CELLS[s].fruits.includes(recipe.fruits[i]));used.add(recipe.fruits[i]);});assert.equal(completedRecipes(recipe.slots.reduce((m,s)=>m|(1<<s),0)).some(r=>r.id===recipe.id),true);assert.ok(recipe.chance>0&&recipe.chance<1);}
-assert.equal(used.size,36,'every visible fruit must participate in a recipe');for(let mask=0;mask<65536;mask++){const complete=completedRecipes(mask);assert.equal(fruitPayout(mask),complete.length<3?0:complete.reduce((s,r)=>s+r.coins,0)+FRUIT_COMPLETION_BONUS[complete.length]);}
-const sorted=[...FRUIT_RECIPES].sort((a,b)=>a.chance-b.chance);for(let i=1;i<sorted.length;i++)assert.ok(sorted[i].coins<=sorted[i-1].coins,'harder recipes must never pay less');
+assert.equal(used.size,36,'every visible fruit must participate in a recipe');for(let mask=0;mask<65536;mask++){const complete=completedRecipes(mask);assert.equal(fruitPayout(mask),[0,0,0,15,20,25,40,55,75,100,150,250,500,1000,2000,5000][complete.length]);}
+for(let n=3;n<=15;n++){assert.equal(FRUIT_PAYOUTS[n]%5,0);assert.ok(FRUIT_PAYOUTS[n]>FRUIT_PAYOUTS[n-1]);}
 const gifts=Array(5).fill(0);for(let i=0;i<100;i++)gifts[giftCount((i+.5)/100)-1]++;assert.deepEqual(gifts,[55,25,12,6,2]);assert.equal(new Set(giftCells(()=>.999)).size,5);
 console.log('Fruit rules passed: exact 16-cell weights, 36 usable fruits, 15 distinct-cell recipes, 65536 board payouts, gift distribution.');

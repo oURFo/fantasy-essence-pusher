@@ -1,5 +1,5 @@
 import {FruitPinball} from './fruit-game.ts';
-import {FRUIT_CELLS,FRUIT_RECIPES,FRUIT_BALLS,FRUIT_COMPLETION_BONUS} from './fruit-rules.ts';
+import {FRUIT_CELLS,FRUIT_RECIPES,FRUIT_BALLS} from './fruit-rules.ts';
 import {FRUIT_PINS,FIELD} from './fruit-physics.ts';
 import {FRUIT_TARGETS} from './fruit-board.ts';
 const sources=['fruit-banquet/cabinet.png','fruit-banquet/fruits.png','sprites.png','green-bead.png','prize-gates.png','fruit-banquet/hardware-cutout.png'];
@@ -24,11 +24,11 @@ function fruit(c:CanvasRenderingContext2D,id:number,x:number,y:number,size:numbe
 export function renderFruit(game:FruitPinball){
  const canvas=document.getElementById('game') as HTMLCanvasElement;if(canvas.width!==1024||canvas.height!==1700){canvas.width=1024;canvas.height=1700;}const c=canvas.getContext('2d')!;
  c.drawImage(background,0,0);label(c,'水 果 星 宴',512,197,43);label(c,'FRUIT CELESTIAL BANQUET',512,232,15,'#dac49b');
- label(c,`十五道星宴配方 · 完成 ${game.completed.length} / 15 · 至少 3 道合計發獎`,512,285,21);
+ label(c,`十五道星宴配方 · 完成 ${game.completed.length} / 15 · 依完成組合數發獎`,512,285,21);
  for(const r of FRUIT_RECIPES){const x=105+r.id%3*274,y=316+Math.floor(r.id/3)*73,done=r.slots.every(s=>game.mask&(1<<s)),age=game.time-game.recipeTimes[r.id];
   plate(c,x,y,266,66,done);label(c,String(r.id+1).padStart(2,'0'),x+16,y+12,11,'#b79884');
   for(let j=0;j<3;j++){const age=game.time-game.hitTimes[r.slots[j]],pulse=!reduced.matches&&age>=0&&age<.7?1+.2*Math.sin(age/.7*Math.PI):1;fruit(c,r.fruits[j],x+39+j*58,y+34,43*pulse,Boolean(game.mask&(1<<r.slots[j])));if(j<2)label(c,'+',x+68+j*58,y+34,16,'#9b887d');}
-  label(c,`= ${(r.coins/20).toFixed(2)}×`,x+220,y+27,18,done?'#fff0b6':'#c6af9d');label(c,`${r.coins} 金幣`,x+220,y+48,12,done?'#ffe59e':'#b99a89');
+  label(c,done?'✓ 完成':`${r.slots.filter(s=>game.mask&(1<<s)).length} / 3`,x+220,y+34,18,done?'#fff0b6':'#c6af9d');
   if(age>=0&&age<1.1&&!reduced.matches){c.save();c.globalAlpha=Math.max(0,1-age/1.1);c.strokeStyle='#ffe39a';c.lineWidth=4;c.strokeRect(x-3,y-3,272,72);c.restore();}
  }
  label(c,game.phase==='playing'?`彈珠 ${game.landed} / ${FRUIT_BALLS} 已落定`:'16 顆彈珠 · 每局 20 金幣',512,716,23,'#f3dfad');
@@ -64,7 +64,7 @@ export function renderFruit(game:FruitPinball){
   if(large&&t<7&&!reduced.matches)for(let i=0;i<64;i++){const a=i*2.399,life=(t+i*.09)%3.8,x=512+Math.cos(a)*life*180,y=900+Math.sin(a)*life*140+life*life*28;c.save();c.globalAlpha=Math.max(0,1-life/3.8);c.fillStyle=['#ffd979','#ff93be','#aff0cf'][i%3];c.translate(x,y);c.rotate(a+t);c.fillRect(-5,-3,10,6);c.restore();}
   c.fillStyle='#100b19bc';c.fillRect(120,744,784,498);plate(c,150,770,724,440,game.payout>0);
   label(c,game.payout>=1000?'星 宴 大 滿 貫':large?'璀 璨 星 宴 大 獎':game.payout?'星 宴 配 方 完 成':'本 次 星 宴 結 束',512,827,36);
-  label(c,`完成 ${game.completed.length} 道配方${FRUIT_COMPLETION_BONUS[game.completed.length]?` · 星宴加成 +${FRUIT_COMPLETION_BONUS[game.completed.length]}`:''}`,512,883,25,'#d5c4a6');
+  label(c,`完成 ${game.completed.length} 組合 · 對應本局獎項`,512,883,25,'#d5c4a6');
   const count=reduced.matches?game.payout:Math.round(game.payout*Math.min(1,t/1.5));label(c,`+ ${count} 金幣`,512,964,65,large?'#fff0a2':'#d6f4dc');
   label(c,game.payout?`總賠率 ${(game.payout/20).toFixed(2)}× · 獎勵已加入共用金幣`:'未達 3 道配方，本局不發放獎勵',512,1030,23);
   label(c,game.progress.streak>=3?'下局開場將觸發精靈贈格':`連續未觸發賠率：${game.progress.streak} 場`,512,1090,23,'#e9b6d0');

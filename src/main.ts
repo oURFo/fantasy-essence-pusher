@@ -12,7 +12,7 @@ import {loadSkyArtwork,renderSky} from './sky-rendering.ts';
 import {FruitPinball,FruitProgress} from './fruit-game.ts';
 import {bindFruitPlunger} from './fruit-input.ts';
 import {loadFruitArtwork,renderFruit} from './fruit-rendering.ts';
-import {FRUIT_CELLS,FRUIT_RECIPES,FRUIT_NAMES,FRUIT_COST,FRUIT_BALLS,FRUIT_COMPLETION_BONUS} from './fruit-rules.ts';
+import {FRUIT_CELLS,FRUIT_RECIPES,FRUIT_NAMES,FRUIT_COST,FRUIT_BALLS,FRUIT_PAYOUTS} from './fruit-rules.ts';
 import './style.css';
 
 const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
@@ -42,7 +42,8 @@ function updateUI(){
   $('fruit-streak').textContent=`連續未發獎 ${game.progress.streak} 場${game.progress.streak>=3?' · 下局贈送 1～5 格水果':''}`;
   $('auto-status').textContent=game.gold<FRUIT_COST&&game.phase!=='playing'?'金幣不足 20，暫時無法開局':game.phase==='playing'?`剩餘 ${16-game.launched} 顆待發射${game.launched?` · 上次力道 ${Math.round(game.lastPower*100)}%`:''} · ${game.canLaunch?'拉下右下角拉把，放開發射':'等待發射軌道清空'} · 不額外扣款`:'按開始或空白鍵開局 · 開局後使用右下拉把發射';
   $('machine-announcement').textContent=$('fruit-round-status').textContent;
-  for(const recipe of FRUIT_RECIPES){const element=$(`fruit-recipe-${recipe.id}`);const lit=recipe.slots.map(i=>Boolean(game.mask&(1<<i)));element.dataset.complete=String(lit.every(Boolean));element.textContent=`${recipe.fruits.map((f,i)=>`${lit[i]?'●':'○'}${FRUIT_NAMES[f]}`).join(' + ')} = ${(recipe.coins/20).toFixed(2)}×（${recipe.coins} 金幣）`;}
+  for(let n=3;n<=15;n++)$(`fruit-payout-${n}`).dataset.current=String(game.completed.length===n);
+  for(const recipe of FRUIT_RECIPES){const element=$(`fruit-recipe-${recipe.id}`);const lit=recipe.slots.map(i=>Boolean(game.mask&(1<<i)));element.dataset.complete=String(lit.every(Boolean));element.textContent=`${recipe.fruits.map((f,i)=>`${lit[i]?'●':'○'}${FRUIT_NAMES[f]}`).join(' + ')} = ${lit.every(Boolean)?'已完成':`已點亮 ${lit.filter(Boolean).length}/3`}`;}
   return;
  }
  $('dropped').textContent=String(game.dropped);$('won').textContent=String(game.won);$('recycled').textContent=String(game.recycled);
@@ -151,4 +152,4 @@ history.replaceState({view:'lobby'},'','#lobby');showLobby();requestAnimationFra
 for(const recipe of FRUIT_RECIPES){const row=document.createElement('li');row.id=`fruit-recipe-${recipe.id}`;$('fruit-recipes').append(row);}
 for(const cell of FRUIT_CELLS){const p=document.createElement('p');p.textContent=`第 ${String(cell.id+1).padStart(2,'0')} 格 · ${cell.fruits.map(f=>FRUIT_NAMES[f]).join('、')} · 參考 ${(cell.weight/100).toFixed(2)}%`;$('fruit-odds').append(p);}
 
-for(let n=8;n<=15;n++){const p=document.createElement('p');p.textContent=`完成 ${n} 道：另加 ${FRUIT_COMPLETION_BONUS[n].toLocaleString()} 金幣`;$(`fruit-bonus-table`).append(p);}
+for(let n=3;n<=15;n++){const p=document.createElement('p');p.id=`fruit-payout-${n}`;p.textContent=`${n} 組合：${FRUIT_PAYOUTS[n].toLocaleString()} 金幣（${FRUIT_PAYOUTS[n]/FRUIT_COST}×）`;$('fruit-payout-table').append(p);}

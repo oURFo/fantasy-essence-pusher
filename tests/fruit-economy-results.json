@@ -2,20 +2,20 @@
   "model": "nominal weighted IID reference only; manual outcomes depend on force and collisions",
   "exact": {
     "base": {
-      "expected": 18.960235505749747,
+      "expected": 18.78023297164813,
       "win": 0.7270604153021842,
       "fullBoardChance": 8.879083783935282e-7
     },
     "gift": {
-      "expected": 26.89745801904545,
+      "expected": 28.883392071738147,
       "win": 0.8339089530961928,
       "fullBoardChance": 0.00008009039458164234
     },
     "giftFraction": 0.01777396682514822,
-    "stationaryRtp": 0.9550655717692443
+    "stationaryRtp": 0.9479903093161163
   },
   "rounds": 200000,
-  "rtp": 0.9554625,
+  "rtp": 0.94904875,
   "winRate": 0.728525,
   "giftRate": 0.01718,
   "histogram": [
@@ -36,6 +36,88 @@
     0,
     0
   ],
+  "payouts": [
+    {
+      "count": 0,
+      "coins": 0,
+      "multiplier": 0
+    },
+    {
+      "count": 1,
+      "coins": 0,
+      "multiplier": 0
+    },
+    {
+      "count": 2,
+      "coins": 0,
+      "multiplier": 0
+    },
+    {
+      "count": 3,
+      "coins": 15,
+      "multiplier": 0.75
+    },
+    {
+      "count": 4,
+      "coins": 20,
+      "multiplier": 1
+    },
+    {
+      "count": 5,
+      "coins": 25,
+      "multiplier": 1.25
+    },
+    {
+      "count": 6,
+      "coins": 40,
+      "multiplier": 2
+    },
+    {
+      "count": 7,
+      "coins": 55,
+      "multiplier": 2.75
+    },
+    {
+      "count": 8,
+      "coins": 75,
+      "multiplier": 3.75
+    },
+    {
+      "count": 9,
+      "coins": 100,
+      "multiplier": 5
+    },
+    {
+      "count": 10,
+      "coins": 150,
+      "multiplier": 7.5
+    },
+    {
+      "count": 11,
+      "coins": 250,
+      "multiplier": 12.5
+    },
+    {
+      "count": 12,
+      "coins": 500,
+      "multiplier": 25
+    },
+    {
+      "count": 13,
+      "coins": 1000,
+      "multiplier": 50
+    },
+    {
+      "count": 14,
+      "coins": 2000,
+      "multiplier": 100
+    },
+    {
+      "count": 15,
+      "coins": 5000,
+      "multiplier": 250
+    }
+  ],
   "recipes": [
     {
       "slots": [
@@ -43,8 +125,7 @@
         5,
         10
       ],
-      "chance": 0.12597128788818582,
-      "coins": 11
+      "chance": 0.12597128788818582
     },
     {
       "slots": [
@@ -52,8 +133,7 @@
         6,
         11
       ],
-      "chance": 0.29181136268693875,
-      "coins": 5
+      "chance": 0.29181136268693875
     },
     {
       "slots": [
@@ -61,8 +141,7 @@
         7,
         12
       ],
-      "chance": 0.29331003809656664,
-      "coins": 5
+      "chance": 0.29331003809656664
     },
     {
       "slots": [
@@ -70,8 +149,7 @@
         8,
         13
       ],
-      "chance": 0.294064831478712,
-      "coins": 5
+      "chance": 0.294064831478712
     },
     {
       "slots": [
@@ -79,8 +157,7 @@
         9,
         14
       ],
-      "chance": 0.29507179586010396,
-      "coins": 5
+      "chance": 0.29507179586010396
     },
     {
       "slots": [
@@ -88,8 +165,7 @@
         6,
         15
       ],
-      "chance": 0.16945129760308403,
-      "coins": 8
+      "chance": 0.16945129760308403
     },
     {
       "slots": [
@@ -97,8 +173,7 @@
         7,
         14
       ],
-      "chance": 0.29354861111577246,
-      "coins": 5
+      "chance": 0.29354861111577246
     },
     {
       "slots": [
@@ -106,8 +181,7 @@
         8,
         11
       ],
-      "chance": 0.2925681901625127,
-      "coins": 5
+      "chance": 0.2925681901625127
     },
     {
       "slots": [
@@ -115,8 +189,7 @@
         12,
         15
       ],
-      "chance": 0.22902648162313363,
-      "coins": 6
+      "chance": 0.22902648162313363
     },
     {
       "slots": [
@@ -124,8 +197,7 @@
         5,
         13
       ],
-      "chance": 0.22236424808353916,
-      "coins": 6
+      "chance": 0.22236424808353916
     },
     {
       "slots": [
@@ -133,8 +205,7 @@
         7,
         9
       ],
-      "chance": 0.2182096111427419,
-      "coins": 6
+      "chance": 0.2182096111427419
     },
     {
       "slots": [
@@ -142,8 +213,7 @@
         8,
         10
       ],
-      "chance": 0.22379193280262696,
-      "coins": 6
+      "chance": 0.22379193280262696
     },
     {
       "slots": [
@@ -151,8 +221,7 @@
         6,
         13
       ],
-      "chance": 0.29330482821546366,
-      "coins": 5
+      "chance": 0.29330482821546366
     },
     {
       "slots": [
@@ -160,8 +229,7 @@
         5,
         14
       ],
-      "chance": 0.2223585166544506,
-      "coins": 6
+      "chance": 0.2223585166544506
     },
     {
       "slots": [
@@ -169,8 +237,7 @@
         11,
         15
       ],
-      "chance": 0.17577373946327252,
-      "coins": 7
+      "chance": 0.17577373946327252
     }
   ]
 }
