@@ -15,6 +15,9 @@
     "stationaryRtp": 0.9479903093161163
   },
   "rounds": 200000,
+  "paidRounds": 198886,
+  "freeAwards": 1114,
+  "rtpIncludingFreeRounds": 0.9543645606025563,
   "rtp": 0.94904875,
   "winRate": 0.728525,
   "giftRate": 0.01718,

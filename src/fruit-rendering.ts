@@ -35,12 +35,14 @@ export function renderFruit(game:FruitPinball){
  for(const peg of FRUIT_PINS)c.drawImage(pin,peg.x-11,peg.y-11,22,22);
  // Fruits are printed directly above the corresponding physical pocket.
  for(const target of FRUIT_TARGETS){const cell=FRUIT_CELLS[target.id],lit=Boolean(game.mask&(1<<cell.id)),age=game.time-game.hitTimes[cell.id],w=target.right-target.left;
-  c.drawImage(pocket,target.x-(w+12)/2,target.y-18,w+12,38);
+  c.drawImage(pocket,target.x-(w+12)/2,target.y-18,w+12,90);
   if(age>=0&&age<1){c.save();c.globalAlpha=(1-age)*.5;c.strokeStyle='#ffe7a2';c.lineWidth=3;c.beginPath();c.ellipse(target.x,target.y,w/2+9,25,0,0,Math.PI*2);c.stroke();c.restore();}
   const size=cell.fruits.length===3?40:44,spacing=cell.fruits.length===3?42:48;
   if(lit){c.fillStyle='#81dba333';c.strokeStyle='#c7edb3';c.lineWidth=1.5;c.beginPath();c.ellipse(target.x,target.y-48,cell.fruits.length*spacing/2+6,27,0,0,Math.PI*2);c.fill();c.stroke();}
   for(let j=0;j<cell.fruits.length;j++)fruit(c,cell.fruits[j],target.x+(j-(cell.fruits.length-1)/2)*spacing,target.y-48,size,true);
-  label(c,`${lit?'✓ ':''}${String(cell.id+1).padStart(2,'0')}${game.gifts.includes(cell.id)?' · 贈':''}`,target.x,target.y+34,14,lit?'#ffe38d':'#dbc7a4');
+  const count=game.pocketCounts[cell.id],cols=Math.max(2,Math.floor((w-8)/22)),rows=Math.max(1,Math.ceil(count/cols)),beadSize=Math.min(22,(w-8)/cols,36/rows);
+  for(let n=0;n<count;n++){const bx=target.x+(n%cols-(Math.min(cols,count)-1)/2)*beadSize,by=target.y+35-Math.floor(n/cols)*beadSize;c.drawImage(pearl,bx-beadSize/2,by-beadSize/2,beadSize,beadSize);}
+  label(c,`${lit?'✓ ':''}${String(cell.id+1).padStart(2,'0')} · ${count}顆${count>=6?' ★':''}${game.gifts.includes(cell.id)?' · 贈':''}`,target.x,target.y+68,14,lit?'#ffe38d':'#dbc7a4');
  }
  // The shooter lane and curved guide use the existing AI-painted gold rail.
  const gates=images[4],gs=gates.naturalWidth/2048;
@@ -50,7 +52,7 @@ export function renderFruit(game:FruitPinball){
   if(!reduced.matches)for(let i=1;i<ball.trail.length;i++){const t=ball.trail[i];c.save();c.globalAlpha=.18*(1-i/6);c.drawImage(pearl,t.x-11,t.y-11,22,22);c.restore();}
   c.drawImage(pearl,ball.x-12,ball.y-12,24,24);
  }
- for(const landing of game.landings){const age=(game.time-landing.time)/.35,size=22*(1-age);c.save();c.globalAlpha=1-age;c.drawImage(pearl,landing.x-size/2,landing.y-7+age*17,size,size);c.restore();}
+
  if(game.canLaunch)c.drawImage(pearl,FIELD.launcherX-12,FIELD.launcherY-12,24,24);
  c.drawImage(body,903,1430,64,200);c.drawImage(knob,914,1481+game.pullPower*60,43,154);
  label(c,`${Math.round(game.pullPower*100)}%`,935,1380,19,'#ffe2a1');label(c,'拉把',935,1352,18);label(c,'↓ 拉下',935,1674,16);
@@ -68,6 +70,6 @@ export function renderFruit(game:FruitPinball){
   const count=reduced.matches?game.payout:Math.round(game.payout*Math.min(1,t/1.5));label(c,`+ ${count} 金幣`,512,964,65,large?'#fff0a2':'#d6f4dc');
   label(c,game.payout?`總賠率 ${(game.payout/20).toFixed(2)}× · 獎勵已加入共用金幣`:'未達 3 道配方，本局不發放獎勵',512,1030,23);
   label(c,game.progress.streak>=3?'下局開場將觸發精靈贈格':`連續未觸發賠率：${game.progress.streak} 場`,512,1090,23,'#e9b6d0');
-  label(c,'按「再開一局」繼續 · 每局 20 金幣',512,1155,22,'#f7dfb2');
+  label(c,game.freeRounds?'同格集滿 6 顆 · 獲贈免費一局！':'按「再開一局」繼續 · 每局 20 金幣',512,1155,22,'#f7dfb2');
  }
 }

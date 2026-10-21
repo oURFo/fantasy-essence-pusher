@@ -31,16 +31,16 @@ function syncWallet(){
 function updateUI(){
  syncWallet();const game=session.game;if(!game)return;
  if(game instanceof FruitPinball){
-  $<HTMLButtonElement>('drop').disabled=session.leaveRequested||game.inputLocked||game.gold<FRUIT_COST;
-  $('drop').textContent=game.phase==='playing'?'本局進行中 · 使用右下拉把':game.phase==='result'?'再開一局 · 20 金幣':'開始星宴 · 20 金幣';
+  $<HTMLButtonElement>('drop').disabled=session.leaveRequested||game.inputLocked||(game.freeRounds===0&&game.gold<FRUIT_COST);
+  $('drop').textContent=game.phase==='playing'?'本局進行中 · 使用右下拉把':game.phase==='result'?(game.freeRounds?'免費再玩一局 · 0 金幣':'再開一局 · 20 金幣'):'開始星宴 · 20 金幣';
   $<HTMLButtonElement>('fruit-plunger-grip').disabled=session.leaveRequested||!game.canLaunch;
   $<HTMLInputElement>('fruit-power').disabled=session.leaveRequested||!game.canLaunch;$<HTMLInputElement>('fruit-power').value=String(Math.round(game.pullPower*100));
   $<HTMLButtonElement>('fruit-fire').disabled=session.leaveRequested||!game.canLaunch;$('fruit-power-label').textContent=`${Math.round(game.pullPower*100)}%`;
   $('auto-drop').hidden=true;$('slot-status').hidden=true;$('status').hidden=true;
   $('fruit-balls').textContent=`${game.landed} / ${FRUIT_BALLS}`;$('fruit-completed').textContent=`${game.completed.length} / 15`;
   $('fruit-round-status').textContent=game.phase==='result'?`本局 ${game.completed.length} 道配方，獲得 ${game.payout} 金幣（${(game.payout/20).toFixed(2)}×）`:game.phase==='playing'?`已發射 ${game.launched} / 16 顆 · ${game.completed.length>=3?'已達發獎門檻':'完成 3 道配方開始發獎'}`:'每局 20 金幣，使用右下拉把逐顆發射 16 顆彈珠。';
-  $('fruit-streak').textContent=`連續未發獎 ${game.progress.streak} 場${game.progress.streak>=3?' · 下局贈送 1～5 格水果':''}`;
-  $('auto-status').textContent=game.gold<FRUIT_COST&&game.phase!=='playing'?'金幣不足 20，暫時無法開局':game.phase==='playing'?`剩餘 ${16-game.launched} 顆待發射${game.launched?` · 上次力道 ${Math.round(game.lastPower*100)}%`:''} · ${game.canLaunch?'拉下右下角拉把，放開發射':'等待發射軌道清空'} · 不額外扣款`:'按開始或空白鍵開局 · 開局後使用右下拉把發射';
+  $('fruit-streak').textContent=`${game.freeRounds?'同格集滿 6 顆！已獲贈免費一局 · ':game.playingFree?'本局為免費遊戲 · ':''}連續未發獎 ${game.progress.streak} 場${game.progress.streak>=3?' · 下局贈送 1～5 格水果':''}`;
+  $('auto-status').textContent=game.freeRounds===0&&game.gold<FRUIT_COST&&game.phase!=='playing'?'金幣不足 20，暫時無法開局':game.phase==='playing'?`剩餘 ${16-game.launched} 顆待發射${game.launched?` · 上次力道 ${Math.round(game.lastPower*100)}%`:''} · ${game.canLaunch?'拉下右下角拉把，放開發射':'等待發射軌道清空'} · 不額外扣款`:'按開始或空白鍵開局 · 開局後使用右下拉把發射';
   $('machine-announcement').textContent=$('fruit-round-status').textContent;
   for(let n=3;n<=15;n++)$(`fruit-payout-${n}`).dataset.current=String(game.completed.length===n);
   for(const recipe of FRUIT_RECIPES){const element=$(`fruit-recipe-${recipe.id}`);const lit=recipe.slots.map(i=>Boolean(game.mask&(1<<i)));element.dataset.complete=String(lit.every(Boolean));element.textContent=`${recipe.fruits.map((f,i)=>`${lit[i]?'●':'○'}${FRUIT_NAMES[f]}`).join(' + ')} = ${lit.every(Boolean)?'已完成':`已點亮 ${lit.filter(Boolean).length}/3`}`;}
