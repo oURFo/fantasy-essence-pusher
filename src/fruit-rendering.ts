@@ -59,7 +59,10 @@ export function renderFruit(game:FruitPinball){
  const fresh=game.time-game.flashAt;
  if(fresh>=0&&fresh<1&&!reduced.matches){c.save();c.globalAlpha=(1-fresh)*(.22+.18*Math.sin(fresh*30));c.strokeStyle='#ffe59c';c.lineWidth=14;c.strokeRect(50,50,924,1600);c.restore();}
  const announcement=game.phase==='idle'?'點擊「開始星宴」，展開十六顆彈珠的旅程':game.lastSlot<0?'使用右下拉把，逐顆發射彈珠':game.duplicate?`第 ${game.lastSlot+1} 格重複命中 · 水果進度不變`:`第 ${game.lastSlot+1} 格點亮 · 對應配方已更新`;
- label(c,announcement,512,1612,21);label(c,'力道影響實際落點 · 三個不同水果格完成配方',512,1648,15,'#c2ab91');
+ label(c,announcement,492,1603,18);
+ const remaining=game.phase==='idle'?0:Math.max(0,FRUIT_BALLS-game.launched);
+ label(c,game.phase==='idle'?'開局補滿 16 顆彈珠':`待發射彈珠 · ${remaining} / ${FRUIT_BALLS}`,492,1630,16,'#e1cfaa');
+ for(let i=0;i<remaining;i++)c.drawImage(pearl,192+i*38,1644,30,30);
  if(game.gifts.length&&game.time-game.startedAt<2.2){plate(c,180,845,664,100,true);label(c,'精 靈 贈 禮',512,874,29,'#ffe2f0');label(c,`開局贈送 ${game.gifts.length} 格：${game.gifts.map(i=>String(i+1).padStart(2,'0')).join(' · ')}`,512,919,23);}
  if(game.phase==='result'){
   const t=game.time-game.resultAt,large=game.payout>=40;
