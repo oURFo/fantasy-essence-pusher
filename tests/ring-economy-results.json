@@ -1,0 +1,69 @@
+{
+  "model": "Uniform random position/pull with actual collision and +/-2 degree wind. Observational only; skill changes returns. No weighted payout draw.",
+  "throws": 30000,
+  "cheapestCostPerRing": 3.3333333333333335,
+  "rowHits": [
+    29,
+    9,
+    8,
+    2,
+    0,
+    0
+  ],
+  "aimed": [
+    {
+      "row": 1,
+      "pull": 0.163,
+      "hitRate": 0.3324,
+      "valuePerRing": 1.662
+    },
+    {
+      "row": 2,
+      "pull": 0.3197,
+      "hitRate": 0.1184,
+      "valuePerRing": 1.1840000000000002
+    },
+    {
+      "row": 3,
+      "pull": 0.4787,
+      "hitRate": 0.0532,
+      "valuePerRing": 1.064
+    },
+    {
+      "row": 4,
+      "pull": 0.6325,
+      "hitRate": 0.034,
+      "valuePerRing": 1.1900000000000002
+    },
+    {
+      "row": 5,
+      "pull": 0.7979,
+      "hitRate": 0.0068,
+      "valuePerRing": 0.408
+    },
+    {
+      "row": 6,
+      "pull": 0.9494,
+      "hitRate": 0.0044,
+      "valuePerRing": 0.44
+    }
+  ],
+  "valuePerRing": 0.0155,
+  "rtpByPack": [
+    {
+      "cost": 100,
+      "rings": 20,
+      "rtp": 0.0031
+    },
+    {
+      "cost": 300,
+      "rings": 70,
+      "rtp": 0.003616666666666667
+    },
+    {
+      "cost": 500,
+      "rings": 150,
+      "rtp": 0.00465
+    }
+  ]
+}

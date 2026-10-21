@@ -25,6 +25,9 @@ jobs:
       - run: node tests/wallet-auto.mjs
       - run: node tests/essence-return.mjs
       - run: node tests/lobby-session.mjs
+      - run: node tests/ring-game.mjs
+      - run: node tests/ring-input.mjs
+      - run: node tests/ring-economy.mjs
       - run: node tests/fruit-rules.mjs
       - run: node tests/fruit-paths.mjs
       - run: node tests/fruit-game.mjs

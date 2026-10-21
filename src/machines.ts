@@ -10,5 +10,5 @@ export const MACHINES=[{
   id:'fruit-banquet',name:'水果星宴',tag:'星光果園 · 十六彈珠 × 水果配方',
   description:'拉下右側拉把，控制星珠力道，喚醒盤面上的水果配方。',
   image:'fruit-banquet/cabinet.png',entryCost:20,
-}] as const;
+},{id:'night-market',name:'夜市拾寶',tag:'夜市套圈圈 · 戰利品背包',description:'把圈圈套進好運，把夜市戰利品帶回家。',image:'night-market/stall.png',entryCost:100}] as const;
 export type MachineId=typeof MACHINES[number]['id'];

@@ -13,6 +13,10 @@ import {FruitPinball,FruitProgress} from './fruit-game.ts';
 import {bindFruitPlunger} from './fruit-input.ts';
 import {loadFruitArtwork,renderFruit} from './fruit-rendering.ts';
 import {FRUIT_CELLS,FRUIT_RECIPES,FRUIT_NAMES,FRUIT_COST,FRUIT_BALLS,FRUIT_PAYOUTS} from './fruit-rules.ts';
+import {NightMarket} from './ring-game.ts';
+import {loadRingArtwork,renderRing} from './ring-rendering.ts';
+import {bindRingInput} from './ring-input.ts';
+import {initRingUI} from './ring-ui.ts';
 import './style.css';
 
 const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
@@ -23,13 +27,16 @@ let lastUI=0;
 let accumulator=0,previous=0,entering=false,readyPromise:Promise<void>|undefined;
 const dialog=$<HTMLDialogElement>('leave-dialog');
 const plunger=bindFruitPlunger(()=>session.game instanceof FruitPinball?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
-function resetClock(){accumulator=0;previous=0;plunger.cancel();}
+const ringInput=bindRingInput(()=>session.game instanceof NightMarket?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
+const ringUI=initRingUI(()=>session.game instanceof NightMarket?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
+function resetClock(){ringInput.cancel();accumulator=0;previous=0;plunger.cancel();}
 function syncWallet(){
  const balance=wallet.gold.toLocaleString('en-US');
  $('gold-balance').textContent=balance;$('lobby-gold').textContent=balance;
 }
 function updateUI(){
  syncWallet();const game=session.game;if(!game)return;
+ if(game instanceof NightMarket){ringUI.update(game);$('machine-announcement').textContent=game.message;return;}
  if(game instanceof FruitPinball){
   $<HTMLButtonElement>('drop').disabled=session.leaveRequested||game.inputLocked||(game.freeRounds===0&&game.gold<FRUIT_COST);
   $('drop').textContent=game.phase==='playing'?'本局進行中 · 使用右下拉把':game.phase==='result'?(game.freeRounds?'免費再玩一局 · 0 金幣':'再開一局 · 20 金幣'):'開始星宴 · 20 金幣';
@@ -66,25 +73,27 @@ function showLobby(){
  $('page-title').textContent='冒險大廳';$('page-subtitle').textContent='選擇一台機台，展開你的下一段冒險。';document.title='冒險大廳 · 秘境金庫';syncWallet();resetClock();
 }
 async function ensureReady(id:MachineId){
+ if(id==='night-market'){await loadRingArtwork();return;}
  if(id==='fruit-banquet'){await loadFruitArtwork();return;}
  if(!readyPromise)readyPromise=Promise.all([RAPIER.init(),loadArtwork()]).then(()=>{}).catch(error=>{readyPromise=undefined;throw error;});
  await readyPromise;if(id==='sky-wings')await loadSkyArtwork();
 }
-function renderGame(){const game=session.game;if(game instanceof FruitPinball)renderFruit(game);else if(game instanceof SkyWings)renderSky(game);else if(game)render(game);}
+function renderGame(){const game=session.game;if(game instanceof NightMarket)renderRing(game);else if(game instanceof FruitPinball)renderFruit(game);else if(game instanceof SkyWings)renderSky(game);else if(game)render(game);}
 async function enterMachine(id:MachineId){
  if(entering||session.game)return;entering=true;
- const button=$<HTMLButtonElement>(id==='fruit-banquet'?'enter-fruit':id==='sky-wings'?'enter-sky':'enter-machine');
+ const button=$<HTMLButtonElement>(id==='night-market'?'enter-ring':id==='fruit-banquet'?'enter-fruit':id==='sky-wings'?'enter-sky':'enter-machine');
  const label=button.textContent;document.querySelectorAll<HTMLButtonElement>('[data-machine]').forEach(b=>b.disabled=true);button.textContent='正在準備機台…';$('lobby-error').textContent='';
  try{
   await ensureReady(id);if(!session.enter(id))return;
   $('lobby-screen').hidden=true;$('machine-screen').hidden=false;$('lobby-wallet').hidden=true;$('machine-nav').hidden=false;
-  const machine=MACHINES.find(m=>m.id===id)!;const sky=id==='sky-wings',fruit=id==='fruit-banquet';
+  const machine=MACHINES.find(m=>m.id===id)!;const sky=id==='sky-wings',fruit=id==='fruit-banquet',ring=id==='night-market';
   $('page-title').textContent=machine.name;$('page-subtitle').textContent=machine.description;document.title=`${machine.name} · 冒險遊藝場`;
-  const canvas=$<HTMLCanvasElement>('game');canvas.width=1024;canvas.height=fruit?1700:1536;canvas.setAttribute('aria-label',fruit?'水果星宴彈珠台，十五道水果配方及十六個水果格':'奇幻推幣機遊戲');
+  const canvas=$<HTMLCanvasElement>('game');canvas.width=1024;canvas.height=fruit?1700:1536;canvas.setAttribute('aria-label',ring?'夜市套圈圈，六排各八件獎品與底部投擲圈圈':fruit?'水果星宴彈珠台，十五道水果配方及十六個水果格':'奇幻推幣機遊戲');
   $('machine-screen').dataset.machine=id;
-  $('fruit-plunger-grip').hidden=!fruit;$('fruit-panel').hidden=!fruit;$('adventure-details').hidden=fruit;$('auto-drop').hidden=fruit;$('slot-status').hidden=fruit;$('status').hidden=fruit;
+  $('ring-throw-zone').hidden=!ring;$('ring-panel').hidden=!ring;document.querySelector<HTMLElement>('.play-controls')!.hidden=ring;
+  $('fruit-plunger-grip').hidden=!fruit;$('fruit-panel').hidden=!fruit;$('adventure-details').hidden=fruit||ring;$('auto-drop').hidden=fruit;$('slot-status').hidden=fruit;$('status').hidden=fruit;
   if(!fruit)$('drop').innerHTML='投入精華 · 1 金幣 <kbd>SPACE</kbd>';
-  document.querySelectorAll<HTMLElement>('.vault-only').forEach(el=>el.hidden=sky||fruit);document.querySelectorAll<HTMLElement>('.sky-only').forEach(el=>el.hidden=!sky);
+  document.querySelectorAll<HTMLElement>('.vault-only').forEach(el=>el.hidden=sky||fruit||ring);document.querySelectorAll<HTMLElement>('.sky-only').forEach(el=>el.hidden=!sky);
   $('front-rule').textContent='中央 1/2 計入獎勵，左右各 1/4 系統回收';
   $('leave-pending').textContent=fruit?'本局彈珠、已點亮水果與未結算獎勵將清除，已支付的 20 金幣不退還。連敗紀錄保留，離場不累加連敗。':sky?'尚未完成的輪盤、升階進度、待轉次數與未派出的精華獎勵也會清除。':'尚未完成的 SLOT、待轉次數與未派出的精華獎勵也會清除。';
   $<HTMLDetailsElement>('adventure-details').open=false;
@@ -95,14 +104,14 @@ async function enterMachine(id:MachineId){
 }
 function requestLeave(){
  if(session.leaveRequested||!session.requestLeave())return;
- resetClock();dialog.showModal();$('keep-playing').focus();updateUI();
+ resetClock();if(session.game instanceof NightMarket){const g=session.game;$('leave-pending').textContent=`背包 ${g.bagCount} 件戰利品將自動售出 ${g.bagValue} 金幣；剩餘 ${g.rings} 個圈圈將清除，不退費。${g.active?'飛行中的圈圈會取消。':''}`;}dialog.showModal();$('keep-playing').focus();updateUI();
 }
 function cancelLeave(){session.cancelLeave();dialog.close();resetClock();updateUI();$('back-to-lobby').focus({preventScroll:true});}
 function confirmLeave(){
  if(!session.confirmLeave())return;
  dialog.close();showLobby();history.replaceState({view:'lobby'},'','#lobby');window.scrollTo({top:0,behavior:'auto'});$('enter-machine').focus({preventScroll:true});
 }
-function drop(){if(session.game&&!document.hidden&&!session.leaveRequested){if(session.game instanceof FruitPinball)session.game.start();else session.game.drop();updateUI();}}
+function drop(){if(session.game&&!document.hidden&&!session.leaveRequested){if(session.game instanceof FruitPinball)session.game.start();else if(!(session.game instanceof NightMarket))session.game.drop();updateUI();}}
 function frame(ms:number){
  if(!previous)previous=ms;const delta=Math.min((ms-previous)/1000,.1);previous=ms;
  if(session.game&&!document.hidden&&!session.leaveRequested){
@@ -112,7 +121,7 @@ function frame(ms:number){
  requestAnimationFrame(frame);
 }
 $('drop').addEventListener('click',drop);
-$('auto-drop').addEventListener('click',()=>{if(session.game&&!document.hidden&&!session.leaveRequested){if(!(session.game instanceof FruitPinball))session.game.setAutoDrop(!session.game.autoDrop);updateUI();}});
+$('auto-drop').addEventListener('click',()=>{if(session.game&&!document.hidden&&!session.leaveRequested){if(!(session.game instanceof FruitPinball)&&!(session.game instanceof NightMarket))session.game.setAutoDrop(!session.game.autoDrop);updateUI();}});
 document.querySelectorAll<HTMLButtonElement>('[data-machine]').forEach(button=>button.addEventListener('click',()=>{void enterMachine(button.dataset.machine as MachineId);}));
 $('back-to-lobby').addEventListener('click',requestLeave);
 $('keep-playing').addEventListener('click',cancelLeave);$('confirm-leave').addEventListener('click',confirmLeave);
