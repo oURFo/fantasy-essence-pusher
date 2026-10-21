@@ -23,3 +23,5 @@ main{grid-template-columns:minmax(320px,1.35fr) minmax(260px,1fr);gap:40px}.mach
 
 /* Keep the narrow mobile cabinet inside the viewport and its handle finger-sized. */
 @media(max-width:760px){main{grid-template-columns:minmax(0,1fr)}.machine{min-width:0}#machine-screen[data-machine="fruit-banquet"] .fruit-plunger-grip{left:auto;right:1.5%;top:85%;width:16%;min-width:48px;height:15%;min-height:72px;touch-action:none;-webkit-user-select:none;-webkit-touch-callout:none}}
+
+@media(max-width:760px){#machine-screen[data-machine="fruit-banquet"]{gap:12px}#machine-screen[data-machine="fruit-banquet"] aside{display:flex;flex-direction:column;gap:16px}#machine-screen[data-machine="fruit-banquet"] .play-controls{order:-1;padding-top:0}#machine-screen[data-machine="fruit-banquet"] .play-controls #drop{min-height:48px}}
