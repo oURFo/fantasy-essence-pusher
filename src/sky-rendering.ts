@@ -2,12 +2,39 @@ import {SkyWings} from './sky-game.ts';
 import {SKY_PEGS,SKY_TIERS} from './sky-rules.ts';
 import {OUTLETS,SPLITTER} from './config.ts';
 import {SKY_FRONT,skyProject as project,skyExitEdges} from './sky-geometry.ts';
+import {skyDrawOrder} from './sky-draw-order.ts';
 const names=['sky-wings/base.png','sky-wings/azure.png','sky-wings/gold.png','sky-wings/wheel.png','sprites.png','green-bead.png','platform.png','side-pipe.png','triangle-splitter.png','prize-gates.png','sky-wings/wings-v2.png','sky-wings/collection-bay-v2.png'];
 const art=names.map(()=>new Image());
 let ready:Promise<void>|undefined;
 export function loadSkyArtwork(){
- if(!ready){art.forEach((img,i)=>img.src=new URL(`./assets/${names[i]}`,document.baseURI).href);ready=Promise.all(art.map(img=>img.decode())).then(()=>{}).catch(e=>{ready=undefined;throw e;});}
+ if(!ready){art.forEach((img,i)=>img.src=new URL(`./assets/${names[i]}`,document.baseURI).href);ready=Promise.all(art.map(img=>img.decode())).then(buildThemeCache).catch(e=>{ready=undefined;throw e;});}
  return ready;
+}
+// Filter and resize the AI sprites once, instead of creating hundreds of
+// filtered offscreen layers every frame. Caches are bounded to three themes.
+function surface(w:number,h:number,paint:(ctx:CanvasRenderingContext2D)=>void){
+ const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+ paint(canvas.getContext('2d')!);return canvas;
+}
+let themes:{background:HTMLCanvasElement;bead:HTMLCanvasElement;wheel:HTMLCanvasElement;top:HTMLCanvasElement;lip:HTMLCanvasElement;pipe:HTMLCanvasElement}[]=[];
+function buildThemeCache(){
+ const edges=skyExitEdges(),ps=art[6].naturalWidth/2048;
+ themes=[0,1,2].map(tier=>{
+  const platformFilter=tier===1?'saturate(.15) brightness(1.7)':tier===2?'sepia(.5) brightness(1.4)':'saturate(.5) brightness(1.4)';
+  return {
+   background:surface(1024,1536,ctx=>{
+    ctx.drawImage(art[tier],0,0,1024,1536);
+    ctx.filter=tier===1?'saturate(.15) brightness(1.15)':tier===2?'sepia(.9) saturate(1.5)':'none';
+    const img=art[11],sw=img.naturalWidth/3;
+    for(let i=0;i<3;i++)ctx.drawImage(img,i*sw,0,sw,img.naturalHeight,edges[i],SKY_FRONT.panelTop,edges[i+1]-edges[i],SKY_FRONT.panelHeight);
+   }),
+   bead:surface(96,96,ctx=>{ctx.filter=tier===1?'hue-rotate(65deg) saturate(1.35) brightness(1.15)':tier===2?'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.25)':'saturate(.8) brightness(1.15)';ctx.drawImage(art[5],0,0,96,96);}),
+   wheel:surface(224,224,ctx=>{ctx.filter=tier===1?'saturate(.4) brightness(1.25)':tier===2?'sepia(.8) saturate(1.7)':'none';ctx.drawImage(art[3],0,0,224,224);}),
+   top:surface(928,124,ctx=>{ctx.filter=platformFilter;ctx.drawImage(art[6],28*ps,166*ps,1990*ps,264*ps,0,0,928,124);}),
+   lip:surface(928,66,ctx=>{ctx.filter=platformFilter;ctx.drawImage(art[6],28*ps,430*ps,1990*ps,140*ps,0,0,928,66);}),
+   pipe:surface(124,62,ctx=>{ctx.filter='brightness(1.4) saturate(.5)';ctx.drawImage(art[7],0,0,124,62);}),
+  };
+ });
 }
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
 const tau=Math.PI*2;
@@ -22,25 +49,15 @@ function wings(ctx:CanvasRenderingContext2D,tier:number,x:number,y:number,w:numb
 export function renderSky(game:SkyWings){
  const canvas=document.getElementById('game') as HTMLCanvasElement,ctx=canvas.getContext('2d')!;
  const r=game.sky,tier=r.tier,accent=r.config.color;
- ctx.clearRect(0,0,1024,1536);ctx.drawImage(art[tier],0,0,1024,1536);
+ const theme=themes[tier];ctx.drawImage(theme.background,0,0);
  if(r.settling){
-  const progress=Math.min(1,r.elapsed/10),next=r.phase==='upgrading'?tier+1:0;
-  ctx.save();ctx.globalAlpha=progress;ctx.drawImage(art[next],0,0,1024,1536);ctx.restore();
+  const next=r.phase==='upgrading'?tier+1:0;
+  ctx.save();ctx.globalAlpha=Math.min(1,r.elapsed/10);ctx.drawImage(themes[next].background,0,0);ctx.restore();
  }
- const edges=skyExitEdges();
- const drawBay=(theme:number,alpha=1)=>{
-  ctx.save();ctx.globalAlpha=alpha;
-  ctx.filter=theme===1?'saturate(.15) brightness(1.15)':theme===2?'sepia(.9) saturate(1.5)':'';
-  const img=art[11],sourceWidth=img.naturalWidth/3;
-  // Refit the AI-painted shafts to the same quarter/half/quarter boundaries as physics.
-  for(let i=0;i<3;i++)ctx.drawImage(img,i*sourceWidth,0,sourceWidth,img.naturalHeight,edges[i],SKY_FRONT.panelTop,edges[i+1]-edges[i],SKY_FRONT.panelHeight);
-  ctx.restore();
- };
- drawBay(tier);if(r.settling)drawBay(r.phase==='upgrading'?tier+1:0,Math.min(1,r.elapsed/10));
  // The wheel is inset into the backboard; physical beads and pins remain in front.
  const wx=512,wy=520,rad=112;
- ctx.save();ctx.translate(wx,wy);ctx.rotate(r.angle);ctx.filter=tier===1?'saturate(.4) brightness(1.25)':tier===2?'sepia(.8) saturate(1.7)':'';
- ctx.save();ctx.rotate(-Math.PI/8);ctx.drawImage(art[3],-rad,-rad,rad*2,rad*2);ctx.restore();ctx.restore();
+ ctx.save();ctx.translate(wx,wy);ctx.rotate(r.angle);
+ ctx.save();ctx.rotate(-Math.PI/8);ctx.drawImage(theme.wheel,-rad,-rad,rad*2,rad*2);ctx.restore();ctx.restore();
  const atlas=art[4],as=atlas.naturalWidth/1280;
  for(const peg of SKY_PEGS){const p=project(peg.x,peg.y,.25),size=22*peg.radius/.105;ctx.drawImage(atlas,770*as,230*as,330*as,330*as,p.x-size/2,p.y-size/2,size,size);}
  // Treat reward labels as a legible display overlay, above the small pin heads.
@@ -69,29 +86,23 @@ export function renderSky(game:SkyWings){
   const x=gateLeft+(i+.5)*gw;
   if(active){ctx.save();ctx.shadowColor=accent;ctx.shadowBlur=lit?30:10;text(ctx,'✦',x,728,lit?36:28,accent);ctx.restore();}
  }
- const frontY=project(0,.7,game.pushZ).y,ps=art[6].naturalWidth/2048;
+ const frontY=project(0,.7,game.pushZ).y;
  ctx.save();ctx.beginPath();ctx.moveTo(180,788);ctx.lineTo(844,788);ctx.lineTo(970,1100);ctx.lineTo(54,1100);ctx.closePath();ctx.clip();
- ctx.filter=tier===1?'saturate(.15) brightness(1.7)':tier===2?'sepia(.5) brightness(1.4)':'saturate(.5) brightness(1.4)';
- ctx.drawImage(art[6],28*ps,166*ps,1990*ps,264*ps,48,766,928,frontY-766);
- ctx.drawImage(art[6],28*ps,430*ps,1990*ps,140*ps,48,frontY,928,30);ctx.restore();
+ ctx.drawImage(theme.top,48,766,928,frontY-766);
+ ctx.drawImage(theme.lip,48,frontY,928,30);ctx.restore();
  for(const [outlet,left,last] of [[OUTLETS.leftPipe,true,game.lastLeftEject],[OUTLETS.pipe,false,game.lastRightEject]] as const){
   const p=project(outlet.x,outlet.y,outlet.z);ctx.save();ctx.translate(p.x,p.y);if(left)ctx.scale(-1,1);
-  ctx.filter='brightness(1.4) saturate(.5)';if(game.time-last<.18){ctx.shadowColor=accent;ctx.shadowBlur=24;}ctx.drawImage(art[7],-62,-31,124,62);ctx.restore();
+  if(game.time-last<.18){ctx.shadowColor=accent;ctx.shadowBlur=24;}ctx.drawImage(theme.pipe,-62,-31,124,62);ctx.restore();
  }
- const depth=(c:typeof game.coins[number])=>{
-  const p=c.body.translation();
-  // Front-edge falls belong in front of the bed, even as their world Y drops.
-  if(c.entered&&p.y<0&&p.z>6.65)return 10000+p.z*44-p.y*48;
-  return c.entered?p.z*44+p.y*25:-p.y*48;
- };
  let drawn=false;const drawSplitter=()=>{const p=project(SPLITTER.x,SPLITTER.height/2,SPLITTER.z);ctx.drawImage(art[8],p.x-35,p.y-33,70,66);drawn=true;};
- for(const coin of [...game.coins].sort((a,b)=>depth(a)-depth(b))){
-  if(!drawn&&depth(coin)>=SPLITTER.z*44+SPLITTER.height*12.5)drawSplitter();
-  const p=coin.body.translation(),s=project(p.x,p.y,p.z),size=coin.entered?42+Math.max(0,p.z)*1.8:44;
-  ctx.save();ctx.beginPath();ctx.rect(54,230,916,1220);ctx.clip();
+ ctx.save();ctx.beginPath();ctx.rect(54,230,916,1220);ctx.clip();
+ for(const {coin,p,depth} of skyDrawOrder(game.coins)){
+  if(!drawn&&depth>=SPLITTER.z*44+SPLITTER.height*12.5)drawSplitter();
+  const s=project(p.x,p.y,p.z),size=coin.entered?42+Math.max(0,p.z)*1.8:44;
   if(coin.entered&&p.y>=0&&p.y<1.2){ctx.fillStyle='#09231e44';ctx.beginPath();ctx.ellipse(s.x,s.y+size*.38,size*.38,size*.13,0,0,tau);ctx.fill();}
-  ctx.filter=tier===1?'hue-rotate(65deg) saturate(1.35) brightness(1.15)':tier===2?'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.25)':'saturate(.8) brightness(1.15)';const sz=size/.84;ctx.drawImage(art[5],s.x-sz/2,s.y-sz/2,sz,sz);ctx.restore();
+  const sz=size/.84;ctx.drawImage(theme.bead,s.x-sz/2,s.y-sz/2,sz,sz);
  }
+ ctx.restore();
  if(!drawn)drawSplitter();
  // The fascia is already in the background. Repainting its rectangular crop
  // here used to cut off beads at the lip and hide the visible fall below it.

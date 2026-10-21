@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-21",
+  "environment": "Same local in-app browser, 1024x1536 canvas; fixed rendered scene after 120 physics steps; 8 warmup + 40 sampled frames; CPU render submission timings and rAF intervals, not full gameplay FPS",
+  "before": {
+    "before": true,
+    "results": [
+      {
+        "tier": 0,
+        "count": 98,
+        "physicsMean": 0.22666666706403096,
+        "renderMean": 2.3025000005960465,
+        "renderP95": 5.100000023841858,
+        "frameP95": 100.10000000000036
+      },
+      {
+        "tier": 1,
+        "count": 256,
+        "physicsMean": 0.7608333339293798,
+        "renderMean": 5.392500013113022,
+        "renderP95": 11.800000071525574,
+        "frameP95": 133.5
+      },
+      {
+        "tier": 2,
+        "count": 514,
+        "physicsMean": 1.6125,
+        "renderMean": 9.692499998211861,
+        "renderP95": 19.300000071525574,
+        "frameP95": 283.2999999999993
+      }
+    ]
+  },
+  "after": {
+    "before": false,
+    "results": [
+      {
+        "tier": 0,
+        "count": 98,
+        "physicsMean": 0.2233333339293798,
+        "renderMean": 0.614999994635582,
+        "renderP95": 1.399999976158142,
+        "frameP95": 16.80000000000291
+      },
+      {
+        "tier": 1,
+        "count": 256,
+        "physicsMean": 0.7441666672627131,
+        "renderMean": 0.8224999994039536,
+        "renderP95": 1.899999976158142,
+        "frameP95": 16.80000000000291
+      },
+      {
+        "tier": 2,
+        "count": 514,
+        "physicsMean": 1.589166667064031,
+        "renderMean": 1.162499985098839,
+        "renderP95": 2.799999952316284,
+        "frameP95": 16.80000000000291
+      }
+    ]
+  }
+}

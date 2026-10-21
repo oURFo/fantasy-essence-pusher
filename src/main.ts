@@ -15,6 +15,7 @@ const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
 let storage:WalletStorage|undefined;
 try{storage=window.localStorage;}catch{/* Browser storage can be disabled. */}
 const wallet=new PlayerWallet(storage),session=new ArcadeSession(wallet);
+let lastUI=0;
 let accumulator=0,previous=0,entering=false,readyPromise:Promise<void>|undefined;
 const dialog=$<HTMLDialogElement>('leave-dialog');
 function resetClock(){accumulator=0;previous=0;}
@@ -82,7 +83,7 @@ function frame(ms:number){
  if(!previous)previous=ms;const delta=Math.min((ms-previous)/1000,.1);previous=ms;
  if(session.game&&!document.hidden&&!session.leaveRequested){
   accumulator+=delta;while(accumulator>=CONFIG.fixedStep){session.step();accumulator-=CONFIG.fixedStep;}
-  renderGame();updateUI();
+  renderGame();if(ms-lastUI>=100){updateUI();lastUI=ms;}
  }
  requestAnimationFrame(frame);
 }
