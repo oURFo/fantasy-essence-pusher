@@ -2,15 +2,17 @@ import {CoinPusher} from './physics.ts';
 import {MACHINES,type MachineId} from './machines.ts';
 import {PlayerWallet} from './wallet.ts';
 import {SkyWings} from './sky-game.ts';
+import {FruitPinball,FruitProgress} from './fruit-game.ts';
 export class ArcadeSession {
-  game:CoinPusher|null=null;
+  game:CoinPusher|FruitPinball|null=null;
   machineId:MachineId|null=null;
   leaveRequested=false;
   readonly wallet:PlayerWallet;
-  constructor(wallet:PlayerWallet){this.wallet=wallet;}
+  readonly fruitProgress:FruitProgress;
+  constructor(wallet:PlayerWallet,fruitProgress=new FruitProgress()){this.wallet=wallet;this.fruitProgress=fruitProgress;}
   enter(id:MachineId) {
     if(this.game||!MACHINES.some(m=>m.id===id))return false;
-    this.game=id==='sky-wings'?new SkyWings(this.wallet):new CoinPusher(undefined,undefined,this.wallet);this.machineId=id;return true;
+    this.game=id==='fruit-banquet'?new FruitPinball(this.wallet,this.fruitProgress):id==='sky-wings'?new SkyWings(this.wallet):new CoinPusher(undefined,undefined,this.wallet);this.machineId=id;return true;
   }
   requestLeave(){if(!this.game)return false;this.leaveRequested=true;return true;}
   cancelLeave(){this.leaveRequested=false;}

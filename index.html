@@ -5,7 +5,7 @@
 <header class="app-header"><div><span class="eyebrow">FANTASY ARCADE</span><h1 id="page-title">冒險大廳</h1><p id="page-subtitle">選擇一台機台，展開你的下一段冒險。</p></div><div class="lobby-wallet" id="lobby-wallet"><span>共用金幣</span><strong id="lobby-gold">1,000</strong><small>本機保存 · 所有機台共用</small></div></header>
 <nav id="machine-nav" class="return-nav" hidden><button id="back-to-lobby" class="back-button">← 返回大廳</button><span>離開機台將重置盤面，金幣保留</span></nav>
 <section id="lobby-screen" class="lobby-screen" aria-label="冒險大廳">
-  <div class="lobby-intro"><div><span class="eyebrow">CHOOSE YOUR ADVENTURE</span><h2>每段冒險，從這裡開始。</h2><p>挑選機台，向秘境與天空展開冒險。</p></div><span class="available-count">02 台機台開放中</span></div>
+  <div class="lobby-intro"><div><span class="eyebrow">CHOOSE YOUR ADVENTURE</span><h2>每段冒險，從這裡開始。</h2><p>挑選機台，向秘境、天空與星光果園展開冒險。</p></div><span class="available-count">03 台機台開放中</span></div>
   <article class="machine-card">
     <div class="machine-card-art"><img id="machine-preview" src="./assets/machine.png" alt="秘境金庫奇幻機台預覽"><span class="machine-number">MACHINE 01</span><span class="open-badge">開放遊玩</span></div>
     <div class="machine-card-info"><span class="eyebrow">奇幻冒險 · 推珠 × SLOT</span><h3 id="machine-card-name">秘境金庫</h3><p id="machine-card-description">讓精華穿越針陣，喚醒龍珠，開啟寶箱裡的命運。</p><div class="machine-tags"><span>1 金幣 / 精華</span><span>龍珠 SLOT</span><span>隨機盤面</span></div><div class="machine-card-rule"><span>每次入場，都是新的盤面</span><p>精華入箱返還金幣。離開時機台進度與未派獎勵清除，已持有金幣保留。</p></div><button id="enter-machine" data-machine="essence-vault">進入機台 →</button></div>
@@ -13,6 +13,10 @@
   <article class="machine-card sky-card">
     <div class="machine-card-art"><img src="./assets/sky-wings/base.png" alt="空之翼浮島機台"><span class="machine-number">MACHINE 02 / SKY WINGS</span><span class="open-badge">三階天空冒險</span></div>
     <div class="machine-card-info"><span class="eyebrow">SKY WINGS · ASCEND ABOVE THE CLOUDS</span><h3>空之翼</h3><p>從浮島振翅，穿越蒼穹雲海，飛向金色天域。</p><div class="machine-tags"><span>八格輪盤</span><span>三階羽翼</span><span>最高 1000 精華</span></div><div class="machine-card-rule"><span>浮島初翼 → 蒼穹展翼 → 天域聖翼</span><p>命中翼徽格啟動輪盤。轉出翅膀，升空十秒後展開限時進階盤面。中央 1/2 收集返幣，左右各 1/4 回收。</p></div><button id="enter-sky" data-machine="sky-wings">向天空出發 →</button></div>
+  </article>
+  <article class="machine-card fruit-card">
+    <div class="machine-card-art"><img src="./assets/fruit-banquet/cabinet.png" alt="水果星宴星光果園彈珠機台"><span class="machine-number">MACHINE 03 / FRUIT BANQUET</span><span class="open-badge">十六彈珠的星光晚宴</span></div>
+    <div class="machine-card-info"><span class="eyebrow">FRUIT CELESTIAL BANQUET</span><h3>水果星宴</h3><p>穿越金色針陣，點亮星光果園。每一道水果配方，都是一份獻給你的星宴祝福。</p><div class="machine-tags"><span>20 金幣 / 局</span><span>每局 16 顆彈珠</span><span>15 道水果配方</span></div><div class="machine-card-rule"><span>三格水果，調和一道星宴</span><p>完成至少 3 道配方才合計發獎；連續 3 場未發獎，下局贈送 1～5 格水果。離場清除本局進度，已扣除的入場金幣不退還。</p></div><button id="enter-fruit" data-machine="fruit-banquet">赴一場星宴 →</button></div>
   </article>
   <p id="lobby-error" class="hint" role="alert"></p>
   <p class="lobby-footnote">金幣儲存在目前瀏覽器。機台不保存盤面，重新進入會重新佈置。</p>
@@ -25,6 +29,7 @@
 </section>
 <aside>
   <section id="sky-stage-panel" class="sky-only sky-stage-panel" hidden aria-label="空之翼階段"><span class="eyebrow">SKY WINGS</span><h2 id="sky-stage">浮島初翼</h2><p id="sky-timer" role="timer">不限時</p><div class="sky-progression">初翼 <span>→</span> 蒼穹 <span>→</span> 天域</div></section>
+  <section id="fruit-panel" class="fruit-panel" hidden aria-label="水果星宴遊戲資訊"><span class="eyebrow">FRUIT CELESTIAL BANQUET</span><h2>十六顆星珠，<br>十五道星宴。</h2><div class="fruit-stats"><div><small>本局落定</small><strong id="fruit-balls">0 / 16</strong></div><div><small>完成配方</small><strong id="fruit-completed">0 / 15</strong></div></div><p id="fruit-round-status" role="status" aria-live="polite">每局 20 金幣，完成至少 3 道配方才發獎。</p><p id="fruit-streak" class="hint"></p><details><summary>水果配方、賠率與命中率</summary><p class="hint">每格首次命中啟用全部水果；每道配方的三種水果均來自不同格。完成 3 道以上，將所有完成配方的賠率相加，再乘以 20 金幣；完成 8 道以上另有星宴加成。彈珠依權重選擇格位，再播放對應針柱碰撞軌跡。</p><ol id="fruit-recipes" class="fruit-recipes"></ol><div id="fruit-bonus-table" class="fruit-odds"></div><div id="fruit-odds" class="fruit-odds"></div><p class="hint">連敗贈格 1／2／3／4／5 格的機率為 55%／25%／12%／6%／2%。只計完整結算的場次，發獎即重置連敗；離場不退費，也不累加連敗。</p></details></section>
   <div class="play-controls">
     <button id="drop" disabled>投入精華 · 1 金幣 <kbd>SPACE</kbd></button>
     <button id="auto-drop" class="auto-button" aria-pressed="false" disabled>開啟自動投入</button>

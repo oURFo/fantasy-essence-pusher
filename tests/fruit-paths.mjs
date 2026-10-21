@@ -1,0 +1,2 @@
+import assert from 'node:assert/strict';import {fruitPaths,FRUIT_GATE_Y} from '../src/fruit-paths.ts';
+const paths=fruitPaths();assert.equal(paths.length,16);for(let i=0;i<16;i++){assert.equal(paths[i].length,3);for(const path of paths[i]){assert.equal(path.slot,i);assert.equal(path.points.at(-1).y,FRUIT_GATE_Y);assert.equal(Math.max(0,Math.min(15,Math.floor((path.points.at(-1).x-80)/54))),i);assert.ok(path.points.length<361);}}assert.equal(fruitPaths(),paths);console.log('Fruit paths: 16 reachable goals, 48 cached physical trajectories, bounded playback, cache reuse.');

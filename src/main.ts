@@ -9,12 +9,15 @@ import {MACHINES,type MachineId} from './machines.ts';
 import {SkyWings} from './sky-game.ts';
 import {SKY_TIERS} from './sky-rules.ts';
 import {loadSkyArtwork,renderSky} from './sky-rendering.ts';
+import {FruitPinball,FruitProgress} from './fruit-game.ts';
+import {loadFruitArtwork,renderFruit} from './fruit-rendering.ts';
+import {FRUIT_CELLS,FRUIT_RECIPES,FRUIT_NAMES,FRUIT_COST,FRUIT_BALLS,FRUIT_COMPLETION_BONUS} from './fruit-rules.ts';
 import './style.css';
 
 const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
 let storage:WalletStorage|undefined;
 try{storage=window.localStorage;}catch{/* Browser storage can be disabled. */}
-const wallet=new PlayerWallet(storage),session=new ArcadeSession(wallet);
+const wallet=new PlayerWallet(storage),session=new ArcadeSession(wallet,new FruitProgress(storage));
 let lastUI=0;
 let accumulator=0,previous=0,entering=false,readyPromise:Promise<void>|undefined;
 const dialog=$<HTMLDialogElement>('leave-dialog');
@@ -25,6 +28,18 @@ function syncWallet(){
 }
 function updateUI(){
  syncWallet();const game=session.game;if(!game)return;
+ if(game instanceof FruitPinball){
+  $<HTMLButtonElement>('drop').disabled=session.leaveRequested||game.inputLocked||game.gold<FRUIT_COST;
+  $('drop').textContent=game.phase==='playing'?'星珠落下中…':game.phase==='result'?'再開一局 · 20 金幣':'開始星宴 · 20 金幣';
+  $('auto-drop').hidden=true;$('slot-status').hidden=true;$('status').hidden=true;
+  $('fruit-balls').textContent=`${game.landed} / ${FRUIT_BALLS}`;$('fruit-completed').textContent=`${game.completed.length} / 15`;
+  $('fruit-round-status').textContent=game.phase==='result'?`本局 ${game.completed.length} 道配方，獲得 ${game.payout} 金幣（${(game.payout/20).toFixed(2)}×）`:game.phase==='playing'?`已發射 ${game.launched} / 16 顆 · ${game.completed.length>=3?'已達發獎門檻':'完成 3 道配方開始發獎'}`:'每局 20 金幣，自動發射 16 顆彈珠。';
+  $('fruit-streak').textContent=`連續未發獎 ${game.progress.streak} 場${game.progress.streak>=3?' · 下局贈送 1～5 格水果':''}`;
+  $('auto-status').textContent=game.gold<FRUIT_COST&&game.phase!=='playing'?'金幣不足 20，暫時無法開局':game.phase==='playing'?'開局只扣一次 20 金幣 · 重複命中不增加水果進度':'按開始或空白鍵開局 · 本局結束後才可再開局';
+  $('machine-announcement').textContent=$('fruit-round-status').textContent;
+  for(const recipe of FRUIT_RECIPES){const element=$(`fruit-recipe-${recipe.id}`);const lit=recipe.slots.map(i=>Boolean(game.mask&(1<<i)));element.dataset.complete=String(lit.every(Boolean));element.textContent=`${recipe.fruits.map((f,i)=>`${lit[i]?'●':'○'}${FRUIT_NAMES[f]}`).join(' + ')} = ${(recipe.coins/20).toFixed(2)}×（${recipe.coins} 金幣）`;}
+  return;
+ }
  $('dropped').textContent=String(game.dropped);$('won').textContent=String(game.won);$('recycled').textContent=String(game.recycled);
  $<HTMLButtonElement>('drop').disabled=session.leaveRequested||game.inputLocked||game.gold<CONFIG.essenceCost||game.time-game.lastDrop+1e-9<CONFIG.dropCooldown||game.coins.length>=CONFIG.maxCoins;
  const auto=$<HTMLButtonElement>('auto-drop');auto.disabled=session.leaveRequested||game.inputLocked||game.gold<CONFIG.essenceCost;
@@ -47,22 +62,27 @@ function showLobby(){
  $('page-title').textContent='冒險大廳';$('page-subtitle').textContent='選擇一台機台，展開你的下一段冒險。';document.title='冒險大廳 · 秘境金庫';syncWallet();resetClock();
 }
 async function ensureReady(id:MachineId){
+ if(id==='fruit-banquet'){await loadFruitArtwork();return;}
  if(!readyPromise)readyPromise=Promise.all([RAPIER.init(),loadArtwork()]).then(()=>{}).catch(error=>{readyPromise=undefined;throw error;});
  await readyPromise;if(id==='sky-wings')await loadSkyArtwork();
 }
-function renderGame(){const game=session.game;if(game instanceof SkyWings)renderSky(game);else if(game)render(game);}
+function renderGame(){const game=session.game;if(game instanceof FruitPinball)renderFruit(game);else if(game instanceof SkyWings)renderSky(game);else if(game)render(game);}
 async function enterMachine(id:MachineId){
  if(entering||session.game)return;entering=true;
- const button=$<HTMLButtonElement>(id==='sky-wings'?'enter-sky':'enter-machine');
+ const button=$<HTMLButtonElement>(id==='fruit-banquet'?'enter-fruit':id==='sky-wings'?'enter-sky':'enter-machine');
  const label=button.textContent;document.querySelectorAll<HTMLButtonElement>('[data-machine]').forEach(b=>b.disabled=true);button.textContent='正在準備機台…';$('lobby-error').textContent='';
  try{
   await ensureReady(id);if(!session.enter(id))return;
   $('lobby-screen').hidden=true;$('machine-screen').hidden=false;$('lobby-wallet').hidden=true;$('machine-nav').hidden=false;
-  const machine=MACHINES.find(m=>m.id===id)!;const sky=id==='sky-wings';
-  $('page-title').textContent=machine.name;$('page-subtitle').textContent=machine.description;document.title=`${machine.name} · 推珠冒險`;
-  document.querySelectorAll<HTMLElement>('.vault-only').forEach(el=>el.hidden=sky);document.querySelectorAll<HTMLElement>('.sky-only').forEach(el=>el.hidden=!sky);
+  const machine=MACHINES.find(m=>m.id===id)!;const sky=id==='sky-wings',fruit=id==='fruit-banquet';
+  $('page-title').textContent=machine.name;$('page-subtitle').textContent=machine.description;document.title=`${machine.name} · 冒險遊藝場`;
+  const canvas=$<HTMLCanvasElement>('game');canvas.width=1024;canvas.height=fruit?1700:1536;canvas.setAttribute('aria-label',fruit?'水果星宴彈珠台，十五道水果配方及十六個水果格':'奇幻推幣機遊戲');
+  $('machine-screen').dataset.machine=id;
+  $('fruit-panel').hidden=!fruit;$('adventure-details').hidden=fruit;$('auto-drop').hidden=fruit;$('slot-status').hidden=fruit;$('status').hidden=fruit;
+  if(!fruit)$('drop').innerHTML='投入精華 · 1 金幣 <kbd>SPACE</kbd>';
+  document.querySelectorAll<HTMLElement>('.vault-only').forEach(el=>el.hidden=sky||fruit);document.querySelectorAll<HTMLElement>('.sky-only').forEach(el=>el.hidden=!sky);
   $('front-rule').textContent='中央 1/2 計入獎勵，左右各 1/4 系統回收';
-  $('leave-pending').textContent=sky?'尚未完成的輪盤、升階進度、待轉次數與未派出的精華獎勵也會清除。':'尚未完成的 SLOT、待轉次數與未派出的精華獎勵也會清除。';
+  $('leave-pending').textContent=fruit?'本局彈珠、已點亮水果與未結算獎勵將清除，已支付的 20 金幣不退還。連敗紀錄保留，離場不累加連敗。':sky?'尚未完成的輪盤、升階進度、待轉次數與未派出的精華獎勵也會清除。':'尚未完成的 SLOT、待轉次數與未派出的精華獎勵也會清除。';
   $<HTMLDetailsElement>('adventure-details').open=false;
   $('loading').style.display='none';resetClock();updateUI();renderGame();
   history.pushState({view:'machine',id},'',`#machine/${id}`);window.scrollTo({top:0,behavior:'auto'});$('back-to-lobby').focus({preventScroll:true});
@@ -78,7 +98,7 @@ function confirmLeave(){
  if(!session.confirmLeave())return;
  dialog.close();showLobby();history.replaceState({view:'lobby'},'','#lobby');window.scrollTo({top:0,behavior:'auto'});$('enter-machine').focus({preventScroll:true});
 }
-function drop(){if(session.game&&!document.hidden&&!session.leaveRequested){session.game.drop();updateUI();}}
+function drop(){if(session.game&&!document.hidden&&!session.leaveRequested){if(session.game instanceof FruitPinball)session.game.start();else session.game.drop();updateUI();}}
 function frame(ms:number){
  if(!previous)previous=ms;const delta=Math.min((ms-previous)/1000,.1);previous=ms;
  if(session.game&&!document.hidden&&!session.leaveRequested){
@@ -88,7 +108,7 @@ function frame(ms:number){
  requestAnimationFrame(frame);
 }
 $('drop').addEventListener('click',drop);
-$('auto-drop').addEventListener('click',()=>{if(session.game&&!document.hidden&&!session.leaveRequested){session.game.setAutoDrop(!session.game.autoDrop);updateUI();}});
+$('auto-drop').addEventListener('click',()=>{if(session.game&&!document.hidden&&!session.leaveRequested){if(!(session.game instanceof FruitPinball))session.game.setAutoDrop(!session.game.autoDrop);updateUI();}});
 document.querySelectorAll<HTMLButtonElement>('[data-machine]').forEach(button=>button.addEventListener('click',()=>{void enterMachine(button.dataset.machine as MachineId);}));
 $('back-to-lobby').addEventListener('click',requestLeave);
 $('keep-playing').addEventListener('click',cancelLeave);$('confirm-leave').addEventListener('click',confirmLeave);
@@ -121,3 +141,8 @@ for(let tier=0;tier<3;tier++){
  $('sky-paytable').append(section);
 }
 history.replaceState({view:'lobby'},'','#lobby');showLobby();requestAnimationFrame(frame);
+
+for(const recipe of FRUIT_RECIPES){const row=document.createElement('li');row.id=`fruit-recipe-${recipe.id}`;$('fruit-recipes').append(row);}
+for(const cell of FRUIT_CELLS){const p=document.createElement('p');p.textContent=`第 ${String(cell.id+1).padStart(2,'0')} 格 · ${cell.fruits.map(f=>FRUIT_NAMES[f]).join('、')} · ${(cell.weight/100).toFixed(2)}%`;$('fruit-odds').append(p);}
+
+for(let n=8;n<=15;n++){const p=document.createElement('p');p.textContent=`完成 ${n} 道：另加 ${FRUIT_COMPLETION_BONUS[n].toLocaleString()} 金幣`;$(`fruit-bonus-table`).append(p);}
