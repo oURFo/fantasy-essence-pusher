@@ -3,67 +3,67 @@
   "throws": 30000,
   "cheapestCostPerRing": 3.3333333333333335,
   "rowHits": [
-    29,
-    9,
-    8,
-    2,
-    0,
+    23,
+    7,
+    4,
+    1,
+    1,
     0
   ],
   "aimed": [
     {
       "row": 1,
-      "pull": 0.163,
+      "pull": 0.1367,
       "hitRate": 0.3324,
       "valuePerRing": 1.662
     },
     {
       "row": 2,
-      "pull": 0.3197,
-      "hitRate": 0.1184,
-      "valuePerRing": 1.1840000000000002
+      "pull": 0.2862,
+      "hitRate": 0.1256,
+      "valuePerRing": 1.2559999999999998
     },
     {
       "row": 3,
-      "pull": 0.4787,
-      "hitRate": 0.0532,
-      "valuePerRing": 1.064
+      "pull": 0.4408,
+      "hitRate": 0.0632,
+      "valuePerRing": 1.2640000000000002
     },
     {
       "row": 4,
-      "pull": 0.6325,
-      "hitRate": 0.034,
-      "valuePerRing": 1.1900000000000002
+      "pull": 0.5941,
+      "hitRate": 0.0324,
+      "valuePerRing": 1.134
     },
     {
       "row": 5,
-      "pull": 0.7979,
-      "hitRate": 0.0068,
-      "valuePerRing": 0.408
+      "pull": 0.7611,
+      "hitRate": 0.01,
+      "valuePerRing": 0.6
     },
     {
       "row": 6,
-      "pull": 0.9494,
-      "hitRate": 0.0044,
-      "valuePerRing": 0.44
+      "pull": 0.9187,
+      "hitRate": 0.0056,
+      "valuePerRing": 0.5599999999999999
     }
   ],
-  "valuePerRing": 0.0155,
+  "valuePerRing": 0.012,
   "rtpByPack": [
     {
       "cost": 100,
       "rings": 20,
-      "rtp": 0.0031
+      "rtp": 0.0024000000000000002
     },
     {
       "cost": 300,
       "rings": 70,
-      "rtp": 0.003616666666666667
+      "rtp": 0.0028
     },
     {
       "cost": 500,
       "rings": 150,
-      "rtp": 0.00465
+      "rtp": 0.0036
     }
   ]
 }

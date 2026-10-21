@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {NightMarket} from '../src/ring-game.ts';
 import {PlayerWallet} from '../src/wallet.ts';
 import {ArcadeSession} from '../src/arcade-session.ts';
-import {RING_PACKS,RING_PRIZES,HOOP} from '../src/ring-rules.ts';
+import {RING_PACKS,RING_PRIZES,HOOP,RING_PLATFORMS} from '../src/ring-rules.ts';
 import {launchRing,stepRing} from '../src/ring-physics.ts';
 assert.deepEqual(RING_PACKS.map(p=>[p.cost,p.rings]),[[100,20],[300,70],[500,150]]);
 assert.equal(RING_PRIZES.length,48);assert.ok(RING_PRIZES.every(p=>p.radius<HOOP.inner));
@@ -17,3 +17,7 @@ function win(id){for(let i=0;i<80;i++)g.step();assert.equal(g.throw(RING_PRIZES[
 win(0);assert.equal(g.inventory[0],1);assert.equal(wallet.gold,100,'capture goes into bag, never directly credits coins');const once=g.bagCount;for(let i=0;i<200;i++)g.step();assert.equal(g.bagCount,once);win(0);assert.equal(g.inventory[0],2,'same prize can be captured repeatedly');win(4);assert.equal(g.inventory[0],3,'same prize variant on another bottle merges into one bag stack');assert.equal(g.inventory[4],0);win(8);assert.equal(g.bagValue,25);assert.equal(g.sell(0),15);assert.equal(wallet.gold,115);assert.equal(g.inventory[0],0);assert.equal(g.sell(0),0);assert.equal(g.sell(8.5),0);assert.equal(g.sell(),10);assert.equal(g.bagCount,0);assert.equal(wallet.gold,125);
 const session=new ArcadeSession(wallet);session.enter('night-market');const sg=session.game;sg.buy(0);sg.inventory[40]=2;const value=sg.bagValue;session.requestLeave();const time=sg.time;session.step();assert.equal(sg.time,time);session.cancelLeave();assert.equal(sg.bagValue,value);session.requestLeave();const before=wallet.gold;session.confirmLeave();assert.equal(wallet.gold,before+value,'leave sells bag exactly once');sg.dispose();assert.equal(wallet.gold,before+value);assert.equal(sg.rings,0);session.enter('night-market');assert.equal(session.game.bagCount,0);assert.equal(session.game.rings,0);
 console.log(JSON.stringify({passed:'ring packs, all 48 physical targets, wind, grazing collision, single capture, duplicate prizes, sell, leave settlement and fresh entry',powers},null,2));
+
+assert.equal(RING_PLATFORMS.length,6);assert.ok(RING_PRIZES.every(p=>p.base===RING_PLATFORMS[p.row].height));
+const low=launchRing(0,.3,.5);Object.assign(low,{x:0,z:RING_PLATFORMS[0].front-HOOP.outer-.01,y:.1,vy:0,vz:3});stepRing(low);assert.ok(low.vz<0,'rings below a stand top bounce against its front edge');
+console.log('Raised stand validation passed: six aligned support heights and solid front edges.');

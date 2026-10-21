@@ -17,19 +17,20 @@ import {NightMarket} from './ring-game.ts';
 import {loadRingArtwork,renderRing} from './ring-rendering.ts';
 import {bindRingInput} from './ring-input.ts';
 import {initRingUI} from './ring-ui.ts';
+import {LobbyGMCode} from './gm-controls.ts';
 import './style.css';
 
 const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
 let storage:WalletStorage|undefined;
 try{storage=window.localStorage;}catch{/* Browser storage can be disabled. */}
 const wallet=new PlayerWallet(storage),session=new ArcadeSession(wallet,new FruitProgress(storage));
-let lastUI=0;
+let lastUI=0;const gmCode=new LobbyGMCode();
 let accumulator=0,previous=0,entering=false,readyPromise:Promise<void>|undefined;
 const dialog=$<HTMLDialogElement>('leave-dialog');
 const plunger=bindFruitPlunger(()=>session.game instanceof FruitPinball?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const ringInput=bindRingInput(()=>session.game instanceof NightMarket?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const ringUI=initRingUI(()=>session.game instanceof NightMarket?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
-function resetClock(){ringInput.cancel();accumulator=0;previous=0;plunger.cancel();}
+function resetClock(){gmCode.reset();ringInput.cancel();accumulator=0;previous=0;plunger.cancel();}
 function syncWallet(){
  const balance=wallet.gold.toLocaleString('en-US');
  $('gold-balance').textContent=balance;$('lobby-gold').textContent=balance;
@@ -127,6 +128,8 @@ $('back-to-lobby').addEventListener('click',requestLeave);
 $('keep-playing').addEventListener('click',cancelLeave);$('confirm-leave').addEventListener('click',confirmLeave);
 dialog.addEventListener('cancel',event=>{event.preventDefault();cancelLeave();});
 window.addEventListener('keydown',event=>{
+ const target=event.target,editable=target instanceof HTMLElement&&(target.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(target.tagName));
+ if(gmCode.key(event.key,performance.now(),!session.game&&!entering&&!document.hidden&&!dialog.open&&!editable,event.repeat,event.ctrlKey||event.altKey||event.metaKey)){if(wallet.credit(1000)){syncWallet();$('lobby-error').textContent='GM 補充成功：+1,000 金幣';}}
  if(event.code==='Space'&&session.game&&!session.leaveRequested&&!(event.target instanceof HTMLInputElement)&&!(event.target instanceof HTMLButtonElement)&&!(event.target instanceof HTMLElement&&event.target.tagName==='SUMMARY')){
   event.preventDefault();if(!event.repeat){if(session.game instanceof FruitPinball&&session.game.phase==='playing')plunger.startKeyboard();else drop();}
  }
