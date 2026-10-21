@@ -55,7 +55,7 @@ export function renderFruit(game:FruitPinball){
 
  if(game.canLaunch)c.drawImage(pearl,FIELD.launcherX-12,FIELD.launcherY-12,24,24);
  c.drawImage(body,903,1430,64,200);c.drawImage(knob,914,1481+game.pullPower*60,43,154);
- label(c,`${Math.round(game.pullPower*100)}%`,935,1380,19,'#ffe2a1');label(c,'拉把',935,1352,18);label(c,'↓ 拉下',935,1674,16);
+ label(c,'拉把',935,1352,18);label(c,'↓ 拉下',935,1674,16);
  const fresh=game.time-game.flashAt;
  if(fresh>=0&&fresh<1&&!reduced.matches){c.save();c.globalAlpha=(1-fresh)*(.22+.18*Math.sin(fresh*30));c.strokeStyle='#ffe59c';c.lineWidth=14;c.strokeRect(50,50,924,1600);c.restore();}
  const announcement=game.phase==='idle'?'點擊「開始星宴」，展開十六顆彈珠的旅程':game.lastSlot<0?'使用右下拉把，逐顆發射彈珠':game.duplicate?`第 ${game.lastSlot+1} 格重複命中 · 水果進度不變`:`第 ${game.lastSlot+1} 格點亮 · 對應配方已更新`;

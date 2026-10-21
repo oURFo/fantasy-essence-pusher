@@ -24,7 +24,7 @@ export class FruitPinball{
  releaseKeyboardPull(){if(!this.keyboardPull)return false;this.keyboardPull=false;return this.launch(this.pullPower);}
  launch(power:number){
   if(!this.canLaunch||!Number.isFinite(power))return false;
-  power=Math.max(0,Math.min(1,power));this.balls.push(Object.assign(launchMarble(power,this.random()*4294967296),{index:this.launched++}));this.lastPower=power;this.nextLaunch=this.time+.4;this.cancelPull();return true;
+  power=Math.max(0,Math.min(1,Math.max(0,Math.min(1,power))+(this.random()-.5)*.04));this.balls.push(Object.assign(launchMarble(power,this.random()*4294967296),{index:this.launched++}));this.lastPower=power;this.nextLaunch=this.time+.4;this.cancelPull();return true;
  }
  get completed(){return completedRecipes(this.mask);}
  start(){
