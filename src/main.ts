@@ -10,6 +10,7 @@ import {SkyWings} from './sky-game.ts';
 import {SKY_TIERS} from './sky-rules.ts';
 import {loadSkyArtwork,renderSky} from './sky-rendering.ts';
 import {FruitPinball,FruitProgress} from './fruit-game.ts';
+import {bindFruitPlunger} from './fruit-input.ts';
 import {loadFruitArtwork,renderFruit} from './fruit-rendering.ts';
 import {FRUIT_CELLS,FRUIT_RECIPES,FRUIT_NAMES,FRUIT_COST,FRUIT_BALLS,FRUIT_COMPLETION_BONUS} from './fruit-rules.ts';
 import './style.css';
@@ -21,7 +22,8 @@ const wallet=new PlayerWallet(storage),session=new ArcadeSession(wallet,new Frui
 let lastUI=0;
 let accumulator=0,previous=0,entering=false,readyPromise:Promise<void>|undefined;
 const dialog=$<HTMLDialogElement>('leave-dialog');
-function resetClock(){accumulator=0;previous=0;}
+const plunger=bindFruitPlunger(()=>session.game instanceof FruitPinball?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
+function resetClock(){accumulator=0;previous=0;plunger.cancel();}
 function syncWallet(){
  const balance=wallet.gold.toLocaleString('en-US');
  $('gold-balance').textContent=balance;$('lobby-gold').textContent=balance;
@@ -30,12 +32,15 @@ function updateUI(){
  syncWallet();const game=session.game;if(!game)return;
  if(game instanceof FruitPinball){
   $<HTMLButtonElement>('drop').disabled=session.leaveRequested||game.inputLocked||game.gold<FRUIT_COST;
-  $('drop').textContent=game.phase==='playing'?'星珠落下中…':game.phase==='result'?'再開一局 · 20 金幣':'開始星宴 · 20 金幣';
+  $('drop').textContent=game.phase==='playing'?'本局進行中 · 使用右下拉把':game.phase==='result'?'再開一局 · 20 金幣':'開始星宴 · 20 金幣';
+  $<HTMLButtonElement>('fruit-plunger-grip').disabled=session.leaveRequested||!game.canLaunch;
+  $<HTMLInputElement>('fruit-power').disabled=session.leaveRequested||!game.canLaunch;$<HTMLInputElement>('fruit-power').value=String(Math.round(game.pullPower*100));
+  $<HTMLButtonElement>('fruit-fire').disabled=session.leaveRequested||!game.canLaunch;$('fruit-power-label').textContent=`${Math.round(game.pullPower*100)}%`;
   $('auto-drop').hidden=true;$('slot-status').hidden=true;$('status').hidden=true;
   $('fruit-balls').textContent=`${game.landed} / ${FRUIT_BALLS}`;$('fruit-completed').textContent=`${game.completed.length} / 15`;
-  $('fruit-round-status').textContent=game.phase==='result'?`本局 ${game.completed.length} 道配方，獲得 ${game.payout} 金幣（${(game.payout/20).toFixed(2)}×）`:game.phase==='playing'?`已發射 ${game.launched} / 16 顆 · ${game.completed.length>=3?'已達發獎門檻':'完成 3 道配方開始發獎'}`:'每局 20 金幣，自動發射 16 顆彈珠。';
+  $('fruit-round-status').textContent=game.phase==='result'?`本局 ${game.completed.length} 道配方，獲得 ${game.payout} 金幣（${(game.payout/20).toFixed(2)}×）`:game.phase==='playing'?`已發射 ${game.launched} / 16 顆 · ${game.completed.length>=3?'已達發獎門檻':'完成 3 道配方開始發獎'}`:'每局 20 金幣，使用右下拉把逐顆發射 16 顆彈珠。';
   $('fruit-streak').textContent=`連續未發獎 ${game.progress.streak} 場${game.progress.streak>=3?' · 下局贈送 1～5 格水果':''}`;
-  $('auto-status').textContent=game.gold<FRUIT_COST&&game.phase!=='playing'?'金幣不足 20，暫時無法開局':game.phase==='playing'?'開局只扣一次 20 金幣 · 重複命中不增加水果進度':'按開始或空白鍵開局 · 本局結束後才可再開局';
+  $('auto-status').textContent=game.gold<FRUIT_COST&&game.phase!=='playing'?'金幣不足 20，暫時無法開局':game.phase==='playing'?`剩餘 ${16-game.launched} 顆待發射${game.launched?` · 上次力道 ${Math.round(game.lastPower*100)}%`:''} · ${game.canLaunch?'拉下右下角拉把，放開發射':'等待發射軌道清空'} · 不額外扣款`:'按開始或空白鍵開局 · 開局後使用右下拉把發射';
   $('machine-announcement').textContent=$('fruit-round-status').textContent;
   for(const recipe of FRUIT_RECIPES){const element=$(`fruit-recipe-${recipe.id}`);const lit=recipe.slots.map(i=>Boolean(game.mask&(1<<i)));element.dataset.complete=String(lit.every(Boolean));element.textContent=`${recipe.fruits.map((f,i)=>`${lit[i]?'●':'○'}${FRUIT_NAMES[f]}`).join(' + ')} = ${(recipe.coins/20).toFixed(2)}×（${recipe.coins} 金幣）`;}
   return;
@@ -78,7 +83,7 @@ async function enterMachine(id:MachineId){
   $('page-title').textContent=machine.name;$('page-subtitle').textContent=machine.description;document.title=`${machine.name} · 冒險遊藝場`;
   const canvas=$<HTMLCanvasElement>('game');canvas.width=1024;canvas.height=fruit?1700:1536;canvas.setAttribute('aria-label',fruit?'水果星宴彈珠台，十五道水果配方及十六個水果格':'奇幻推幣機遊戲');
   $('machine-screen').dataset.machine=id;
-  $('fruit-panel').hidden=!fruit;$('adventure-details').hidden=fruit;$('auto-drop').hidden=fruit;$('slot-status').hidden=fruit;$('status').hidden=fruit;
+  $('fruit-plunger-grip').hidden=!fruit;$('fruit-panel').hidden=!fruit;$('adventure-details').hidden=fruit;$('auto-drop').hidden=fruit;$('slot-status').hidden=fruit;$('status').hidden=fruit;
   if(!fruit)$('drop').innerHTML='投入精華 · 1 金幣 <kbd>SPACE</kbd>';
   document.querySelectorAll<HTMLElement>('.vault-only').forEach(el=>el.hidden=sky||fruit);document.querySelectorAll<HTMLElement>('.sky-only').forEach(el=>el.hidden=!sky);
   $('front-rule').textContent='中央 1/2 計入獎勵，左右各 1/4 系統回收';
@@ -115,9 +120,10 @@ $('keep-playing').addEventListener('click',cancelLeave);$('confirm-leave').addEv
 dialog.addEventListener('cancel',event=>{event.preventDefault();cancelLeave();});
 window.addEventListener('keydown',event=>{
  if(event.code==='Space'&&session.game&&!session.leaveRequested&&!(event.target instanceof HTMLInputElement)&&!(event.target instanceof HTMLButtonElement)&&!(event.target instanceof HTMLElement&&event.target.tagName==='SUMMARY')){
-  event.preventDefault();if(!event.repeat)drop();
+  event.preventDefault();if(!event.repeat){if(session.game instanceof FruitPinball&&session.game.phase==='playing')plunger.startKeyboard();else drop();}
  }
 });
+window.addEventListener('keyup',event=>{if(event.code==='Space'&&session.game instanceof FruitPinball&&session.game.keyboardPull){event.preventDefault();plunger.releaseKeyboard();}});
 document.addEventListener('visibilitychange',resetClock);
 window.addEventListener('popstate',()=>{
  if(session.game){
@@ -143,6 +149,6 @@ for(let tier=0;tier<3;tier++){
 history.replaceState({view:'lobby'},'','#lobby');showLobby();requestAnimationFrame(frame);
 
 for(const recipe of FRUIT_RECIPES){const row=document.createElement('li');row.id=`fruit-recipe-${recipe.id}`;$('fruit-recipes').append(row);}
-for(const cell of FRUIT_CELLS){const p=document.createElement('p');p.textContent=`第 ${String(cell.id+1).padStart(2,'0')} 格 · ${cell.fruits.map(f=>FRUIT_NAMES[f]).join('、')} · ${(cell.weight/100).toFixed(2)}%`;$('fruit-odds').append(p);}
+for(const cell of FRUIT_CELLS){const p=document.createElement('p');p.textContent=`第 ${String(cell.id+1).padStart(2,'0')} 格 · ${cell.fruits.map(f=>FRUIT_NAMES[f]).join('、')} · 參考 ${(cell.weight/100).toFixed(2)}%`;$('fruit-odds').append(p);}
 
 for(let n=8;n<=15;n++){const p=document.createElement('p');p.textContent=`完成 ${n} 道：另加 ${FRUIT_COMPLETION_BONUS[n].toLocaleString()} 金幣`;$(`fruit-bonus-table`).append(p);}

@@ -8,7 +8,7 @@ export const MACHINES=[{
   image:'sky-wings/base.png',entryCost:1,
 },{
   id:'fruit-banquet',name:'水果星宴',tag:'星光果園 · 十六彈珠 × 水果配方',
-  description:'讓十六顆星珠喚醒果園，點亮十五道星宴配方。',
+  description:'拉下右側拉把，控制星珠力道，喚醒盤面上的水果配方。',
   image:'fruit-banquet/cabinet.png',entryCost:20,
 }] as const;
 export type MachineId=typeof MACHINES[number]['id'];

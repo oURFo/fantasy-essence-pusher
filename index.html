@@ -16,7 +16,7 @@
   </article>
   <article class="machine-card fruit-card">
     <div class="machine-card-art"><img src="./assets/fruit-banquet/cabinet.png" alt="水果星宴星光果園彈珠機台"><span class="machine-number">MACHINE 03 / FRUIT BANQUET</span><span class="open-badge">十六彈珠的星光晚宴</span></div>
-    <div class="machine-card-info"><span class="eyebrow">FRUIT CELESTIAL BANQUET</span><h3>水果星宴</h3><p>穿越金色針陣，點亮星光果園。每一道水果配方，都是一份獻給你的星宴祝福。</p><div class="machine-tags"><span>20 金幣 / 局</span><span>每局 16 顆彈珠</span><span>15 道水果配方</span></div><div class="machine-card-rule"><span>三格水果，調和一道星宴</span><p>完成至少 3 道配方才合計發獎；連續 3 場未發獎，下局贈送 1～5 格水果。離場清除本局進度，已扣除的入場金幣不退還。</p></div><button id="enter-fruit" data-machine="fruit-banquet">赴一場星宴 →</button></div>
+    <div class="machine-card-info"><span class="eyebrow">FRUIT CELESTIAL BANQUET</span><h3>水果星宴</h3><p>拉下右側拉把，控制發射力道，讓星珠落入直接畫有水果的盤面格位。</p><div class="machine-tags"><span>20 金幣 / 局</span><span>每局 16 顆彈珠</span><span>15 道水果配方</span></div><div class="machine-card-rule"><span>三格水果，調和一道星宴</span><p>完成至少 3 道配方才合計發獎；連續 3 場未發獎，下局贈送 1～5 格水果。離場清除本局進度，已扣除的入場金幣不退還。</p></div><button id="enter-fruit" data-machine="fruit-banquet">赴一場星宴 →</button></div>
   </article>
   <p id="lobby-error" class="hint" role="alert"></p>
   <p class="lobby-footnote">金幣儲存在目前瀏覽器。機台不保存盤面，重新進入會重新佈置。</p>
@@ -25,11 +25,11 @@
 <section class="machine">
   <div class="wallet" aria-label="金幣餘額"><span class="wallet-symbol" aria-hidden="true">◈</span><div><span class="wallet-label">金幣</span><strong id="gold-balance" aria-label="目前金幣">1,000</strong></div></div>
   <span id="machine-announcement" class="sr-only" role="status" aria-live="polite">秘境金庫 · 龍珠入寶箱，喚醒命運 SLOT</span>
-  <canvas id="game" aria-label="奇幻推幣機遊戲"></canvas><div id="loading">正在喚醒秘境機台…</div>
+  <canvas id="game" aria-label="奇幻推幣機遊戲"></canvas><button id="fruit-plunger-grip" class="fruit-plunger-grip" hidden aria-label="彈珠拉把，向下拖曳蓄力後放開發射；鍵盤可按住空白鍵蓄力"></button><div id="loading">正在喚醒秘境機台…</div>
 </section>
 <aside>
   <section id="sky-stage-panel" class="sky-only sky-stage-panel" hidden aria-label="空之翼階段"><span class="eyebrow">SKY WINGS</span><h2 id="sky-stage">浮島初翼</h2><p id="sky-timer" role="timer">不限時</p><div class="sky-progression">初翼 <span>→</span> 蒼穹 <span>→</span> 天域</div></section>
-  <section id="fruit-panel" class="fruit-panel" hidden aria-label="水果星宴遊戲資訊"><span class="eyebrow">FRUIT CELESTIAL BANQUET</span><h2>十六顆星珠，<br>十五道星宴。</h2><div class="fruit-stats"><div><small>本局落定</small><strong id="fruit-balls">0 / 16</strong></div><div><small>完成配方</small><strong id="fruit-completed">0 / 15</strong></div></div><p id="fruit-round-status" role="status" aria-live="polite">每局 20 金幣，完成至少 3 道配方才發獎。</p><p id="fruit-streak" class="hint"></p><details><summary>水果配方、賠率與命中率</summary><p class="hint">每格首次命中啟用全部水果；每道配方的三種水果均來自不同格。完成 3 道以上，將所有完成配方的賠率相加，再乘以 20 金幣；完成 8 道以上另有星宴加成。彈珠依權重選擇格位，再播放對應針柱碰撞軌跡。</p><ol id="fruit-recipes" class="fruit-recipes"></ol><div id="fruit-bonus-table" class="fruit-odds"></div><div id="fruit-odds" class="fruit-odds"></div><p class="hint">連敗贈格 1／2／3／4／5 格的機率為 55%／25%／12%／6%／2%。只計完整結算的場次，發獎即重置連敗；離場不退費，也不累加連敗。</p></details></section>
+  <section id="fruit-panel" class="fruit-panel" hidden aria-label="水果星宴遊戲資訊"><span class="eyebrow">FRUIT CELESTIAL BANQUET</span><h2>十六顆星珠，<br>十五道星宴。</h2><div class="fruit-stats"><div><small>本局落定</small><strong id="fruit-balls">0 / 16</strong></div><div><small>完成配方</small><strong id="fruit-completed">0 / 15</strong></div></div><p id="fruit-round-status" role="status" aria-live="polite">每局 20 金幣，完成至少 3 道配方才發獎。</p><p id="fruit-streak" class="hint"></p><div class="fruit-launch-controls"><label for="fruit-power">拉把力道 <strong id="fruit-power-label">0%</strong></label><input id="fruit-power" type="range" min="0" max="100" value="0" aria-label="彈珠發射力道"><button id="fruit-fire" type="button" disabled>發射彈珠</button><p class="hint">右下角拉把向下拖曳後放開；也可按住空白鍵蓄力、放開發射。滑桿與發射按鈕可用鍵盤操作。</p></div><details><summary>水果配方、賠率與命中率</summary><p class="hint">每格首次命中啟用全部水果；每道配方的三種水果均來自不同格。完成 3 道以上，將所有完成配方的賠率相加，再乘以 20 金幣；完成 8 道以上另有星宴加成。彈珠使用即時碰撞；拉把力道決定初速，盤面水果就是實際落球口。下列機率是均勻選擇力道的參考目標，實際分布隨玩家力道改變。</p><ol id="fruit-recipes" class="fruit-recipes"></ol><div id="fruit-bonus-table" class="fruit-odds"></div><div id="fruit-odds" class="fruit-odds"></div><p class="hint">連敗贈格 1／2／3／4／5 格的機率為 55%／25%／12%／6%／2%。只計完整結算的場次，發獎即重置連敗；離場不退費，也不累加連敗。</p></details></section>
   <div class="play-controls">
     <button id="drop" disabled>投入精華 · 1 金幣 <kbd>SPACE</kbd></button>
     <button id="auto-drop" class="auto-button" aria-pressed="false" disabled>開啟自動投入</button>

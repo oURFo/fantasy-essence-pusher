@@ -1,5 +1,15 @@
 # Fruit Celestial Banquet artwork
 
+## Manual plunger update, 2026-10-21
+
+Final hardware atlas: `hardware-cutout.png`, generated and edited with the built-in imagegen tool. Tight runtime source crops retain the AI-painted spring housing (164,15,216,992), pearl pull rod (653,102,195,765), and collection pocket (1020,286,492,443). The handle moves with player drag; the original fruit atlas is now painted directly over the 16 physical pockets. No image pixels were edited by scripts. The unused presentation draft is preserved locally as preview-fruit-hardware-draft.png.
+
+Generation prompt:
+
+Use case stylized-concept. Production transparent sprite atlas for opulent fantasy fruit-garden pinball machine, champagne gold brass, ivory pearl, dark plum wood, emerald accents, detailed realistic 3D game asset. Canvas landscape 1536x1024 exactly THREE equal 512x1024 transparent columns, one isolated object per column centered, generous transparent margin, no overlap. LEFT column: vertical mechanical pinball spring launcher housing viewed from front orthographic, tall narrow brass open channel, steel compression spring visible inside with gilded mounting plates, top opening, NO pull knob attached. CENTER column: separate matching spring plunger pull handle, a small ivory round knob with brass collar and a vertical thin steel shaft pointing UP, no housing, centered complete object. RIGHT column: a single elliptical dark recessed ball-collection pocket mouth viewed from front slightly above, thin ornate gold oval rim, deep black interior with realistic depth, compact leaf flourishes. All three objects wholly inside their own column. Perfect coherent materials, no text, no numbers, no fruit, no balls, no board, true transparent alpha. Machine hardware sprites, NOT a finished mockup. Do not draw backdrop or solid panels.
+
+Edit prompt: preserve all three objects, their positions, designs and scale; remove all background, brown/black backdrop, ground, surrounding glow, haze, bloom, halo, gradients and cast shadows; empty pixels should be transparent, while the dark interior inside the gold pocket rim stays opaque. Preserve the three-column 1536x1024 atlas. Final crops exclude the unused surrounding presentation space.
+
 Generated with the built-in imagegen tool on 2026-10-21. Project assets: `cabinet.png` (portrait cabinet) and `fruits.png` (transparent 6 × 6 atlas). Sources were copied non-destructively from Codex generated_images. Runtime crops each fruit into a bounded 80 × 80 cache and creates a dimmed state once. Cabinet, existing AI-painted pin heads, pearl sprite and gate posts supply the machine artwork; rectangles, labels, glows and confetti are interface overlays.
 
 ## Cabinet prompt
