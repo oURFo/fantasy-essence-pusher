@@ -134,3 +134,5 @@ src/slot.ts 為獎項與狀態機；src/slot-rendering.ts 為動畫；tests/slot
 
 規則：src/sky-rules.ts；物理整合：src/sky-game.ts；AI 素材與演出：src/sky-rendering.ts、public/assets/sky-wings/。執行 node tests/sky-wings.mjs 與 node tests/sky-physics.mjs 驗證。三階機殼、輪盤、羽翼為內建 imagegen 製作，提示詞與用途記錄於 public/assets/sky-wings/ARTWORK.md。
 
+
+空之翼中央第 3／4／5 格已用圓形針柱配置校準至 3%／1%／3% 目標；2,880 顆連續投入實測為 3.19%／0.83%／3.33%。物理機率隨投球時機浮動，完整條件與限制見《空之翼設計規格.md》，回歸測試為 `node tests/sky-balance.mjs`。
