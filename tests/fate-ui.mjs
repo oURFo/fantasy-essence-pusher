@@ -9,3 +9,6 @@ nodes.get('fate-right').click();assert.equal(g.angle,3,'aim buttons remain usabl
 blocked=true;for(let i=0;i<60;i++)g.step();fire();assert.equal(g.shots,2);ui.update(g);assert.equal(nodes.get('fate-aim-zone').disabled,true);blocked=false;
 g.notices.push({id:1,award:9999,time:g.time});ui.update(g);assert.match(nodes.get('fate-message').textContent,/9,999/);g=new FateOrbit(new PlayerWallet());ui.update(g);assert.equal(nodes.get('fate-fire').disabled,false);assert.match(nodes.get('fate-message').textContent,/調整/);
 console.log('UI passed: explicit fire button, one-second cooldown, no double charge, aim during active balls, modal block and jackpot notification.');
+
+nodes.get('fate-auto').click();ui.update(g);assert.equal(g.autoFire,true);assert.match(nodes.get('fate-auto').textContent,/開/);assert.equal(g.shots,1);blocked=true;nodes.get('fate-auto').click();assert.equal(g.autoFire,true);ui.update(g);assert.equal(nodes.get('fate-auto').disabled,true);blocked=false;nodes.get('fate-auto').click();ui.update(g);assert.equal(g.autoFire,false);assert.match(nodes.get('fate-auto').textContent,/關/);
+console.log('UI passed: auto-fire toggle and blocked modal.');

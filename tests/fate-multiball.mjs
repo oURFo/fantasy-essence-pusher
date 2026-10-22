@@ -18,3 +18,12 @@ const p=launchFateBall(0),q=launchFateBall(0);q.x=.1;p.vx=1;q.vx=-1;resolveShotC
 const u=enterFateDisc(0,.5),v=enterFateDisc(0,.5);resolveDiscContacts([u,v]);assert.ok(Math.hypot(u.x-v.x,u.y-v.y)>.089);
 const stress=new FateOrbit(new PlayerWallet(),()=>.5);for(let frame=0;frame<3600;frame++){if(frame%60===0)stress.shoot();stress.step();assert.ok(stress.runs.length<=70);}assert.equal(stress.shots,60);assert.ok(stress.gold>=820);assert.ok(stress.runs.every(r=>!r.ball||Number.isFinite(r.ball.x)));ticks(stress,7200);assert.equal(stress.runs.length,0,'all concurrent balls must eventually settle without forced results');
 console.log('Passed: 1 shot/s, aim while active, independent balls and settlements, shared disk motor, deepest occupied focus, muzzle alignment, ball contacts, concurrent jackpot, cleanup and 60-shot stress.');
+
+// Random launch changes velocity, while the projectile stays at the physical muzzle.
+for(const [unit,scale,offset] of [[0,.8,-2],[.5,1,0],[1,1.2,2]]){
+ const randomShot=new FateOrbit(new PlayerWallet(),()=>unit);randomShot.angle=55;randomShot.shoot();const ball=randomShot.latestShot.ball,base=launchFateBall(55);
+ assert.equal(ball.x,base.x);assert.equal(ball.y,base.y);assert.ok(Math.abs(Math.hypot(ball.vx,ball.vy)/Math.hypot(base.vx,base.vy)-scale)<1e-9);assert.ok(Math.abs(Math.atan2(ball.vx,ball.vy)*180/Math.PI-(55+offset))<1e-9);
+}
+const automatic=new FateOrbit(new PlayerWallet(),()=>.5);automatic.toggleAutoFire();assert.equal(automatic.shots,1);ticks(automatic,59);assert.equal(automatic.shots,1);ticks(automatic,1);assert.equal(automatic.shots,2);assert.equal(automatic.gold,994);automatic.toggleAutoFire();ticks(automatic,60);assert.equal(automatic.shots,2);automatic.toggleAutoFire();assert.equal(automatic.shots,3);automatic.dispose();assert.equal(automatic.autoFire,false);ticks(automatic,60);assert.equal(automatic.shots,3);
+const poorWallet=new PlayerWallet();poorWallet.spend(994);const poor=new FateOrbit(poorWallet,()=>.5);poor.toggleAutoFire();ticks(poor,120);assert.equal(poor.shots,2);assert.equal(poor.gold,0);assert.equal(poor.autoFire,false);assert.equal(poor.shoot(),false);
+console.log('Passed: random speed/angle endpoints, muzzle consistency, auto-fire cadence, stop/resume, insufficient funds and disposal.');

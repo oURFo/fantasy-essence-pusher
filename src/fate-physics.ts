@@ -6,7 +6,7 @@ export function fateObstacles(time:number):FateObstacle[]{
  for(let i=0;i<9;i++){const a=time*omega-Math.PI/3+i*Math.PI/12,dx=Math.cos(a)*radius,dy=Math.sin(a)*radius;pegs.push({kind:'rotor',x:dx,y:5.45+dy,half:0,radius:.10,angle:a,vx:-dy*omega,vy:dx*omega,omega:0});}
  return [...pegs,{kind:'mover',x:Math.sin(time*.45)*1.9,y:7.9,half:.55,radius:.17,angle:0,vx:Math.cos(time*.45)*.855,vy:0,omega:0}];
 }
-export function launchFateBall(angle:number):ShotBall{const a=Math.max(-B.maxAngle,Math.min(B.maxAngle,angle))*Math.PI/180;return{x:Math.sin(a)*FATE_CANNON.length,y:FATE_CANNON.pivotY+Math.cos(a)*FATE_CANNON.length,vx:Math.sin(a)*B.speed,vy:Math.cos(a)*B.speed,roll:0,age:0,done:false,lane:null,trail:[]};}
+export function launchFateBall(angle:number,speedScale=1,angleOffset=0):ShotBall{const a=Math.max(-B.maxAngle,Math.min(B.maxAngle,angle))*Math.PI/180,d=a+Math.max(-2,Math.min(2,angleOffset))*Math.PI/180,speed=B.speed*Math.max(.8,Math.min(1.2,speedScale));return{x:Math.sin(a)*FATE_CANNON.length,y:FATE_CANNON.pivotY+Math.cos(a)*FATE_CANNON.length,vx:Math.sin(d)*speed,vy:Math.cos(d)*speed,roll:0,age:0,done:false,lane:null,trail:[]};}
 function collide(ball:ShotBall,x:number,y:number,radius:number,vx=0,vy=0){
  const dx=ball.x-x,dy=ball.y-y,d=Math.hypot(dx,dy),min=radius+B.ballRadius;if(d>=min)return;
  const nx=d?dx/d:1,ny=d?dy/d:0;ball.x=x+nx*(min+.0001);ball.y=y+ny*(min+.0001);const impact=(ball.vx-vx)*nx+(ball.vy-vy)*ny;

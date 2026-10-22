@@ -4,7 +4,7 @@ import {launchFateBall,stepFateBall,enterFateDisc,stepFateDisc,resolveShotContac
 export type FatePhase='shooting'|'portal'|'disc'|'transfer'|'drain'|'result';
 export type FateRun={id:number;phase:FatePhase;phaseAt:number;ball:ShotBall|null;disc:DiscBall|null;level:number;results:(number|null)[];lastLane:number|null;award:number};
 export class FateOrbit{
- time=0;angle=0;dragging=false;points=0;totalPoints=0;redeemed=0;shots=0;fortuneEntries=0;jackpots=0;
+ time=0;autoFire=false;angle=0;dragging=false;points=0;totalPoints=0;redeemed=0;shots=0;fortuneEntries=0;jackpots=0;
  runs:FateRun[]=[];plateAngles=Array(4).fill(0);lastAward=0;lastLane:number|null=null;rewardAt=-Infinity;lastShot=-Infinity;
  notices:{id:number;award:number;time:number}[]=[];
  message='調整大砲角度，按下發射。';eventId=0;eventKind='idle';private disposed=false;private settlements=0;private lastRun:FateRun|null=null;
@@ -21,11 +21,13 @@ export class FateOrbit{
  get results(){return this.focus?.results??[null,null,null,null];}get minimum(){return FATE_LEVELS[this.level].min;}
  cancelAim(){this.dragging=false;}
  private event(kind:string,message:string){this.eventId++;this.eventKind=kind;this.message=message;}
- shoot(){if(!this.canShoot||!this.wallet.spend(FATE_COST))return false;this.lastShot=this.time;this.shots++;this.runs.push({id:this.shots,phase:'shooting',phaseAt:this.time,ball:launchFateBall(this.angle),disc:null,level:0,results:Array(4).fill(null),lastLane:null,award:0});this.event('shooting','星珠滾動中 · 每秒最多發射 1 顆');this.cancelAim();return true;}
+ shoot(){if(!this.canShoot||!this.wallet.spend(FATE_COST))return false;this.lastShot=this.time;this.shots++;this.runs.push({id:this.shots,phase:'shooting',phaseAt:this.time,ball:launchFateBall(this.angle,.8+this.random()*.4,this.random()*4-2),disc:null,level:0,results:Array(4).fill(null),lastLane:null,award:0});this.event('shooting','星珠滾動中 · 每秒最多發射 1 顆');this.cancelAim();return true;}
+ toggleAutoFire(){if(this.disposed)return;this.autoFire=!this.autoFire;if(this.autoFire){if(this.gold<FATE_COST){this.autoFire=false;this.message='金幣不足，自動發射已停止。';}else this.shoot();}}
  redeem(){if(this.disposed)return 0;const amount=this.exchangeGold;if(!amount||!this.wallet.credit(amount))return 0;this.points-=amount*POINTS_PER_GOLD;this.redeemed+=amount;this.message='兌換 '+amount+' 金幣，保留 '+this.points+' 積分。';return amount;}
  private award(r:FateRun,amount:number){if(r.phase==='result')return;this.points+=amount;this.totalPoints+=amount;this.lastAward=amount;this.lastLane=r.lastLane;this.rewardAt=this.time;this.notices.push({id:++this.settlements,award:amount,time:this.time});r.award=amount;r.phase='result';r.phaseAt=this.time;r.disc=null;this.lastRun=r;this.event(amount===FATE_JACKPOT?'jackpot':'result',amount?(amount===FATE_JACKPOT?'天命大獎！':'獲得')+' '+amount.toLocaleString()+' 積分':'OUT · 本球未獲得積分。');if(amount===FATE_JACKPOT)this.jackpots++;}
  private beginDisc(r:FateRun){r.disc=enterFateDisc(r.level,this.random(),this.plateAngles[r.level]);r.phase='disc';r.phaseAt=this.time;this.event('disc','第 '+(r.level+1)+' 層啟動 · 保底 '+FATE_LEVELS[r.level].min+' 積分');}
  step(){if(this.disposed)return;this.time+=1/60;
+  if(this.autoFire){if(this.gold<FATE_COST){this.autoFire=false;this.message='金幣不足，自動發射已停止。';}else if(this.canShoot)this.shoot();}
   for(const r of this.runs){if(r.phase==='portal'&&this.time-r.phaseAt>=1.15)this.beginDisc(r);else if(r.phase==='transfer'&&this.time-r.phaseAt>=1.4){r.level++;this.beginDisc(r);}else if(r.phase==='drain'&&this.time-r.phaseAt>=.9){if(r.disc?.hole===0){if(r.level===3)this.award(r,FATE_JACKPOT);else{r.phase='transfer';r.phaseAt=this.time;this.event('transfer','紅洞晉級！下一層保底 '+FATE_LEVELS[r.level+1].min+' 積分');}}else this.award(r,fateAward(r.level,this.random()));}}
   const shots=this.runs.filter(r=>r.phase==='shooting');for(const r of shots){r.ball!.trail.unshift({x:r.ball!.x,y:r.ball!.y});r.ball!.trail.length=Math.min(r.ball!.trail.length,7);}
   for(let i=0;i<2;i++){resolveShotContacts(shots.map(r=>r.ball!).filter(b=>!b.done));for(const r of shots)stepFateBall(r.ball!,this.time+(i-1)/120);}
@@ -36,5 +38,5 @@ export class FateOrbit{
   }
   this.runs=this.runs.filter(r=>r.phase!=='result');this.notices=this.notices.filter(n=>this.time-n.time<8);
  }
- dispose(){if(this.disposed)return;this.redeem();this.disposed=true;this.points=0;this.runs=[];this.notices=[];this.lastRun=null;this.cancelAim();}
+ dispose(){if(this.disposed)return;this.redeem();this.disposed=true;this.autoFire=false;this.points=0;this.runs=[];this.notices=[];this.lastRun=null;this.cancelAim();}
 }
