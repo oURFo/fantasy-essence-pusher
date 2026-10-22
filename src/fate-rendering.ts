@@ -25,7 +25,7 @@ export function renderFate(g:FateOrbit){
  for(let i=1;i<9;i++){const p=project(-3.6+i*.8,9.925);c.save();c.translate(p.x,p.y);c.rotate(Math.PI/2);art(c,5,0,0,96,7);c.restore();}
  for(let i=0;i<9;i++){const x=512+(-3.2+i*.8)*106,selected=g.lastLane===i,red=FATE_LANES[i]==='fate';c.save();if(selected){c.shadowColor=red?'#ffde7e':'#8ce5df';c.shadowBlur=25;}art(c,red?1:2,x,420,76,65);c.restore();label(c,red?'命運':FATE_LANES[i]===0?'OUT':`${FATE_LANES[i]}分`,x,361,23,red?'#ffde8d':'#dcf2ed');}
  for(const pin of FATE_PINS){const p=project(pin.x,pin.y);art(c,4,p.x,p.y,28,25);}
- for(const o of fateObstacles(g.time*.5)){const p=project(o.x,o.y);c.save();c.translate(p.x,p.y);c.rotate(-o.angle);art(c,5,0,0,(o.half*2+o.radius*2)*106,o.radius*168);c.restore();}
+ for(const o of fateObstacles(g.time*.5)){const p=project(o.x,o.y);c.save();c.translate(p.x,p.y);if(o.kind==='rotor')art(c,4,0,0,o.radius*212,o.radius*168);else{c.rotate(-o.angle);art(c,5,0,0,(o.half*2+o.radius*2)*106,o.radius*168);}c.restore();}
  if(g.ball){if(!reduced.matches)for(let i=1;i<g.ball.trail.length;i++){const p=project(g.ball.trail[i].x,g.ball.trail[i].y);c.save();c.globalAlpha=.25*(1-i/8);art(c,3,p.x,p.y,24);c.restore();}const p=project(g.ball.x,g.ball.y);rollingBall(c,p.x,p.y,38,g.time*2.5);}
  if(!g.inputLocked){const a=g.angle*Math.PI/180,start=project(0,.65),end=project(Math.sin(a)*2,.65+Math.cos(a)*2);c.save();c.setLineDash([10,12]);beam(c,start.x,start.y,end.x,end.y,'#b6e9e5aa',3);c.restore();rollingBall(c,start.x,start.y,38,0);}
  const base=project(0,.2);c.save();c.translate(base.x,base.y);c.rotate(-Math.PI/2-g.angle*Math.PI/180);art(c,5,35,0,115,34);c.restore();
