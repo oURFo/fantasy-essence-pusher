@@ -1,12 +1,20 @@
 import assert from 'node:assert/strict';
 import {FateOrbit} from '../src/fate-game.ts';
-import {FATE_COST,FATE_JACKPOT,FATE_LANES,FATE_LEVELS,DISC,discHolePosition,fateAward} from '../src/fate-rules.ts';
+import {FATE_COST,FATE_JACKPOT,FATE_LANES,FATE_LEVELS,FATE_BOARD,DISC,discHolePosition,fateAward} from '../src/fate-rules.ts';
 import {enterFateDisc,stepFateDisc,launchFateBall,stepFateBall,fateObstacles} from '../src/fate-physics.ts';
 import {PlayerWallet} from '../src/wallet.ts';
 import {ArcadeSession} from '../src/arcade-session.ts';
 const ticks=(g,n)=>{for(let i=0;i<n;i++)g.step();};
 const resolve=d=>{for(let i=0;i<4000&&!d.done;i++)stepFateDisc(d);assert.equal(d.done,true);return d;};
 assert.equal(FATE_COST,3);assert.equal(FATE_JACKPOT,9999);assert.deepEqual(FATE_LANES,[0,10,20,40,'fate',40,20,10,0]);
+assert.ok(FATE_BOARD.speed<10&&FATE_BOARD.ballRadius>=.18,'use a visible, slower rolling ball');
+assert.ok(DISC.trackRadius<.3,'drain holes belong near the centre');
+for(const unit of [0,.5,1]){
+ const d=enterFateDisc(0,unit);let radius=d.radius;
+ for(let i=0;i<4000&&!d.done;i++){stepFateDisc(d);assert.ok(d.radius<=radius+1e-9,'spiral must approach the centre');assert.ok(d.tangentSpeed/d.radius<1.8,'ball must remain slow enough to follow');radius=d.radius;}
+ assert.ok(d.done&&d.time>8&&d.time<18,'allow several suspenseful turns, then drain naturally');
+ assert.ok(d.angle+Math.PI/2>Math.PI*2,'ball visibly circles before entering a hole');
+}
 const speeds=[];
 for(let level=0;level<4;level++){
  const cfg=FATE_LEVELS[level];assert.equal(cfg.holes,level+3);assert.ok(cfg.min>40);if(level)assert.ok(cfg.min>FATE_LEVELS[level-1].max);
