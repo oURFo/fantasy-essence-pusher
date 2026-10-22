@@ -58,7 +58,7 @@ function updateUI(){
  auto.setAttribute('aria-pressed',String(game.autoDrop));auto.textContent=game.autoDrop?'停止自動投入':'開啟自動投入';
  $('auto-status').textContent=game.gold<CONFIG.essenceCost?'金幣不足，已停止投入；精華入箱可回補金幣':game.autoDrop?'自動投入中 · 每秒最多 2 顆 · 每顆 1 金幣':'1 金幣投入 1 精華 · 精華入箱返還 1 金幣';
  if(game instanceof SkyWings){
-  const r=game.sky;$('machine-announcement').textContent=r.message;
+  const r=game.sky;$('auto-status').textContent+=` · 本階每顆精華入箱返還 ${r.tier+1} 金幣`;$('machine-announcement').textContent=r.message;
   $('slot-status').textContent=`${r.message}${r.queue?` · 待轉 ${r.queue} 次`:''}${game.pendingBonuses.length?` · 待派 ${game.pendingBonuses.length} 精華`:''}`;
   $('sky-stage').textContent=r.config.name;$('sky-timer').textContent=r.locked?r.message:r.tier===0?'不限時':`剩餘 ${Math.ceil(r.remaining)} 秒`;
   $('sky-stage-panel').dataset.tier=String(r.tier);

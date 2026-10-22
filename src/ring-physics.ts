@@ -1,4 +1,4 @@
-import {HOOP,RING_PRIZES,RING_PLATFORMS} from './ring-rules.ts';
+import {HOOP,RING_PRIZES,RING_PLATFORMS,ringClearance} from './ring-rules.ts';
 export type TossRing={x:number;z:number;y:number;vx:number;vz:number;vy:number;age:number;wind:number;angle:number;candidate:number|null;stable:number;done:boolean;hit:number|null;bounces:number};
 export function launchRing(x:number,power:number,windUnit:number):TossRing{
  power=Math.max(0,Math.min(1,power));const wind=(Math.max(0,Math.min(1,windUnit))*4-2)*Math.PI/180,vz=2.2+power*11.4;
@@ -9,7 +9,7 @@ export function stepRing(r:TossRing,dt=1/120){
  for(const p of RING_PRIZES){
   const top=p.base+p.height;
   if(r.y>top||r.y<p.base)continue;
-  const clearance=HOOP.inner-p.radius;
+  const clearance=ringClearance(p.radius);
   // Interpolate the neck-plane crossing so fast far-row throws cannot tunnel through.
   if(oldY>top&&r.y<=top&&r.vy<0){const t=(oldY-top)/(oldY-r.y),cx=oldX+(r.x-oldX)*t,cz=oldZ+(r.z-oldZ)*t,cd=Math.hypot(cx-p.x,cz-p.z);
    if(cd<clearance){r.candidate=p.id;r.x=cx+(r.x-cx)*.08;r.z=cz+(r.z-cz)*.08;r.vx*=.08;r.vz*=.08;}
@@ -33,7 +33,7 @@ export function stepRing(r:TossRing,dt=1/120){
   if(r.z>=platform.front&&r.z<=platform.back&&oldY>=platform.height-.001)support=Math.max(support,platform.height+.025);
  }
  if(r.y<=support){r.y=support;if(r.vy<-.3){r.vy=-r.vy*.18;r.bounces++;}else r.vy=0;const drag=Math.exp(-12*dt);r.vx*=drag;r.vz*=drag;
-  if(Math.hypot(r.vx,r.vz)<.15){r.stable+=dt;if(r.stable>=.3){const p=r.candidate===null?null:RING_PRIZES[r.candidate];r.hit=p&&Math.abs(support-p.base-.025)<.001&&Math.hypot(r.x-p.x,r.z-p.z)<=HOOP.inner-p.radius?p.id:null;r.done=true;}}
+  if(Math.hypot(r.vx,r.vz)<.15){r.stable+=dt;if(r.stable>=.3){const p=r.candidate===null?null:RING_PRIZES[r.candidate];r.hit=p&&Math.abs(support-p.base-.025)<.001&&Math.hypot(r.x-p.x,r.z-p.z)<=ringClearance(p.radius)?p.id:null;r.done=true;}}
  }
  if(r.age>6||Math.abs(r.x)>4.8||r.z>12){r.done=true;r.hit=null;}
 }

@@ -1,69 +1,69 @@
 {
   "model": "Uniform random position/pull with actual collision and +/-2 degree wind. Observational only; skill changes returns. No weighted payout draw.",
   "throws": 30000,
-  "cheapestCostPerRing": 3.3333333333333335,
+  "cheapestCostPerRing": 2.5,
   "rowHits": [
-    23,
-    7,
-    4,
-    1,
+    34,
+    18,
+    11,
+    5,
     1,
     0
   ],
   "aimed": [
     {
       "row": 1,
-      "pull": 0.1367,
-      "hitRate": 0.3324,
-      "valuePerRing": 1.662
+      "pull": 0.1358,
+      "hitRate": 0.4572,
+      "valuePerRing": 2.286
     },
     {
       "row": 2,
-      "pull": 0.2862,
-      "hitRate": 0.1256,
-      "valuePerRing": 1.2559999999999998
+      "pull": 0.2874,
+      "hitRate": 0.1936,
+      "valuePerRing": 1.936
     },
     {
       "row": 3,
-      "pull": 0.4408,
-      "hitRate": 0.0632,
-      "valuePerRing": 1.2640000000000002
+      "pull": 0.44,
+      "hitRate": 0.078,
+      "valuePerRing": 1.56
     },
     {
       "row": 4,
-      "pull": 0.5941,
-      "hitRate": 0.0324,
-      "valuePerRing": 1.134
+      "pull": 0.5933,
+      "hitRate": 0.0392,
+      "valuePerRing": 1.3719999999999999
     },
     {
       "row": 5,
-      "pull": 0.7611,
-      "hitRate": 0.01,
-      "valuePerRing": 0.6
+      "pull": 0.7608,
+      "hitRate": 0.0056,
+      "valuePerRing": 0.336
     },
     {
       "row": 6,
-      "pull": 0.9187,
-      "hitRate": 0.0056,
-      "valuePerRing": 0.5599999999999999
+      "pull": 0.9186,
+      "hitRate": 0.0052,
+      "valuePerRing": 0.52
     }
   ],
-  "valuePerRing": 0.012,
+  "valuePerRing": 0.026833333333333334,
   "rtpByPack": [
     {
       "cost": 100,
-      "rings": 20,
-      "rtp": 0.0024000000000000002
+      "rings": 30,
+      "rtp": 0.00805
     },
     {
       "cost": 300,
-      "rings": 70,
-      "rtp": 0.0028
+      "rings": 100,
+      "rtp": 0.008944444444444444
     },
     {
       "cost": 500,
-      "rings": 150,
-      "rtp": 0.0036
+      "rings": 200,
+      "rtp": 0.010733333333333334
     }
   ]
 }

@@ -35,6 +35,7 @@ jobs:
       - run: node tests/fruit-touch-input.mjs
       - run: node tests/fruit-economy.mjs
       - run: node tests/sky-wings.mjs
+      - run: node tests/sky-return-gold.mjs
       - run: node tests/sky-transition.mjs
       - run: node tests/sky-front-layout.mjs
       - run: node tests/sky-draw-order.mjs

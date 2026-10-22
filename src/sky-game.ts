@@ -9,6 +9,7 @@ export class SkyWings extends CoinPusher {
   super(physicsRandom,physicsRandom,wallet,{pegs:SKY_PEGS,dragon:false,rewardHalfWidth:SKY_FRONT.rewardHalfWidth,rewardCollectionY:-4});
   this.sky=new SkyRules(random);
  }
+ protected override get essenceReturnGold(){return (this.sky?.tier??0)+1;}
  override get inputLocked(){return this.sky.locked;}
  override reset(){super.reset();this.sky?.reset();}
  override drop(){if(this.sky?.locked)return false;return super.drop();}

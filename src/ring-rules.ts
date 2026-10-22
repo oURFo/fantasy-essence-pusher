@@ -1,4 +1,4 @@
-export const RING_PACKS=[{cost:100,rings:20},{cost:300,rings:70},{cost:500,rings:150}] as const;
+export const RING_PACKS=[{cost:100,rings:30},{cost:300,rings:100},{cost:500,rings:200}] as const;
 export const RING_ROWS=[
  {name:'小玩具',price:5,height:.64,radius:.13},
  {name:'牛奶・果汁',price:10,height:.74,radius:.145},
@@ -13,3 +13,6 @@ export const RING_PRIZES=RING_ROWS.flatMap((r,row)=>Array.from({length:8},(_,col
 export const RING_PLATFORMS=RING_ROWS.map((_,row)=>({row,height:.18+row*.1,left:-3.5,right:3.5,front:1.5+row*1.6-.45,back:1.5+row*1.6+.45}));
 export const HOOP={inner:.18,outer:.225,gravity:9.8} as const;
 export function ringProjection(x:number,z:number,height=0){const scale=1/(1+.035*z);return{x:512+x*108*scale,y:1190-z*95*scale-height*110*scale,scale};}
+
+export const RING_HIT_TOLERANCE=1.3;
+export function ringClearance(radius:number){return (HOOP.inner-radius)*RING_HIT_TOLERANCE;}

@@ -16,6 +16,7 @@ export class CoinPusher {
   private ownsWallet:boolean;
   get gold(){return this.wallet.gold;}
   set gold(value:number){this.wallet.setBalance(value);}
+  protected get essenceReturnGold(){return CONFIG.essenceReturnGold;}
   earnedGold=0;
   autoDrop=false;
   time = 0;
@@ -183,7 +184,7 @@ export class CoinPusher {
           if(coin.exitZone==='reward') {
             this.won++;this.lastRewardTime=this.time;
             if(coin.kind==='gold')this.slot.trigger();
-            else {this.gold+=CONFIG.essenceReturnGold;this.earnedGold+=CONFIG.essenceReturnGold;}
+            else {this.gold+=this.essenceReturnGold;this.earnedGold+=this.essenceReturnGold;}
           }
           else this.recycled++;
         }
