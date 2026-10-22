@@ -8,7 +8,7 @@ export const FATE_LEVELS=[
 ] as const;
 export const FATE_BOARD={left:-3.6,right:3.6,top:10.7,gateY:10,ballRadius:.18,maxAngle:55,speed:8.8,slopeGravity:1.2} as const;
 export const FATE_PINS:{x:number;y:number;radius:number}[]=[];
-for(const [row,y] of [3.1,5.9,8.1].entries())for(let col=0;col<4;col++){const x=-2.7+col*1.8+(row%2?.35:0);if(!(row===1&&Math.abs(x)<1))FATE_PINS.push({x:row===2&&Math.abs(x)<1?Math.sign(x)*.4:x,y,radius:.10});}
+for(const [row,y] of [2.0,3.25,4.5,5.75,7.0,8.5].entries())for(let col=0;col<6;col++){const x=-2.85+col*1.10+(row%2?.22:0);if(Math.hypot(x,y-5.45)>1.75)FATE_PINS.push({x,y,radius:.10});}
 export const DISC={trackRadius:.27,startRadius:.90,holeRadius:.085,ballRadius:.045,motorSpeed:.10,minSpeed:2.8,maxSpeed:4.2} as const;
 export function fateLane(x:number){return Math.max(0,Math.min(8,Math.floor((x-FATE_BOARD.left)/.8)));}
 export function fateAward(level:number,unit:number){const c=FATE_LEVELS[level];return c.min+Math.floor(Math.max(0,Math.min(1-Number.EPSILON,unit))*(c.max-c.min+1));}

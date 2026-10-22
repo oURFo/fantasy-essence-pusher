@@ -97,30 +97,30 @@
   ],
   "board": {
     "counts": [
-      4279,
-      162,
-      282,
-      132,
-      103,
-      212,
-      285,
-      76,
-      3333
+      5194,
+      597,
+      949,
+      1157,
+      1975,
+      2527,
+      1692,
+      717,
+      5192
     ],
     "rates": [
-      0.21395,
-      0.0081,
-      0.0141,
-      0.0066,
-      0.00515,
-      0.0106,
-      0.01425,
-      0.0038,
-      0.16665
+      0.2597,
+      0.02985,
+      0.04745,
+      0.05785,
+      0.09875,
+      0.12635,
+      0.0846,
+      0.03585,
+      0.2596
     ],
-    "expired": 11136,
-    "meanSeconds": 3.4716891666666605,
-    "displayMeanSeconds": 6.943378333333321
+    "expired": 0,
+    "meanSeconds": 5.93124916666668,
+    "displayMeanSeconds": 11.86249833333336
   },
   "economy": {
     "shotCostGold": 3,
@@ -128,10 +128,10 @@
     "jackpotPoints": 9999,
     "nominalDiscExpectedPoints": 143.88611111111112,
     "measuredDiscExpectedPoints": 143.8983325445,
-    "fateRate": 0.00515,
-    "directExpectedPoints": 1.3739999999999999,
-    "totalExpectedPoints": 2.115076412604175,
-    "referenceRtp": 0.07050254708680584,
-    "jackpotPerShot": 1.4306985825e-05
+    "fateRate": 0.09875,
+    "directExpectedPoints": 10.666,
+    "totalExpectedPoints": 24.875960338769374,
+    "referenceRtp": 0.8291986779589792,
+    "jackpotPerShot": 0.000274332980625
   }
 }
