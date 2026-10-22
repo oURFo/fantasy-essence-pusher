@@ -1,0 +1,128 @@
+{
+  "model": "Reference only: uniform player angles and distributed obstacle/plate phases; equal-hole physical outcomes, no weighted acceptance. Real player strategy and conversion tails affect returns.",
+  "samples": 20000,
+  "discs": [
+    {
+      "level": 1,
+      "holes": 3,
+      "counts": [
+        6671,
+        6670,
+        6659
+      ],
+      "rates": [
+        0.33355,
+        0.3335,
+        0.33295
+      ],
+      "redRate": 0.33355,
+      "referenceRedRate": 0.3333333333333333,
+      "meanSeconds": 2.3253675000000893,
+      "maxSeconds": 2.674999999999993
+    },
+    {
+      "level": 2,
+      "holes": 4,
+      "counts": [
+        4995,
+        5006,
+        4994,
+        5005
+      ],
+      "rates": [
+        0.24975,
+        0.2503,
+        0.2497,
+        0.25025
+      ],
+      "redRate": 0.24975,
+      "referenceRedRate": 0.25,
+      "meanSeconds": 2.306990416666849,
+      "maxSeconds": 2.558333333333327
+    },
+    {
+      "level": 3,
+      "holes": 5,
+      "counts": [
+        3991,
+        3996,
+        4001,
+        4010,
+        4002
+      ],
+      "rates": [
+        0.19955,
+        0.1998,
+        0.20005,
+        0.2005,
+        0.2001
+      ],
+      "redRate": 0.19955,
+      "referenceRedRate": 0.2,
+      "meanSeconds": 2.296035416666879,
+      "maxSeconds": 2.499999999999994
+    },
+    {
+      "level": 4,
+      "holes": 6,
+      "counts": [
+        3330,
+        3329,
+        3341,
+        3330,
+        3329,
+        3341
+      ],
+      "rates": [
+        0.1665,
+        0.16645,
+        0.16705,
+        0.1665,
+        0.16645,
+        0.16705
+      ],
+      "redRate": 0.1665,
+      "referenceRedRate": 0.16666666666666666,
+      "meanSeconds": 2.288806666666902,
+      "maxSeconds": 2.4666666666666606
+    }
+  ],
+  "board": {
+    "counts": [
+      2014,
+      2030,
+      2055,
+      1918,
+      2050,
+      1865,
+      1857,
+      2143,
+      2407
+    ],
+    "rates": [
+      0.1007,
+      0.1015,
+      0.10275,
+      0.0959,
+      0.1025,
+      0.09325,
+      0.09285,
+      0.10715,
+      0.12035
+    ],
+    "expired": 1661,
+    "meanSeconds": 5.8278895833331985
+  },
+  "economy": {
+    "shotCostGold": 3,
+    "pointsPerGold": 10,
+    "jackpotPoints": 9999,
+    "nominalDiscExpectedPoints": 143.88611111111112,
+    "measuredDiscExpectedPoints": 143.78372242954578,
+    "fateRate": 0.1025,
+    "directExpectedPoints": 13.5645,
+    "totalExpectedPoints": 28.30233154902844,
+    "referenceRtp": 0.9434110516342814,
+    "jackpotPerShot": 0.0002836980020261461
+  }
+}
