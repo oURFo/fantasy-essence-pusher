@@ -6,7 +6,7 @@ import {PlayerWallet} from '../src/wallet.ts';
 import {ArcadeSession} from '../src/arcade-session.ts';
 const ticks=(g,n)=>{for(let i=0;i<n;i++)g.step();};
 const resolve=d=>{for(let i=0;i<4000&&!d.done;i++)stepFateDisc(d);assert.equal(d.done,true);return d;};
-assert.equal(FATE_COST,3);assert.equal(FATE_JACKPOT,9999);assert.deepEqual(FATE_LANES,[0,10,20,40,'fate',40,20,10,0]);
+assert.equal(FATE_COST,3);assert.equal(FATE_JACKPOT,9999);assert.deepEqual(FATE_LANES,[0,40,20,10,'fate',10,20,40,0]);
 assert.ok(FATE_BOARD.speed<10&&FATE_BOARD.ballRadius>=.18,'use a visible, slower rolling ball');
 assert.ok(DISC.trackRadius<.3,'drain holes belong near the centre');
 for(const unit of [0,.5,1]){

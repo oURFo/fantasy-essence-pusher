@@ -1,5 +1,5 @@
 export const FATE_COST=3,POINTS_PER_GOLD=10,FATE_JACKPOT=9999;
-export const FATE_LANES=[0,10,20,40,'fate',40,20,10,0] as const;
+export const FATE_LANES=[0,40,20,10,'fate',10,20,40,0] as const;
 export const FATE_LEVELS=[
  {name:'初啟星盤',holes:3,min:51,max:89,color:'#84dfce'},
  {name:'銀河星盤',holes:4,min:101,max:179,color:'#7dc8ff'},

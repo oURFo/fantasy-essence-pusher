@@ -129,9 +129,9 @@
     "nominalDiscExpectedPoints": 143.88611111111112,
     "measuredDiscExpectedPoints": 143.8983325445,
     "fateRate": 0.0324,
-    "directExpectedPoints": 11.915,
-    "totalExpectedPoints": 16.5773059744418,
-    "referenceRtp": 0.5525768658147266,
-    "jackpotPerShot": 9.000899819999999e-05
+    "directExpectedPoints": 7.4195,
+    "totalExpectedPoints": 12.0818059744418,
+    "referenceRtp": 0.40272686581472666,
+    "jackpotPerShot": 0.00009000899819999999
   }
 }
