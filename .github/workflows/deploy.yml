@@ -28,6 +28,7 @@ jobs:
       - run: node tests/fate-game.mjs
       - run: node tests/fate-input.mjs
       - run: node tests/fate-balance.mjs
+      - run: node tests/fate-layout.mjs
       - run: node tests/gm-controls.mjs
       - run: node tests/ring-game.mjs
       - run: node tests/ring-input.mjs

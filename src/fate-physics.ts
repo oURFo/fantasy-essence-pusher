@@ -1,12 +1,12 @@
 import {FATE_BOARD as B,FATE_PINS,DISC,FATE_LEVELS,discHolePosition,fateLane} from './fate-rules.ts';
-export type ShotBall={x:number;y:number;vx:number;vy:number;age:number;done:boolean;lane:number|null;trail:{x:number;y:number}[]};
+export type ShotBall={x:number;y:number;vx:number;vy:number;roll:number;age:number;done:boolean;lane:number|null;trail:{x:number;y:number}[]};
 export type FateObstacle={x:number;y:number;half:number;radius:number;angle:number;vx:number;vy:number;omega:number;kind:'rotor'|'mover'};
 export function fateObstacles(time:number):FateObstacle[]{
  const omega=.28*1.5,radius=1.05*1.3,pegs:FateObstacle[]=[];
  for(let i=0;i<9;i++){const a=time*omega-Math.PI/3+i*Math.PI/12,dx=Math.cos(a)*radius,dy=Math.sin(a)*radius;pegs.push({kind:'rotor',x:dx,y:5.45+dy,half:0,radius:.10,angle:a,vx:-dy*omega,vy:dx*omega,omega:0});}
- return [...pegs,{kind:'mover',x:Math.sin(time*.35)*2.25,y:7.55,half:.42,radius:.17,angle:0,vx:Math.cos(time*.35)*.7875,vy:0,omega:0}];
+ return [...pegs,{kind:'mover',x:Math.sin(time*.45)*1.9,y:7.9,half:.55,radius:.17,angle:0,vx:Math.cos(time*.45)*.855,vy:0,omega:0}];
 }
-export function launchFateBall(angle:number):ShotBall{const a=Math.max(-B.maxAngle,Math.min(B.maxAngle,angle))*Math.PI/180;return{x:0,y:.65,vx:Math.sin(a)*B.speed,vy:Math.cos(a)*B.speed,age:0,done:false,lane:null,trail:[]};}
+export function launchFateBall(angle:number):ShotBall{const a=Math.max(-B.maxAngle,Math.min(B.maxAngle,angle))*Math.PI/180;return{x:0,y:.65,vx:Math.sin(a)*B.speed,vy:Math.cos(a)*B.speed,roll:0,age:0,done:false,lane:null,trail:[]};}
 function collide(ball:ShotBall,x:number,y:number,radius:number,vx=0,vy=0){
  const dx=ball.x-x,dy=ball.y-y,d=Math.hypot(dx,dy),min=radius+B.ballRadius;if(d>=min)return;
  const nx=d?dx/d:1,ny=d?dy/d:0;ball.x=x+nx*(min+.0001);ball.y=y+ny*(min+.0001);const impact=(ball.vx-vx)*nx+(ball.vy-vy)*ny;
@@ -16,7 +16,7 @@ function collide(ball:ShotBall,x:number,y:number,radius:number,vx=0,vy=0){
 
 }
 export function stepFateBall(ball:ShotBall,time:number,dt=1/120){
- if(ball.done)return;const oldY=ball.y;ball.age+=dt;ball.vy+=B.slopeGravity*dt;const friction=Math.exp(-.016*dt);ball.vx*=friction;ball.vy*=friction;ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;
+ if(ball.done)return;const oldY=ball.y;ball.age+=dt;ball.vy+=B.slopeGravity*dt;const friction=Math.exp(-.045*dt);ball.vx*=friction;ball.vy*=friction;ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;ball.roll+=Math.hypot(ball.vx,ball.vy)*dt/B.ballRadius;
  if(ball.x<B.left+B.ballRadius){ball.x=B.left+B.ballRadius;ball.vx=Math.max(0,ball.vx);}if(ball.x>B.right-B.ballRadius){ball.x=B.right-B.ballRadius;ball.vx=Math.min(0,ball.vx);}
  for(const pin of FATE_PINS)collide(ball,pin.x,pin.y,pin.radius);
  for(const o of fateObstacles(time)){const ux=Math.cos(o.angle),uy=Math.sin(o.angle),along=Math.max(-o.half,Math.min(o.half,(ball.x-o.x)*ux+(ball.y-o.y)*uy)),px=o.x+ux*along,py=o.y+uy*along;collide(ball,px,py,o.radius,o.vx-o.omega*(py-o.y),o.vy+o.omega*(px-o.x));}
