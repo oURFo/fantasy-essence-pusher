@@ -26,6 +26,8 @@ jobs:
       - run: node tests/essence-return.mjs
       - run: node tests/lobby-session.mjs
       - run: node tests/fate-game.mjs
+      - run: node tests/fate-multiball.mjs
+      - run: node tests/fate-ui.mjs
       - run: node tests/fate-input.mjs
       - run: node tests/fate-balance.mjs
       - run: node tests/fate-layout.mjs

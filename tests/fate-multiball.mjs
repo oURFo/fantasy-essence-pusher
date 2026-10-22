@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {FateOrbit} from '../src/fate-game.ts';
+import {PlayerWallet} from '../src/wallet.ts';
+import {DISC,FATE_CANNON} from '../src/fate-rules.ts';
+import {enterFateDisc,launchFateBall,resolveShotContacts,resolveDiscContacts} from '../src/fate-physics.ts';
+const ticks=(g,n)=>{for(let i=0;i<n;i++)g.step();};
+const g=new FateOrbit(new PlayerWallet(),()=>.5);
+assert.equal(g.shoot(),true);assert.equal(g.shoot(),false);ticks(g,59);assert.equal(g.shoot(),false);ticks(g,1);assert.equal(g.shoot(),true);assert.equal(g.gold,994);assert.equal(g.runs.length,2);assert.equal(g.inputLocked,false);
+const first=g.runs[0].ball;assert.ok(first.age>0);assert.equal(g.runs[1].ball.age,0);ticks(g,1);assert.ok(first.age>1,'board advances at normal simulation speed, twice the previous playback');
+function disc(game,level,angle=0){game.time+=1;assert.ok(game.shoot());const r=game.latestShot;r.phase='disc';r.phaseAt=game.time;r.ball=null;r.level=level;r.disc=enterFateDisc(level,.5,game.plateAngles[level]);r.disc.angle=angle;r.disc.x=r.disc.radius*Math.cos(angle);r.disc.y=r.disc.radius*Math.sin(angle);return r;}
+const multi=new FateOrbit(new PlayerWallet(),()=>.5),a=disc(multi,0,0),b=disc(multi,1,1),c=disc(multi,2,2),d=disc(multi,2,4);
+assert.equal(multi.level,2,'123 occupied focuses level 3');const before=multi.plateAngles[2];multi.step();assert.ok(Math.abs(multi.plateAngles[2]-before-DISC.motorSpeed/60)<1e-9,'one motor update regardless of ball count');assert.equal(c.disc.plateAngle,d.disc.plateAngle);assert.equal(c.disc.plateAngle,multi.plateAngles[2]);assert.equal(multi.plateAngles[3],0);
+multi.time+=1;assert.ok(multi.shoot());assert.equal(multi.level,2,'new board shot cannot steal focus');multi.runs=multi.runs.filter(r=>r!==c&&r!==d);assert.equal(multi.level,1,'focus moves up only when deeper occupancy ends');assert.ok(a.disc.time>0&&b.disc.time>0);
+const settled=new FateOrbit(new PlayerWallet(),()=>.5),grand=disc(settled,3),white=disc(settled,0);for(const r of [grand,white]){r.phase='drain';r.phaseAt=settled.time-1;r.disc.done=true;r.disc.hole=r===grand?0:1;}settled.step();assert.equal(settled.points,10069);assert.equal(settled.jackpots,1);assert.ok(settled.grandNotice,'concurrent small award cannot hide jackpot');assert.equal(settled.runs.length,0);ticks(settled,60);assert.equal(settled.points,10069);assert.equal(settled.redeem(),1006);assert.equal(settled.points,9);
+const cancel=new FateOrbit(new PlayerWallet());cancel.shoot();cancel.time+=1;cancel.shoot();cancel.points=29;cancel.dispose();assert.equal(cancel.gold,996);assert.equal(cancel.runs.length,0);assert.equal(cancel.shoot(),false);cancel.dispose();assert.equal(cancel.gold,996);
+const left=launchFateBall(-35),right=launchFateBall(35);assert.ok(left.x<0&&right.x>0);assert.equal(left.y,right.y);assert.ok(Math.abs(Math.hypot(right.x,right.y-FATE_CANNON.pivotY)-FATE_CANNON.length)<1e-9,'ball starts at rotated muzzle');
+const p=launchFateBall(0),q=launchFateBall(0);q.x=.1;p.vx=1;q.vx=-1;resolveShotContacts([p,q]);assert.ok(Math.hypot(p.x-q.x,p.y-q.y)>=.36);assert.ok(p.vx<1&&q.vx>-1);
+const u=enterFateDisc(0,.5),v=enterFateDisc(0,.5);resolveDiscContacts([u,v]);assert.ok(Math.hypot(u.x-v.x,u.y-v.y)>.089);
+const stress=new FateOrbit(new PlayerWallet(),()=>.5);for(let frame=0;frame<3600;frame++){if(frame%60===0)stress.shoot();stress.step();assert.ok(stress.runs.length<=70);}assert.equal(stress.shots,60);assert.ok(stress.gold>=820);assert.ok(stress.runs.every(r=>!r.ball||Number.isFinite(r.ball.x)));ticks(stress,7200);assert.equal(stress.runs.length,0,'all concurrent balls must eventually settle without forced results');
+console.log('Passed: 1 shot/s, aim while active, independent balls and settlements, shared disk motor, deepest occupied focus, muzzle alignment, ball contacts, concurrent jackpot, cleanup and 60-shot stress.');

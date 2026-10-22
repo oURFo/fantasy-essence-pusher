@@ -1,4 +1,4 @@
-import {FATE_BOARD as B,FATE_PINS,DISC,FATE_LEVELS,discHolePosition,fateLane} from './fate-rules.ts';
+import {FATE_BOARD as B,FATE_CANNON,FATE_PINS,DISC,FATE_LEVELS,discHolePosition,fateLane} from './fate-rules.ts';
 export type ShotBall={x:number;y:number;vx:number;vy:number;roll:number;age:number;done:boolean;lane:number|null;trail:{x:number;y:number}[]};
 export type FateObstacle={x:number;y:number;half:number;radius:number;angle:number;vx:number;vy:number;omega:number;kind:'rotor'|'mover'};
 export function fateObstacles(time:number):FateObstacle[]{
@@ -6,7 +6,7 @@ export function fateObstacles(time:number):FateObstacle[]{
  for(let i=0;i<9;i++){const a=time*omega-Math.PI/3+i*Math.PI/12,dx=Math.cos(a)*radius,dy=Math.sin(a)*radius;pegs.push({kind:'rotor',x:dx,y:5.45+dy,half:0,radius:.10,angle:a,vx:-dy*omega,vy:dx*omega,omega:0});}
  return [...pegs,{kind:'mover',x:Math.sin(time*.45)*1.9,y:7.9,half:.55,radius:.17,angle:0,vx:Math.cos(time*.45)*.855,vy:0,omega:0}];
 }
-export function launchFateBall(angle:number):ShotBall{const a=Math.max(-B.maxAngle,Math.min(B.maxAngle,angle))*Math.PI/180;return{x:0,y:.65,vx:Math.sin(a)*B.speed,vy:Math.cos(a)*B.speed,roll:0,age:0,done:false,lane:null,trail:[]};}
+export function launchFateBall(angle:number):ShotBall{const a=Math.max(-B.maxAngle,Math.min(B.maxAngle,angle))*Math.PI/180;return{x:Math.sin(a)*FATE_CANNON.length,y:FATE_CANNON.pivotY+Math.cos(a)*FATE_CANNON.length,vx:Math.sin(a)*B.speed,vy:Math.cos(a)*B.speed,roll:0,age:0,done:false,lane:null,trail:[]};}
 function collide(ball:ShotBall,x:number,y:number,radius:number,vx=0,vy=0){
  const dx=ball.x-x,dy=ball.y-y,d=Math.hypot(dx,dy),min=radius+B.ballRadius;if(d>=min)return;
  const nx=d?dx/d:1,ny=d?dy/d:0;ball.x=x+nx*(min+.0001);ball.y=y+ny*(min+.0001);const impact=(ball.vx-vx)*nx+(ball.vy-vy)*ny;
@@ -19,11 +19,12 @@ export function stepFateBall(ball:ShotBall,time:number,dt=1/120){
  if(ball.done)return;const oldY=ball.y;ball.age+=dt;ball.vy+=B.slopeGravity*dt;const friction=Math.exp(-.045*dt);ball.vx*=friction;ball.vy*=friction;ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;ball.roll+=Math.hypot(ball.vx,ball.vy)*dt/B.ballRadius;
  if(ball.x<B.left+B.ballRadius){ball.x=B.left+B.ballRadius;ball.vx=Math.max(0,ball.vx);}if(ball.x>B.right-B.ballRadius){ball.x=B.right-B.ballRadius;ball.vx=Math.min(0,ball.vx);}
  for(const pin of FATE_PINS)collide(ball,pin.x,pin.y,pin.radius);
- for(const o of fateObstacles(time)){const ux=Math.cos(o.angle),uy=Math.sin(o.angle),along=Math.max(-o.half,Math.min(o.half,(ball.x-o.x)*ux+(ball.y-o.y)*uy)),px=o.x+ux*along,py=o.y+uy*along;collide(ball,px,py,o.radius,o.vx-o.omega*(py-o.y),o.vy+o.omega*(px-o.x));}
+ // Ball playback is faster; keep the player's existing mechanical obstacle speed.
+ for(const o of fateObstacles(time*.5)){const ux=Math.cos(o.angle),uy=Math.sin(o.angle),along=Math.max(-o.half,Math.min(o.half,(ball.x-o.x)*ux+(ball.y-o.y)*uy)),px=o.x+ux*along,py=o.y+uy*along;collide(ball,px,py,o.radius,(o.vx-o.omega*(py-o.y))*.5,(o.vy+o.omega*(px-o.x))*.5);}
  if(ball.y>9.35)for(let i=1;i<9;i++)collide(ball,B.left+i*.8,Math.max(9.4,Math.min(10.5,ball.y)),.035);
  if(oldY<B.gateY&&ball.y>=B.gateY&&ball.vy>0){ball.done=true;ball.lane=fateLane(ball.x);return;}
  if(ball.y>B.top-B.ballRadius){ball.y=B.top-B.ballRadius;ball.vy=Math.min(0,ball.vy);}
- if(ball.y<.2){ball.y=.2;ball.vy=Math.max(0,ball.vy);}if(ball.age>25){ball.done=true;ball.lane=null;}
+ if(ball.y<-.25){ball.y=-.25;ball.vy=Math.max(0,ball.vy);}if(ball.age>25){ball.done=true;ball.lane=null;}
 }
 export type DiscBall={level:number;radius:number;radialSpeed:number;angle:number;tangentSpeed:number;plateAngle:number;time:number;hole:number|null;done:boolean;x:number;y:number;trail:{x:number;y:number}[]};
 export function enterFateDisc(level:number,unit:number,plateAngle=0):DiscBall{
@@ -41,4 +42,12 @@ export function stepFateDisc(ball:DiscBall,dt=1/120){
  const count=FATE_LEVELS[ball.level].holes,clearance=DISC.holeRadius-DISC.ballRadius;let earliest=2,index=-1;
  for(let i=0;i<count;i++){const from=discHolePosition(count,i,oldPlate),to=discHolePosition(count,i,ball.plateAngle),dx=oldX-from.x,dy=oldY-from.y,vx=ball.x-to.x-dx,vy=ball.y-to.y-dy,a=vx*vx+vy*vy,b=2*(dx*vx+dy*vy),c=dx*dx+dy*dy-clearance*clearance,discriminant=b*b-4*a*c;const hit=c<=0?0:a>0&&discriminant>=0?(-b-Math.sqrt(discriminant))/(2*a):2;if(hit>=0&&hit<=1&&hit<earliest){earliest=hit;index=i;}}
  if(index>=0){ball.x=oldX+(ball.x-oldX)*earliest;ball.y=oldY+(ball.y-oldY)*earliest;ball.hole=index;ball.done=true;}
+}
+type MovingCircle={x:number;y:number;vx:number;vy:number};
+function separate(a:MovingCircle,b:MovingCircle,r:number){const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);if(d>=r*2)return false;const nx=d?dx/d:1,ny=d?dy/d:0,push=(r*2-d+.00001)/2;a.x-=nx*push;a.y-=ny*push;b.x+=nx*push;b.y+=ny*push;const relative=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(relative<0){const impulse=-relative*.55;a.vx-=impulse*nx;a.vy-=impulse*ny;b.vx+=impulse*nx;b.vy+=impulse*ny;}return true;}
+export function resolveShotContacts(balls:ShotBall[]){for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++){const a=balls[i],b=balls[j],ay=a.y,by=b.y;separate(a,b,B.ballRadius);if(ay<B.gateY&&a.y>=B.gateY)a.y=B.gateY-.00001;if(by<B.gateY&&b.y>=B.gateY)b.y=B.gateY-.00001;}}
+export function resolveDiscContacts(balls:DiscBall[]){
+ const states=balls.map(b=>({x:b.x,y:b.y,vx:Math.cos(b.angle)*b.radialSpeed-Math.sin(b.angle)*b.tangentSpeed,vy:Math.sin(b.angle)*b.radialSpeed+Math.cos(b.angle)*b.tangentSpeed,changed:false}));
+ for(let i=0;i<states.length;i++)for(let j=i+1;j<states.length;j++)if(separate(states[i],states[j],DISC.ballRadius)){states[i].changed=true;states[j].changed=true;}
+ states.forEach((s,i)=>{if(!s.changed)return;const b=balls[i];b.angle=Math.atan2(s.y,s.x);b.radius=Math.max(.16,Math.min(.95,Math.hypot(s.x,s.y)));b.x=b.radius*Math.cos(b.angle);b.y=b.radius*Math.sin(b.angle);b.radialSpeed=s.vx*Math.cos(b.angle)+s.vy*Math.sin(b.angle);b.tangentSpeed=-s.vx*Math.sin(b.angle)+s.vy*Math.cos(b.angle);});
 }

@@ -99,7 +99,7 @@ async function enterMachine(id:MachineId){
   $('page-title').textContent=machine.name;$('page-subtitle').textContent=machine.description;document.title=`${machine.name} · 冒險遊藝場`;
   const canvas=$<HTMLCanvasElement>('game');canvas.width=1024;canvas.height=fruit?1700:1536;canvas.setAttribute('aria-label',fate?'命運星軌障礙射球，中央命運孔與積分孔及OUT':ring?'夜市套圈圈，六排各八件獎品與底部投擲圈圈':fruit?'水果星宴彈珠台，十五道水果配方及十六個水果格':'奇幻推幣機遊戲');
   $('machine-screen').dataset.machine=id;
-  $('fate-aim-zone').hidden=!fate;$('fate-panel').hidden=!fate;
+  $('fate-aim-zone').hidden=!fate;$('fate-cannon-fire').hidden=!fate;$('fate-panel').hidden=!fate;
   $('ring-throw-zone').hidden=!ring;$('ring-panel').hidden=!ring;document.querySelector<HTMLElement>('.play-controls')!.hidden=ring||fate;
   $('fruit-plunger-grip').hidden=!fruit;$('fruit-panel').hidden=!fruit;$('adventure-details').hidden=fruit||ring||fate;$('auto-drop').hidden=fruit;$('slot-status').hidden=fruit;$('status').hidden=fruit;
   if(!fruit)$('drop').innerHTML='投入精華 · 1 金幣 <kbd>SPACE</kbd>';
@@ -114,7 +114,7 @@ async function enterMachine(id:MachineId){
 }
 function requestLeave(){
  if(session.leaveRequested||!session.requestLeave())return;
- resetClock();if(session.game instanceof FateOrbit){const g=session.game;$('leave-pending').textContent=`目前 ${g.points} 積分，離開將兌換 ${g.exchangeGold} 金幣；不足 10 分的 ${g.points%10} 積分將清除。未完成的射球及命運盤獎勵會取消。`;}if(session.game instanceof NightMarket){const g=session.game;$('leave-pending').textContent=`背包 ${g.bagCount} 件戰利品將自動售出 ${g.bagValue} 金幣；剩餘 ${g.rings} 個圈圈將清除，不退費。${g.active?'飛行中的圈圈會取消。':''}`;}dialog.showModal();$('keep-playing').focus();updateUI();
+ resetClock();if(session.game instanceof FateOrbit){const g=session.game;$('leave-pending').textContent=`目前 ${g.points} 積分，離開將兌換 ${g.exchangeGold} 金幣；不足 10 分的 ${g.points%10} 積分將清除。尚有 ${g.runs.length} 顆球未完成，離開將取消其獎勵。`;}if(session.game instanceof NightMarket){const g=session.game;$('leave-pending').textContent=`背包 ${g.bagCount} 件戰利品將自動售出 ${g.bagValue} 金幣；剩餘 ${g.rings} 個圈圈將清除，不退費。${g.active?'飛行中的圈圈會取消。':''}`;}dialog.showModal();$('keep-playing').focus();updateUI();
 }
 function cancelLeave(){session.cancelLeave();dialog.close();resetClock();updateUI();$('back-to-lobby').focus({preventScroll:true});}
 function confirmLeave(){

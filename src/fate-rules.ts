@@ -7,6 +7,7 @@ export const FATE_LEVELS=[
  {name:'天命星盤',holes:6,min:601,max:999,color:'#ffd47d'},
 ] as const;
 export const FATE_BOARD={left:-3.6,right:3.6,top:10.7,gateY:10,ballRadius:.18,maxAngle:55,speed:4.6,slopeGravity:3.6} as const;
+export const FATE_CANNON={pivotY:-1.35,length:2,width:2,height:2.67} as const;
 export const FATE_PINS:{x:number;y:number;radius:number}[]=[];
 for(const [y,xs] of [
  [1.9,[-2.9,-1.75,-.6,.55,1.7,2.85]],

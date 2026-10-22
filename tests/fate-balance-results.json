@@ -1,5 +1,5 @@
 {
-  "model": "Reference only: uniform player angles and distributed obstacle/plate phases; equal-hole physical outcomes, no weighted acceptance. Real player strategy and conversion tails affect returns.",
+  "model": "Reference only: isolated shots, without ball-ball collisions, uniform player angles and distributed obstacle/plate phases; equal-hole physical outcomes, no weighted acceptance. Real player strategy and conversion tails affect returns.",
   "samples": 20000,
   "discs": [
     {
@@ -97,30 +97,30 @@
   ],
   "board": {
     "counts": [
-      4591,
-      576,
-      1943,
-      2869,
-      614,
-      3169,
-      942,
-      1156,
-      4140
+      6049,
+      802,
+      1076,
+      1679,
+      648,
+      2944,
+      780,
+      824,
+      5198
     ],
     "rates": [
-      0.22955,
-      0.0288,
-      0.09715,
-      0.14345,
-      0.0307,
-      0.15845,
-      0.0471,
-      0.0578,
-      0.207
+      0.30245,
+      0.0401,
+      0.0538,
+      0.08395,
+      0.0324,
+      0.1472,
+      0.039,
+      0.0412,
+      0.2599
     ],
     "expired": 0,
-    "meanSeconds": 4.1371508333332825,
-    "displayMeanSeconds": 8.274301666666565
+    "meanSeconds": 4.09148958333325,
+    "displayMeanSeconds": 4.09148958333325
   },
   "economy": {
     "shotCostGold": 3,
@@ -128,10 +128,10 @@
     "jackpotPoints": 9999,
     "nominalDiscExpectedPoints": 143.88611111111112,
     "measuredDiscExpectedPoints": 143.8983325445,
-    "fateRate": 0.0307,
-    "directExpectedPoints": 15.827,
-    "totalExpectedPoints": 20.24467880911615,
-    "referenceRtp": 0.6748226269705383,
-    "jackpotPerShot": 8.528630385000001e-05
+    "fateRate": 0.0324,
+    "directExpectedPoints": 11.915,
+    "totalExpectedPoints": 16.5773059744418,
+    "referenceRtp": 0.5525768658147266,
+    "jackpotPerShot": 9.000899819999999e-05
   }
 }

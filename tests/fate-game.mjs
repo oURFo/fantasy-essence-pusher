@@ -24,7 +24,7 @@ assert.ok(FATE_PINS.length>=24,'increase the fixed pin field');
 assert.ok(FATE_PINS.every(p=>Math.hypot(p.x,p.y-5.45)>1.75),'fixed pins must clear the rotor sweep');
 assert.ok(Math.abs(fateObstacles(1)[0].angle-arc[0].angle-.28*1.5)<1e-9,'rotor speed is 1.5 times the previous version');
 const recovering=launchFateBall(0);Object.assign(recovering,{x:3.2,y:.7,vx:0,vy:-.15});for(let i=0;i<30;i++)stepFateBall(recovering,i/120);assert.ok(recovering.vy>0&&!recovering.done,'slope gravity recovers a brief downward rebound');
-const floor=launchFateBall(0);Object.assign(floor,{x:0,y:.1,vx:0,vy:-.1});stepFateBall(floor,0);assert.equal(floor.done,false,'lower edge is a soft wall, not an OUT trigger');assert.ok(floor.vy>=0);
+const floor=launchFateBall(0);Object.assign(floor,{x:0,y:-.3,vx:0,vy:-.1});stepFateBall(floor,0);assert.equal(floor.done,false,'lower edge is a soft wall, not an OUT trigger');assert.ok(floor.vy>=0);
 const wall=launchFateBall(0);Object.assign(wall,{x:3.5,y:1,vx:4,vy:0});stepFateBall(wall,0);assert.equal(wall.vx,0,'wall absorbs normal motion instead of bouncing');
 const pin=launchFateBall(0);Object.assign(pin,{x:FATE_PINS[0].x-.2,y:FATE_PINS[0].y,vx:4,vy:0});stepFateBall(pin,0,0);assert.ok(pin.vx<0&&Math.abs(pin.vx)<.5,'pin produces only a small cushioned rebound');
 const ceiling=launchFateBall(0);Object.assign(ceiling,{x:0,y:10.6,vx:0,vy:3});stepFateBall(ceiling,0);assert.equal(ceiling.done,false,'ceiling contact must not award or trigger OUT');assert.equal(ceiling.vy,0);
