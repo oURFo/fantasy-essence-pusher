@@ -37,9 +37,16 @@ const ringUI=initRingUI(()=>session.game instanceof NightMarket?session.game:nul
 const fateUI=initFateUI(()=>session.game instanceof FateOrbit?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const fateInput=bindFateInput(()=>session.game instanceof FateOrbit?session.game:null,()=>document.hidden||session.leaveRequested,updateUI,fateUI.unlock);
 function resetClock(){fateInput.cancel();gmCode.reset();ringInput.cancel();accumulator=0;previous=0;plunger.cancel();}
+function updateRefill(){
+ const seconds=Math.ceil(wallet.refillRemaining()/1000),button=$<HTMLButtonElement>('lobby-refill');
+ button.disabled=seconds>0||Boolean(session.game)||entering;
+ $('lobby-refill-timer').textContent=seconds?`下次領取 ${String(Math.floor(seconds/3600)).padStart(2,'0')}:${String(Math.floor(seconds/60)%60).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`:'每 4 小時可領一次';
+}
+$('lobby-refill').addEventListener('click',()=>{if(session.game||entering||document.hidden)return;const received=wallet.claimRefill();$('lobby-refill-message').textContent=received?'已領取 500 金幣！':'尚在冷卻中，請稍後再領取。';syncWallet();});
+setInterval(()=>{if(!session.game&&!document.hidden)updateRefill();},1000);
 function syncWallet(){
  const balance=wallet.gold.toLocaleString('en-US');
- $('gold-balance').textContent=balance;$('lobby-gold').textContent=balance;
+ $('gold-balance').textContent=balance;$('lobby-gold').textContent=balance;updateRefill();
 }
 function updateUI(){
  syncWallet();const game=session.game;if(!game)return;

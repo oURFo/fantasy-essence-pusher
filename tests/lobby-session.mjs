@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';import R from '@dimforge/rapier3d-compat';import {PlayerWallet,WALLET_KEY} from '../src/wallet.ts';import {ArcadeSession} from '../src/arcade-session.ts';
+import assert from 'node:assert/strict';import R from '@dimforge/rapier3d-compat';import {PlayerWallet,WALLET_KEY,REFILL_COOLDOWN} from '../src/wallet.ts';import {ArcadeSession} from '../src/arcade-session.ts';
 const values=new Map();const storage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v)};
 let wallet=new PlayerWallet(storage);assert.equal(wallet.gold,1000);assert.equal(wallet.spend(1),true);assert.equal(wallet.gold,999);wallet=new PlayerWallet(storage);assert.equal(wallet.gold,999,'重新載入不可重發起始金幣');
 wallet.setBalance(0);assert.equal(new PlayerWallet(storage).gold,0,'零餘額也應保留');assert.equal(wallet.spend(1),false);assert.equal(wallet.credit(2),true);assert.equal(wallet.gold,2);assert.throws(()=>wallet.setBalance(-1));
@@ -14,3 +14,9 @@ assert.equal(session.enter('essence-vault'),true);const second=session.game;asse
 second.drop();assert.equal(wallet.gold,998);const bead=second.coins[0];bead.body.setTranslation({x:0,y:-1.9,z:7.1},true);session.step();assert.equal(wallet.gold,999,'機台返幣必須寫入共用錢包');assert.equal(new PlayerWallet(storage).gold,999,'返幣即時保存');
 session.requestLeave();session.confirmLeave();for(let i=0;i<120;i++)session.step();assert.equal(wallet.gold,999,'大廳不得背景扣錢');assert.equal(session.confirmLeave(),false);
 console.log('大廳驗證通過：共用金幣本機保存、確認期間凍結、取消續玩、離開清盤、再入新局、返幣同步、無背景扣款。');
+
+const refillValues=new Map(),refillStorage={getItem:k=>refillValues.get(k)??null,setItem:(k,v)=>refillValues.set(k,v)},refill=new PlayerWallet(refillStorage),stale=new PlayerWallet(refillStorage),now=1800000000000;
+assert.equal(refill.claimRefill(now),true);assert.equal(refill.gold,1500);assert.equal(refill.refillRemaining(now),4*60*60*1000);assert.equal(refill.claimRefill(now),false);assert.equal(refill.claimRefill(now+REFILL_COOLDOWN-1),false);assert.equal(stale.claimRefill(now+1),false);assert.equal(stale.gold,1500);
+const restored=new PlayerWallet(refillStorage);assert.equal(restored.gold,1500);assert.equal(restored.refillRemaining(now+1000),REFILL_COOLDOWN-1000);restored.spend(3);assert.equal(new PlayerWallet(refillStorage).refillRemaining(now),REFILL_COOLDOWN);assert.equal(restored.claimRefill(now+REFILL_COOLDOWN),true);assert.equal(restored.gold,1997);assert.equal(restored.claimRefill(now),false,'clock rollback cannot shorten cooldown');assert.equal(restored.claimRefill(NaN),false);
+const memoryRefill=new PlayerWallet({getItem(){throw Error();},setItem(){throw Error();}});assert.equal(memoryRefill.claimRefill(now),true);assert.equal(memoryRefill.claimRefill(now+1),false);
+console.log('Refill passed: +500, exact four-hour boundary, reload persistence, stale tabs, spending retains cooldown, clock rollback and restricted storage.');

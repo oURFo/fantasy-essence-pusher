@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>冒險大廳 · 秘境金庫</title></head>
 <body><div id="app">
-<header class="app-header"><div><span class="eyebrow">FANTASY ARCADE</span><h1 id="page-title">冒險大廳</h1><p id="page-subtitle">選擇一台機台，展開你的下一段冒險。</p></div><div class="lobby-wallet" id="lobby-wallet"><span>共用金幣</span><strong id="lobby-gold">1,000</strong><small>本機保存 · 所有機台共用</small></div></header>
+<header class="app-header"><div><span class="eyebrow">FANTASY ARCADE</span><h1 id="page-title">冒險大廳</h1><p id="page-subtitle">選擇一台機台，展開你的下一段冒險。</p></div><div class="lobby-wallet" id="lobby-wallet"><span>共用金幣</span><strong id="lobby-gold">1,000</strong><small>本機保存 · 所有機台共用</small><button id="lobby-refill" type="button">領取 500 金幣</button><small id="lobby-refill-timer">每 4 小時可領一次</small><span id="lobby-refill-message" role="status" aria-live="polite"></span></div></header>
 <nav id="machine-nav" class="return-nav" hidden><button id="back-to-lobby" class="back-button">← 返回大廳</button><span>離開機台將重置盤面，金幣保留</span></nav>
 <section id="lobby-screen" class="lobby-screen" aria-label="冒險大廳">
   <div class="lobby-intro"><div><span class="eyebrow">CHOOSE YOUR ADVENTURE</span><h2>每段冒險，從這裡開始。</h2><p>挑選機台，向秘境、天空、星光果園、夜市與星軌展開冒險。</p></div><span class="available-count">05 台機台開放中</span></div>
