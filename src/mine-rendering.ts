@@ -1,5 +1,5 @@
 import {GoldMine} from './mine-game.ts';
-import {MINE,MINE_PORTS,MINE_PINS,MINE_SLOT,MINE_RIGHT_ROOF,mineBowl} from './mine-rules.ts';
+import {MINE,MINE_PORTS,MINE_PINS,MINE_SLOT,MINE_SLOT_TIMING,MINE_RIGHT_ROOF,mineBowl} from './mine-rules.ts';
 const background=new Image(),sheet=new Image(),sprites:HTMLCanvasElement[]=[];let ready:Promise<void>|undefined;
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 export function loadMineArtwork(){return ready??=Promise.all([['cabinet',background],['sprites',sheet]].map(async([name,img])=>{const image=img as HTMLImageElement;image.src=new URL(`./assets/gold-mine/${name}.png`,document.baseURI).href;await image.decode();})).then(()=>{for(const [x,y,w,h] of [[0,160,490,300],[495,155,340,310],[860,175,275,300],[1160,145,365,340],[15,560,370,370],[400,560,370,370],[785,545,355,390],[1160,565,365,365]]){const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d')!.drawImage(sheet,x,y,w,h,0,0,w,h);sprites.push(c);}}).catch(e=>{ready=undefined;throw e;});}
@@ -24,8 +24,8 @@ export function renderMine(g:GoldMine){const canvas=document.getElementById('gam
  c.drawImage(mineBase(),0,0);
  // Slot is embedded in the backboard: pins and balls are drawn above it, with no slot collider.
  panel(c,322,605,380,167);const spinning=g.slotPhase==='spin',elapsed=g.time-g.slotAt;
- for(let i=0;i<3;i++){const stop=elapsed>1.2+i*.65,index=spinning?(stop?(g.spinResult>=0?g.spinResult:(i*2+1)%7):Math.floor(g.time*15+i*2)%7):g.slotIndex>=0?g.slotIndex:(i*2+1)%7;c.save();c.beginPath();c.rect(334+i*120,620,112,115);c.clip();if(spinning&&!stop){for(let j=-1;j<=1;j++)symbol(c,(index+j+7)%7,390+i*120,677+j*108+(g.time*650%108),87);}else symbol(c,index,390+i*120,679,92);c.restore();}
- if(spinning&&elapsed>1.85&&g.spinResult>=0){c.save();c.shadowColor='#ff9b38';c.shadowBlur=reduced.matches?0:25;text(c,'激 熱 · REACH',512,575,32,'#ffe078');c.restore();}
+ for(let i=0;i<3;i++){const stop=elapsed>MINE_SLOT_TIMING.firstStop+i*MINE_SLOT_TIMING.stopGap,index=spinning?(stop?(g.spinResult>=0?g.spinResult:(i*2+1)%7):Math.floor(g.time*22+i*2)%7):g.slotIndex>=0?g.slotIndex:(i*2+1)%7;c.save();c.beginPath();c.rect(334+i*120,620,112,115);c.clip();if(spinning&&!stop){for(let j=-1;j<=1;j++)symbol(c,(index+j+7)%7,390+i*120,677+j*108+(g.time*MINE_SLOT_TIMING.scroll%108),87);}else symbol(c,index,390+i*120,679,92);c.restore();}
+ if(spinning&&elapsed>MINE_SLOT_TIMING.firstStop+MINE_SLOT_TIMING.stopGap&&g.spinResult>=0){c.save();c.shadowColor='#ff9b38';c.shadowBlur=reduced.matches?0:25;text(c,'激 熱 · REACH',512,575,32,'#ffe078');c.restore();}
  text(c,spinning?'礦脈探測中…':g.slotPhase==='result'?(g.lastSlotAward?`大當り ＋${g.lastSlotAward} 珠`:'再挑戰！'):'三圖相同 · 採礦車派珠',512,751,19);
  c.drawImage(minePins(),0,0);
  // Train artwork and collider move together, exposing the right-shot route.

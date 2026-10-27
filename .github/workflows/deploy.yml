@@ -27,6 +27,7 @@ jobs:
       - run: node tests/lobby-session.mjs
       - run: node tests/mine-game.mjs
       - run: node tests/mine-ui.mjs
+      - run: node tests/mine-layout.mjs
       - run: node tests/fate-game.mjs
       - run: node tests/fate-multiball.mjs
       - run: node tests/fate-ui.mjs

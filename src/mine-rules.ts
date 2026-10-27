@@ -10,3 +10,7 @@ for(const p of MINE_PORTS.filter(p=>p.kind==='score'))for(const [dx,dy] of [[-37
 export function mineBowl(x:number){return 1195-.00105*(x-500)**2;}
 
 export const MINE_RIGHT_ROOF={left:822,right:938,y:245} as const;
+
+// Staggered guard pins shed approaches from the left while leaving the right rail exit open.
+MINE_PINS.push({x:590,y:1040,r:7},{x:610,y:1064,r:7},{x:614,y:1090,r:7},{x:638,y:1055,r:7});
+export const MINE_SLOT_TIMING={spin:1.6,result:.8,firstStop:.5,stopGap:.35,scroll:1000} as const;
