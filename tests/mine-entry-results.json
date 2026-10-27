@@ -1,6 +1,6 @@
 {
   "model": "Isolated physical shots, 200 launch variations per left strength and right mode; compare short-train left edge604 versus extended edge560 using identical pins and full collision simulation. No direction-based pocket rejection. Concurrent gameplay may differ.",
-  "pins": 173,
+  "pins": 154,
   "train": {
     "left": 560,
     "right": 902
@@ -8,162 +8,162 @@
   "before": [
     {
       "train": "parked",
-      "leftBlueRate": 0.108,
-      "rightBlueRate": 0.255,
+      "leftBlueRate": 0.2285,
+      "rightBlueRate": 0.39,
       "powers": [
         {
           "power": 1,
           "samples": 200,
-          "blue": 10,
-          "score": 101,
-          "blueRate": 0.05
+          "blue": 14,
+          "score": 84,
+          "blueRate": 0.07
         },
         {
           "power": 2,
           "samples": 200,
-          "blue": 15,
-          "score": 86,
-          "blueRate": 0.075
+          "blue": 21,
+          "score": 65,
+          "blueRate": 0.105
         },
         {
           "power": 3,
           "samples": 200,
-          "blue": 11,
-          "score": 79,
-          "blueRate": 0.055
+          "blue": 26,
+          "score": 58,
+          "blueRate": 0.13
         },
         {
           "power": 4,
           "samples": 200,
-          "blue": 27,
-          "score": 56,
-          "blueRate": 0.135
+          "blue": 38,
+          "score": 36,
+          "blueRate": 0.19
         },
         {
           "power": 5,
           "samples": 200,
-          "blue": 27,
-          "score": 38,
-          "blueRate": 0.135
+          "blue": 53,
+          "score": 26,
+          "blueRate": 0.265
         },
         {
           "power": 6,
           "samples": 200,
-          "blue": 26,
-          "score": 38,
-          "blueRate": 0.13
+          "blue": 47,
+          "score": 26,
+          "blueRate": 0.235
         },
         {
           "power": 7,
           "samples": 200,
-          "blue": 30,
-          "score": 37,
-          "blueRate": 0.15
+          "blue": 66,
+          "score": 18,
+          "blueRate": 0.33
         },
         {
           "power": 8,
           "samples": 200,
-          "blue": 24,
-          "score": 78,
-          "blueRate": 0.12
+          "blue": 45,
+          "score": 71,
+          "blueRate": 0.225
         },
         {
           "power": 9,
           "samples": 200,
-          "blue": 20,
-          "score": 67,
-          "blueRate": 0.1
+          "blue": 62,
+          "score": 57,
+          "blueRate": 0.31
         },
         {
           "power": 10,
           "samples": 200,
-          "blue": 26,
-          "score": 20,
-          "blueRate": 0.13
+          "blue": 85,
+          "score": 18,
+          "blueRate": 0.425
         },
         {
           "power": 11,
           "samples": 200,
-          "blue": 51,
-          "score": 2,
-          "blueRate": 0.255
+          "blue": 78,
+          "score": 0,
+          "blueRate": 0.39
         }
       ]
     },
     {
       "train": "away",
-      "leftBlueRate": 0.3895,
+      "leftBlueRate": 0.4195,
       "rightBlueRate": 1,
       "powers": [
         {
           "power": 1,
           "samples": 200,
-          "blue": 11,
-          "score": 101,
-          "blueRate": 0.055
+          "blue": 15,
+          "score": 84,
+          "blueRate": 0.075
         },
         {
           "power": 2,
           "samples": 200,
-          "blue": 32,
-          "score": 85,
-          "blueRate": 0.16
+          "blue": 27,
+          "score": 65,
+          "blueRate": 0.135
         },
         {
           "power": 3,
           "samples": 200,
-          "blue": 34,
-          "score": 75,
-          "blueRate": 0.17
+          "blue": 44,
+          "score": 57,
+          "blueRate": 0.22
         },
         {
           "power": 4,
           "samples": 200,
-          "blue": 60,
-          "score": 51,
-          "blueRate": 0.3
+          "blue": 58,
+          "score": 34,
+          "blueRate": 0.29
         },
         {
           "power": 5,
           "samples": 200,
-          "blue": 72,
-          "score": 33,
-          "blueRate": 0.36
+          "blue": 78,
+          "score": 25,
+          "blueRate": 0.39
         },
         {
           "power": 6,
           "samples": 200,
-          "blue": 81,
-          "score": 31,
-          "blueRate": 0.405
+          "blue": 91,
+          "score": 23,
+          "blueRate": 0.455
         },
         {
           "power": 7,
           "samples": 200,
-          "blue": 110,
-          "score": 32,
-          "blueRate": 0.55
+          "blue": 125,
+          "score": 16,
+          "blueRate": 0.625
         },
         {
           "power": 8,
           "samples": 200,
-          "blue": 76,
-          "score": 75,
-          "blueRate": 0.38
+          "blue": 93,
+          "score": 67,
+          "blueRate": 0.465
         },
         {
           "power": 9,
           "samples": 200,
-          "blue": 129,
-          "score": 62,
-          "blueRate": 0.645
+          "blue": 132,
+          "score": 57,
+          "blueRate": 0.66
         },
         {
           "power": 10,
           "samples": 200,
-          "blue": 174,
+          "blue": 176,
           "score": 18,
-          "blueRate": 0.87
+          "blueRate": 0.88
         },
         {
           "power": 11,
@@ -178,162 +178,162 @@
   "after": [
     {
       "train": "parked",
-      "leftBlueRate": 0.042,
-      "rightBlueRate": 0.03,
+      "leftBlueRate": 0.113,
+      "rightBlueRate": 0.105,
       "powers": [
         {
           "power": 1,
           "samples": 200,
-          "blue": 3,
-          "score": 102,
-          "blueRate": 0.015
+          "blue": 10,
+          "score": 84,
+          "blueRate": 0.05
         },
         {
           "power": 2,
           "samples": 200,
-          "blue": 6,
-          "score": 88,
-          "blueRate": 0.03
+          "blue": 10,
+          "score": 69,
+          "blueRate": 0.05
         },
         {
           "power": 3,
           "samples": 200,
-          "blue": 5,
-          "score": 85,
-          "blueRate": 0.025
+          "blue": 12,
+          "score": 67,
+          "blueRate": 0.06
         },
         {
           "power": 4,
           "samples": 200,
-          "blue": 15,
-          "score": 58,
-          "blueRate": 0.075
+          "blue": 24,
+          "score": 47,
+          "blueRate": 0.12
         },
         {
           "power": 5,
           "samples": 200,
-          "blue": 9,
-          "score": 52,
-          "blueRate": 0.045
+          "blue": 21,
+          "score": 38,
+          "blueRate": 0.105
         },
         {
           "power": 6,
           "samples": 200,
-          "blue": 12,
-          "score": 43,
-          "blueRate": 0.06
+          "blue": 31,
+          "score": 41,
+          "blueRate": 0.155
         },
         {
           "power": 7,
           "samples": 200,
-          "blue": 12,
-          "score": 52,
-          "blueRate": 0.06
+          "blue": 32,
+          "score": 29,
+          "blueRate": 0.16
         },
         {
           "power": 8,
           "samples": 200,
-          "blue": 9,
-          "score": 83,
-          "blueRate": 0.045
+          "blue": 24,
+          "score": 79,
+          "blueRate": 0.12
         },
         {
           "power": 9,
           "samples": 200,
-          "blue": 6,
-          "score": 69,
-          "blueRate": 0.03
+          "blue": 26,
+          "score": 65,
+          "blueRate": 0.13
         },
         {
           "power": 10,
           "samples": 200,
-          "blue": 7,
-          "score": 21,
-          "blueRate": 0.035
+          "blue": 36,
+          "score": 22,
+          "blueRate": 0.18
         },
         {
           "power": 11,
           "samples": 200,
-          "blue": 6,
+          "blue": 21,
           "score": 9,
-          "blueRate": 0.03
+          "blueRate": 0.105
         }
       ]
     },
     {
       "train": "away",
-      "leftBlueRate": 0.3895,
+      "leftBlueRate": 0.4195,
       "rightBlueRate": 1,
       "powers": [
         {
           "power": 1,
           "samples": 200,
-          "blue": 11,
-          "score": 101,
-          "blueRate": 0.055
+          "blue": 15,
+          "score": 84,
+          "blueRate": 0.075
         },
         {
           "power": 2,
           "samples": 200,
-          "blue": 32,
-          "score": 85,
-          "blueRate": 0.16
+          "blue": 27,
+          "score": 65,
+          "blueRate": 0.135
         },
         {
           "power": 3,
           "samples": 200,
-          "blue": 34,
-          "score": 75,
-          "blueRate": 0.17
+          "blue": 44,
+          "score": 57,
+          "blueRate": 0.22
         },
         {
           "power": 4,
           "samples": 200,
-          "blue": 60,
-          "score": 51,
-          "blueRate": 0.3
+          "blue": 58,
+          "score": 34,
+          "blueRate": 0.29
         },
         {
           "power": 5,
           "samples": 200,
-          "blue": 72,
-          "score": 33,
-          "blueRate": 0.36
+          "blue": 78,
+          "score": 25,
+          "blueRate": 0.39
         },
         {
           "power": 6,
           "samples": 200,
-          "blue": 81,
-          "score": 31,
-          "blueRate": 0.405
+          "blue": 91,
+          "score": 23,
+          "blueRate": 0.455
         },
         {
           "power": 7,
           "samples": 200,
-          "blue": 110,
-          "score": 32,
-          "blueRate": 0.55
+          "blue": 125,
+          "score": 16,
+          "blueRate": 0.625
         },
         {
           "power": 8,
           "samples": 200,
-          "blue": 76,
-          "score": 75,
-          "blueRate": 0.38
+          "blue": 93,
+          "score": 67,
+          "blueRate": 0.465
         },
         {
           "power": 9,
           "samples": 200,
-          "blue": 129,
-          "score": 62,
-          "blueRate": 0.645
+          "blue": 132,
+          "score": 57,
+          "blueRate": 0.66
         },
         {
           "power": 10,
           "samples": 200,
-          "blue": 174,
+          "blue": 176,
           "score": 18,
-          "blueRate": 0.87
+          "blueRate": 0.88
         },
         {
           "power": 11,
@@ -345,6 +345,6 @@
       ]
     }
   ],
-  "parkedLeftRelativeReduction": 0.6111111111111112,
-  "parkedRightRelativeReduction": 0.8823529411764706
+  "parkedLeftRelativeReduction": 0.5054704595185996,
+  "parkedRightRelativeReduction": 0.7307692307692308
 }

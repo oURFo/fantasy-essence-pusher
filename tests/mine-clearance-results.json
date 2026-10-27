@@ -1,0 +1,9 @@
+{
+  "passed": "all pair gaps and wall/train/bowl/return-rail clearances, top-of-pin releases with timeout disabled",
+  "pins": 154,
+  "minimumPinEdgeGap": 25.560080889704963,
+  "requiredGap": 24,
+  "ballDiameter": 18,
+  "releaseCases": 924,
+  "reportedAreaNaturalDrainCases": 42
+}

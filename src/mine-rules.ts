@@ -12,7 +12,23 @@ export function mineBowl(x:number){return 1195-.00105*(x-500)**2;}
 export const MINE_RIGHT_ROOF={left:822,right:938,y:245} as const;
 
 // Staggered guard pins shed approaches from the left while leaving the right rail exit open.
-MINE_PINS.push({x:590,y:1040,r:7},{x:610,y:1064,r:7},{x:614,y:1090,r:7},{x:638,y:1055,r:7});
+MINE_PINS.push({x:575,y:1029,r:7},{x:600,y:1063,r:7},{x:614,y:1100,r:7},{x:640,y:1050,r:7});
 export const MINE_SLOT_TIMING={spin:1.6,result:.8,firstStop:.5,stopGap:.35,scroll:1000} as const;
 
 export const MINE_TRAIN={left:560,right:902,top:803,bottom:887} as const;
+
+// Every passage has a full 18px steel-ball diameter plus 6px of tolerance.
+export const MINE_MIN_PIN_GAP=MINE.ballRadius*2+6;
+function segmentDistance(x:number,y:number,ax:number,ay:number,bx:number,by:number){const dx=bx-ax,dy=by-ay,t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy)));return Math.hypot(x-ax-t*dx,y-ay-t*dy);}
+function pinHasBoundarySpace(p:{x:number;y:number;r:number}){
+ if(p.x-p.r-129<MINE_MIN_PIN_GAP||895-p.x-p.r<MINE_MIN_PIN_GAP||p.y>=mineBowl(p.x))return false;
+ let bowl=Infinity;for(let x=138;x<=886;x+=2)bowl=Math.min(bowl,Math.hypot(p.x-x,p.y-mineBowl(x)));if(bowl-p.r-4<MINE_MIN_PIN_GAP)return false;
+ const trainDistance=Math.hypot(Math.max(MINE_TRAIN.left-p.x,0,p.x-MINE_TRAIN.right),Math.max(MINE_TRAIN.top-p.y,0,p.y-MINE_TRAIN.bottom));
+ if(trainDistance-p.r<MINE_MIN_PIN_GAP)return false;
+ if(segmentDistance(p.x,p.y,664,1100.08,890,969)-p.r-3.5<MINE_MIN_PIN_GAP)return false;
+ return true;
+}
+// Keep intentional pocket guards first; omit grid pegs that would pinch their passages.
+const orderedPins=[...MINE_PINS.slice(-4),...MINE_PINS.slice(-16,-4),...MINE_PINS.slice(0,-16)],spacedPins:typeof MINE_PINS=[];
+for(const pin of orderedPins)if(pinHasBoundarySpace(pin)&&spacedPins.every(p=>Math.hypot(p.x-pin.x,p.y-pin.y)-p.r-pin.r>=MINE_MIN_PIN_GAP))spacedPins.push(pin);
+MINE_PINS.splice(0,MINE_PINS.length,...spacedPins);
