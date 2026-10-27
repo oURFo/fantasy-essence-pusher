@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {templeDoorPose,drawTempleDoors} from '../src/temple-doors.ts';
+import {TempleFortune} from '../src/temple-game.ts';import {PlayerWallet} from '../src/wallet.ts';
+const g=new TempleFortune(new PlayerWallet());g.phase='opening';g.phaseAt=0;
+let previous=0;for(let frame=0;frame<=240;frame++){g.time=frame/60;const p=templeDoorPose(g.doorOpen);assert.ok(p.open>=previous);previous=p.open;assert.equal(p.leftX,218);assert.ok(p.rightX+p.rightWidth<=808.00001);}assert.equal(g.doorOpen,1);
+g.phase='bonus';assert.equal(g.doorOpen,1);g.phase='drain-down';assert.equal(g.doorOpen,1);
+g.phase='closing';g.phaseAt=0;previous=1;for(let frame=0;frame<=240;frame++){g.time=frame/60;const p=templeDoorPose(g.doorOpen);assert.ok(p.open<=previous);previous=p.open;}assert.equal(g.doorOpen,0);
+assert.deepEqual(templeDoorPose(-1),templeDoorPose(0));assert.deepEqual(templeDoorPose(2),templeDoorPose(1));
+const calls=[],c={save(){},beginPath(){},rect(...a){calls.push(['clipRect',...a]);},clip(){},drawImage(...a){calls.push(a);},restore(){}};
+drawTempleDoors(c,'closed','interior',1);assert.equal(calls[1][0],'interior','open board must draw the AI temple interior');assert.equal(calls[2][0],'closed');assert.ok(calls[2][7]<20,'left door remains at hinge');assert.ok(calls[3][7]<20,'right door remains at hinge');
+console.log('Temple doors passed: four-second opening, persistent open interior, inverse closing, hinge positions and interior draw order.');
