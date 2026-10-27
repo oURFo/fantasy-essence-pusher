@@ -31,7 +31,9 @@ export function renderMine(g:GoldMine){const canvas=document.getElementById('gam
  // Train artwork and collider move together, exposing the right-shot route.
  c.save();c.beginPath();c.rect(120,270,780,960);c.clip();if(g.time-g.scoreFlash<.4){c.shadowColor='#fff5a5';c.shadowBlur=32;}art(c,0,752+g.trainX,844,305,95);c.restore();
  if(g.train==='departing'||g.train==='returning'){for(let i=0;i<16;i++){const age=(g.time*1.3+i*.13)%2,x=825+g.trainX-age*65,y=790-age*100;c.save();c.globalAlpha=(1-age/2)*.4;c.fillStyle='#e4e2cf';c.beginPath();c.ellipse(x,y,10+age*24,8+age*18,0,0,Math.PI*2);c.fill();c.restore();}}
- art(c,1,g.cartX,278,108,75);
+ const cartAge=g.time-g.lastReward,cartGlow=reduced.matches?(g.pendingBalls>0||cartAge<.5?1:0):Math.max(0,1-cartAge/.24);
+ c.save();if(cartGlow>0){c.shadowColor='#ffe47b';c.shadowBlur=14+24*cartGlow;c.filter=`brightness(${1+cartGlow*.75})`;}
+ art(c,1,g.cartX,278,108,75);c.restore();
  for(const b of g.balls)art(c,2,b.x,b.y,20,20);
  panel(c,225,1250,575,64);text(c,`${g.points.toLocaleString()} 積分 · ${g.exchangeGold} 金幣可兌換`,512,1282,28,'#fff8dc');
  panel(c,252,1322,412,102);
