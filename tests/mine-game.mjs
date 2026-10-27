@@ -18,3 +18,9 @@ const greenSeen=new Set();for(let p=1;p<=10;p++)for(let i=0;i<30;i++){const b=mi
 
 let weight=0;for(const [i,prize] of MINE_SLOT.entries()){const unit=(weight+prize.weight/2)/1000,game=new GoldMine(new PlayerWallet(),()=>unit);assert.equal(mineSlotDraw(unit),i);game.slotQueue=1;ticks(game,195);assert.equal(game.lastSlotAward,prize.balls);assert.equal(game.slotWins,1);assert.equal(game.pendingBalls+game.paidBalls,prize.balls);weight+=prize.weight;}
 const goldLocked=new GoldMine(new PlayerWallet(),()=>0);goldLocked.train='gold';goldLocked.trainAt=goldLocked.time;goldLocked.pendingBalls=10;goldLocked.slotQueue=3;const original=goldLocked.trainAt;pocket(goldLocked,'score');assert.equal(goldLocked.trainAt,original);goldLocked.time=101;goldLocked.step();assert.equal(goldLocked.train,'returning');assert.ok(goldLocked.pendingBalls>0&&goldLocked.slotQueue>0,'return does not silently discard queued rewards');
+
+const rightRail=mineLaunch(1,10,true,.5);assert.ok(rightRail.x>880);while(rightRail.rail<1){stepMineBall(rightRail,0);assert.ok(rightRail.x>=820,'right shot stays inside its own right-hand rail');assert.ok(rightRail.y>=254,'right rail cannot cross over its roof');}assert.ok(rightRail.vy>0,'right rail releases downward into the board');
+const roof=mineRewardBall(1,850,.5);roof.y=260;roof.vy=-200;stepMineBall(roof,480,.1);assert.ok(roof.y>=254&&roof.vy>=0,'upper right canopy physically blocks upward travel');
+assert.ok(MINE_PINS.filter(p=>p.x>322&&p.x<702&&p.y>605&&p.y<772).length>=20,'pin field continues across the background slot');
+const backgroundSlot=mineRewardBall(1,500,.5);backgroundSlot.y=690;assert.ok(MINE_PINS.every(p=>Math.hypot(p.x-backgroundSlot.x,p.y-backgroundSlot.y)>p.r+9));stepMineBall(backgroundSlot,480,0);assert.equal(backgroundSlot.x,500);assert.equal(backgroundSlot.y,690,'slot screen has no collision surface');
+console.log('Passed: independent right rail, physical roof, pins across slot, non-colliding slot background.');
