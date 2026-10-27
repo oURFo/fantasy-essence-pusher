@@ -12,3 +12,8 @@ console.log('UI passed: explicit fire button, one-second cooldown, no double cha
 
 nodes.get('fate-auto').click();ui.update(g);assert.equal(g.autoFire,true);assert.match(nodes.get('fate-auto').textContent,/開/);assert.equal(g.shots,1);blocked=true;nodes.get('fate-auto').click();assert.equal(g.autoFire,true);ui.update(g);assert.equal(nodes.get('fate-auto').disabled,true);blocked=false;nodes.get('fate-auto').click();ui.update(g);assert.equal(g.autoFire,false);assert.match(nodes.get('fate-auto').textContent,/關/);
 console.log('UI passed: auto-fire toggle and blocked modal.');
+
+const {fateRewardPresentation}=await import('../src/fate-reward-effects.ts');
+const presentation={time:10,notices:[{id:1,award:9999,time:9,lane:4,level:3},{id:2,award:140,time:9.5,lane:4,level:1},{id:3,award:40,time:9.9,lane:1,level:0}]};
+assert.equal(fateRewardPresentation(presentation).grand.award,9999);assert.deepEqual(fateRewardPresentation(presentation).rewards.map(n=>n.id),[1,2]);presentation.time=13.1;assert.equal(fateRewardPresentation(presentation).rewards.length,0);assert.equal(fateRewardPresentation(presentation).grand.id,1);presentation.time=17;assert.equal(fateRewardPresentation(presentation).grand,undefined);
+console.log('Reward effects passed: disc-only popups, independent jackpot priority and exact expiration.');

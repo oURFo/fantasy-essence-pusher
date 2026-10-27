@@ -6,7 +6,7 @@ export type FateRun={id:number;phase:FatePhase;phaseAt:number;ball:ShotBall|null
 export class FateOrbit{
  time=0;autoFire=false;angle=0;dragging=false;points=0;totalPoints=0;redeemed=0;shots=0;fortuneEntries=0;jackpots=0;
  runs:FateRun[]=[];plateAngles=Array(4).fill(0);lastAward=0;lastLane:number|null=null;rewardAt=-Infinity;lastShot=-Infinity;
- notices:{id:number;award:number;time:number}[]=[];
+ notices:{id:number;award:number;time:number;lane?:number|null;level?:number}[]=[];
  message='調整大砲角度，按下發射。';eventId=0;eventKind='idle';private disposed=false;private settlements=0;private lastRun:FateRun|null=null;
  readonly wallet:PlayerWallet;private random:()=>number;
  constructor(wallet:PlayerWallet,random:()=>number=Math.random){this.wallet=wallet;this.random=random;}
@@ -24,7 +24,7 @@ export class FateOrbit{
  shoot(){if(!this.canShoot||!this.wallet.spend(FATE_COST))return false;this.lastShot=this.time;this.shots++;this.runs.push({id:this.shots,phase:'shooting',phaseAt:this.time,ball:launchFateBall(this.angle,.8+this.random()*.4,this.random()*4-2),disc:null,level:0,results:Array(4).fill(null),lastLane:null,award:0});this.event('shooting','星珠滾動中 · 每秒最多發射 1 顆');this.cancelAim();return true;}
  toggleAutoFire(){if(this.disposed)return;this.autoFire=!this.autoFire;if(this.autoFire){if(this.gold<FATE_COST){this.autoFire=false;this.message='金幣不足，自動發射已停止。';}else this.shoot();}}
  redeem(){if(this.disposed)return 0;const amount=this.exchangeGold;if(!amount||!this.wallet.credit(amount))return 0;this.points-=amount*POINTS_PER_GOLD;this.redeemed+=amount;this.message='兌換 '+amount+' 金幣，保留 '+this.points+' 積分。';return amount;}
- private award(r:FateRun,amount:number){if(r.phase==='result')return;this.points+=amount;this.totalPoints+=amount;this.lastAward=amount;this.lastLane=r.lastLane;this.rewardAt=this.time;this.notices.push({id:++this.settlements,award:amount,time:this.time});r.award=amount;r.phase='result';r.phaseAt=this.time;r.disc=null;this.lastRun=r;this.event(amount===FATE_JACKPOT?'jackpot':'result',amount?(amount===FATE_JACKPOT?'天命大獎！':'獲得')+' '+amount.toLocaleString()+' 積分':'OUT · 本球未獲得積分。');if(amount===FATE_JACKPOT)this.jackpots++;}
+ private award(r:FateRun,amount:number){if(r.phase==='result')return;this.points+=amount;this.totalPoints+=amount;this.lastAward=amount;this.lastLane=r.lastLane;this.rewardAt=this.time;this.notices.push({id:++this.settlements,award:amount,time:this.time,lane:r.lastLane,level:r.level});r.award=amount;r.phase='result';r.phaseAt=this.time;r.disc=null;this.lastRun=r;this.event(amount===FATE_JACKPOT?'jackpot':'result',amount?(amount===FATE_JACKPOT?'天命大獎！':'獲得')+' '+amount.toLocaleString()+' 積分':'OUT · 本球未獲得積分。');if(amount===FATE_JACKPOT)this.jackpots++;}
  private beginDisc(r:FateRun){r.disc=enterFateDisc(r.level,this.random(),this.plateAngles[r.level]);r.phase='disc';r.phaseAt=this.time;this.event('disc','第 '+(r.level+1)+' 層啟動 · 保底 '+FATE_LEVELS[r.level].min+' 積分');}
  step(){if(this.disposed)return;this.time+=1/60;
   if(this.autoFire){if(this.gold<FATE_COST){this.autoFire=false;this.message='金幣不足，自動發射已停止。';}else if(this.canShoot)this.shoot();}

@@ -1,3 +1,4 @@
+import {drawFateRewards} from './fate-reward-effects.ts';
 import {FateOrbit} from './fate-game.ts';
 import {FATE_LANES,FATE_LEVELS,FATE_PINS,FATE_CANNON,DISC,discHolePosition} from './fate-rules.ts';
 import {fateObstacles,launchFateBall} from './fate-physics.ts';
@@ -34,6 +35,7 @@ export function renderFate(g:FateOrbit){
  if(g.grandNotice&&!reduced.matches){c.save();c.strokeStyle='#ffdf84';c.lineWidth=10;c.globalAlpha=.3+.2*Math.sin(g.time*7);c.strokeRect(25,25,974,1486);c.restore();}
  if(g.time-g.rewardAt<1.5&&!reduced.matches){const age=(g.time-g.rewardAt)/1.5;c.save();c.globalAlpha=(1-age)*.5;c.strokeStyle=g.lastAward===9999?'#ffdc75':'#99e3de';c.lineWidth=14;c.strokeRect(25,25,974,1486);c.restore();}
  if((g.phase==='disc'||g.phase==='drain')&&g.disc){c.fillStyle='#081b29ed';c.fillRect(105,492,814,680);label(c,`第 ${g.level+1} 層 · ${FATE_LEVELS[g.level].name}`,512,555,35);c.save();c.translate(512,820);c.scale(1,.78);discScene(c,g,g.level,300);c.restore();label(c,g.phase==='drain'?'星珠落入洞口…':g.disc.radius>.4?'星珠緩緩繞行，逐漸靠近圓心':'接近洞口！紅洞晉級 · 白洞得分',512,1100,27,'#ffe2a0');label(c,`本層保底 ${g.minimum} 積分`,512,1145,24);}
+ drawFateRewards(c,g,1024,1536,reduced.matches);
  renderFateDiscs(g);
 }
 function renderFateDiscs(g:FateOrbit){
@@ -44,6 +46,6 @@ function renderFateDiscs(g:FateOrbit){
   if(!count&&g.results[level]!==null){label(c,g.results[level]===0?'紅洞':'得分',63,v.y+45,16,g.results[level]===0?'#ffcf82':'#e4f5ef');}
  }
  for(const run of g.runs.filter(r=>r.phase==='portal'||r.phase==='transfer')){const from=run.phase==='portal'?{x:310,y:25}:FATE_DISC_VIEW[run.level],to=FATE_DISC_VIEW[run.phase==='portal'?0:run.level+1],duration=run.phase==='portal'?1.15:1.4,t=Math.min(1,(g.time-run.phaseAt)/duration);c.save();c.shadowColor='#ffd575';c.shadowBlur=20;beam(c,from.x,from.y,to.x,to.y,'#ffda82',5);art(c,3,from.x+(to.x-from.x)*t,from.y+(to.y-from.y)*t,20);c.restore();}
- if(g.phase==='result'&&g.lastAward){const age=g.time-g.rewardAt;c.fillStyle='#09131fe8';c.fillRect(75,392,470,156);label(c,g.lastAward===9999?'天 命 大 獎':g.lastLane===4?'星 盤 獎 勵':'射 擊 得 分',310,428,28,'#ffdc91');label(c,`+ ${g.lastAward.toLocaleString()} 積分`,310,492,39,'#fff0b9');if(g.lastAward===9999&&age<7&&!reduced.matches){for(let i=0;i<64;i++){const life=(age+i*.071)%3.7,a=i*2.399,x=310+Math.cos(a)*life*110,y=440+Math.sin(a)*life*90+life*life*35;c.save();c.globalAlpha=1-life/3.7;c.fillStyle=['#ffd978','#8bd9f5','#c7acff'][i%3];c.fillRect(x,y,5,8);c.restore();}}}
+ drawFateRewards(c,g,620,980,reduced.matches);
  label(c,'紅洞晉級 · 白洞得分 · 四紅連通 9,999 分',310,952,20,'#ead5ad');
 }
