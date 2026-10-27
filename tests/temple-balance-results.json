@@ -1,0 +1,40 @@
+{
+  "shots": 30000,
+  "points": 270960,
+  "referenceRtp": 0.9032,
+  "results": [
+    {
+      "seed": 123456789,
+      "shots": 10000,
+      "points": 52530,
+      "rtp": 0.5253,
+      "slot": 478,
+      "bonusCount": 4,
+      "seconds": 5097.0500000099755,
+      "phase": "base",
+      "balls": 0
+    },
+    {
+      "seed": 246813579,
+      "shots": 10000,
+      "points": 129220,
+      "rtp": 1.2922,
+      "slot": 511,
+      "bonusCount": 15,
+      "seconds": 5638.100000002102,
+      "phase": "base",
+      "balls": 0
+    },
+    {
+      "seed": 987654321,
+      "shots": 10000,
+      "points": 89210,
+      "rtp": 0.8921,
+      "slot": 523,
+      "bonusCount": 9,
+      "seconds": 5415.850000005336,
+      "phase": "base",
+      "balls": 0
+    }
+  ]
+}
