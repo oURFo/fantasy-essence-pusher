@@ -1,4 +1,31 @@
 {
+  "calendar": [
+    {
+      "label": "初一",
+      "chance": 10,
+      "balls": 10
+    },
+    {
+      "label": "一般十五（不含八月）",
+      "chance": 10,
+      "balls": 10
+    },
+    {
+      "label": "八月十五",
+      "chance": 3,
+      "balls": 50
+    },
+    {
+      "label": "二月初二",
+      "chance": 2.5,
+      "balls": 0
+    },
+    {
+      "label": "其他日期",
+      "chance": 74.5,
+      "balls": 0
+    }
+  ],
   "shots": 30000,
   "points": 270960,
   "referenceRtp": 0.9032,

@@ -1,13 +1,22 @@
 export const TEMPLE={cost:1,cooldown:.5,radius:9,gravity:440,pointsPerGold:10,score:10,bonusSeconds:100,transitionSeconds:4,slotSeconds:2.4,resultSeconds:1.2} as const;
 export type TempleDate={month:number;day:number;kind:'miss'|'small'|'medium'|'bonus';balls:number};
-// Mutually exclusive outcomes, then a calendar date consistent with the outcome.
+export const TEMPLE_CALENDAR_PAYTABLE=[
+ {label:'初一',chance:10,balls:10},
+ {label:'一般十五（不含八月）',chance:10,balls:10},
+ {label:'八月十五',chance:3,balls:50},
+ {label:'二月初二',chance:2.5,balls:0},
+ {label:'其他日期',chance:74.5,balls:0},
+] as const;
+const missDates:{month:number;day:number}[]=[];
+for(let month=1;month<=12;month++)for(let day=1;day<=30;day++)if(day!==1&&day!==15&&!(month===2&&day===2))missDates.push({month,day});
+// Draw the reward first; every displayed date must agree with its payout.
 export function templeCalendar(unit:number,dateUnit:number):TempleDate{
- const n=Math.max(0,Math.min(.999999999,unit));
+ const n=Math.max(0,Math.min(.999999999,unit)),date=Math.max(0,Math.min(.999999999,dateUnit));
  if(n<.025)return{month:2,day:2,kind:'bonus',balls:0};
  if(n<.055)return{month:8,day:15,kind:'medium',balls:50};
- if(n<.255){const m=1+Math.floor(Math.max(0,Math.min(.999999999,dateUnit))*11);return{month:m>=8?m+1:m,day:15,kind:'small',balls:10};}
- const dates=[];for(let month=1;month<=12;month++)for(let day=1;day<=30;day++)if(day!==15&&!(month===2&&day===2))dates.push({month,day});
- return{...dates[Math.floor(Math.max(0,Math.min(.999999999,dateUnit))*dates.length)],kind:'miss',balls:0};
+ if(n<.155)return{month:1+Math.floor(date*12),day:1,kind:'small',balls:10};
+ if(n<.255){const m=1+Math.floor(date*11);return{month:m>=8?m+1:m,day:15,kind:'small',balls:10};}
+ return{...missDates[Math.floor(date*missDates.length)],kind:'miss',balls:0};
 }
 export const TEMPLE_MONTHS=['正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 export function templeDay(day:number){const digits=['一','二','三','四','五','六','七','八','九'];return day<10?'初'+digits[day-1]:day===10?'初十':day<20?'十'+digits[day-11]:day===20?'二十':day<30?'廿'+digits[day-21]:'三十';}

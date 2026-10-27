@@ -3,7 +3,7 @@ import {TEMPLE,templeCalendar,type TempleDate} from './temple-rules.ts';
 import {templeBall,stepTempleBall,templeBallContacts,type TempleBall} from './temple-physics.ts';
 export class TempleFortune{
  readonly wallet:PlayerWallet;private random:()=>number;
- time=0;points=0;totalPoints=0;shots=0;scored=0;recycled=0;slotEntries=0;balls:TempleBall[]=[];power=5;firing=false;lastShot=-Infinity;pendingBalls=0;lastReward=-Infinity;lastCloud=-Infinity;cloudBalls=0;slotQueue=0;slotPhase:'idle'|'spin'|'result'='idle';slotAt=0;date:TempleDate={month:1,day:1,kind:'miss',balls:0};
+ time=0;points=0;totalPoints=0;shots=0;scored=0;recycled=0;slotEntries=0;balls:TempleBall[]=[];power=5;firing=false;lastShot=-Infinity;pendingBalls=0;lastReward=-Infinity;lastCloud=-Infinity;cloudBalls=0;slotQueue=0;slotPhase:'idle'|'spin'|'result'='idle';slotAt=0;date:TempleDate={month:1,day:3,kind:'miss',balls:0};
  phase:'base'|'drain-up'|'opening'|'bonus'|'drain-down'|'closing'='base';phaseAt=0;winAt=-Infinity;scoreAt=-Infinity;lastScore=0;message='福德正神 · 左打祈福，天公爐入珠翻曆';disposed=false;private nextId=0;private outcome:TempleDate=this.date;
  constructor(wallet:PlayerWallet,random:()=>number=Math.random){this.wallet=wallet;this.random=random;}
  get spinDate(){return this.outcome;}
@@ -16,7 +16,7 @@ export class TempleFortune{
  private resolve(){this.date=this.outcome;this.winAt=this.time;
  if(this.date.kind==='bonus'&&this.phase==='base'){this.phase='drain-up';this.phaseAt=this.time;this.message='二月初二！福德正神聖誕 · 原盤結算後開廟';}
  else if(this.date.kind==='bonus'){this.pendingBalls+=50;this.message='福運接連到！開廟已排定，追加 50 珠';}
- else if(this.date.balls){this.pendingBalls+=this.date.balls;this.message=this.date.kind==='medium'?'八月十五！中秋賜福 ＋50 珠':'月圓祈福！＋10 珠';}
+ else if(this.date.balls){this.pendingBalls+=this.date.balls;this.message=this.date.kind==='medium'?'八月十五！中秋賜福 ＋50 珠':this.date.day===1?'初一納福！＋10 珠':'十五祈福！＋10 珠';}
  else this.message='香火綿延 · 再祈好運';}
  step(){if(this.disposed)return;this.time+=1/60;
  if(this.phase==='bonus'&&this.remaining<=1e-8){this.phase='drain-down';this.phaseAt=this.time;this.message='賜福時間結束 · 金珠結算後關廟';}
