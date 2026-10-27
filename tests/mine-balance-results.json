@@ -1,0 +1,50 @@
+{
+  "model": "Concurrent reference; random left strength every5s, switch to right during gold, 4000 paid balls per seed then drain ALL free rewards and spins, including train re-triggers. Player strategy, random outcomes and exit conversion tails change returns. This is not a guaranteed RTP.",
+  "target": 0.92,
+  "greenPoints": 18,
+  "meanSlotBalls": 2.3000000000000003,
+  "shots": 12000,
+  "points": 109116,
+  "referenceRtp": 0.9093,
+  "samples": [
+    {
+      "seed": 123456789,
+      "shots": 4000,
+      "scored": 1803,
+      "slotEntries": 2012,
+      "wins": 378,
+      "rewards": 4310,
+      "points": 32454,
+      "rtp": 0.81135,
+      "goldSeconds": 1300.1833333333334,
+      "maxBalls": 51,
+      "seconds": 10183.533333269292
+    },
+    {
+      "seed": 246813579,
+      "shots": 4000,
+      "scored": 1973,
+      "slotEntries": 2077,
+      "wins": 403,
+      "rewards": 4805,
+      "points": 35514,
+      "rtp": 0.88785,
+      "goldSeconds": 1100.1666666666667,
+      "maxBalls": 51,
+      "seconds": 10492.583333264794
+    },
+    {
+      "seed": 987654321,
+      "shots": 4000,
+      "scored": 2286,
+      "slotEntries": 2522,
+      "wins": 510,
+      "rewards": 6100,
+      "points": 41148,
+      "rtp": 1.0287,
+      "goldSeconds": 1100.1666666666667,
+      "maxBalls": 49,
+      "seconds": 12744.483333232025
+    }
+  ]
+}
