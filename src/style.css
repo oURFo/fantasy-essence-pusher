@@ -42,7 +42,15 @@ main{grid-template-columns:minmax(320px,1.35fr) minmax(260px,1fr);gap:40px}.mach
 .temple-panel{border:1px solid #92623b;border-radius:20px;padding:24px;background:linear-gradient(150deg,#331811,#151a1f);color:#f8e4b8}
 .temple-panel h2{color:#ffdb8c}.temple-panel input{width:100%;accent-color:#dbaa4d;min-height:44px;touch-action:pan-x}
 .temple-controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.temple-controls button{flex:1;padding:12px 8px}
-.temple-knob{position:absolute;left:65%;top:90%;width:20%;height:8%;border-radius:50%;touch-action:none;cursor:ns-resize;background:radial-gradient(circle at 38% 30%,#f4cc76,#956123 46%,#4b2413 65%,#d7a655 70%,#69391c 76%);box-shadow:inset 0 0 12px #ffdc93,0 4px 12px #0008;border:3px solid #e7ba67}
-.temple-knob::after{content:'左打';position:absolute;inset:0;display:grid;place-items:center;color:#fff1ce;font-weight:700;font-size:clamp(12px,2vw,18px);text-shadow:0 2px 3px #000}
-.temple-knob:focus-visible{outline:3px solid #fff;outline-offset:4px}.temple-knob[aria-disabled=true]{opacity:.5}
-@media(max-width:760px){.temple-panel{padding:18px}.temple-controls button{min-height:46px}.temple-knob{border-width:2px}}
+.temple-knob{--knob-turn:-120deg;position:absolute;left:69%;top:87.5%;width:18%;height:12%;border:0;border-radius:50%;touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;isolation:isolate;filter:drop-shadow(0 4px 5px #000b)}
+.temple-knob::before{content:'';position:absolute;inset:6%;border-radius:50%;background:#32140c;box-shadow:0 0 0 2px #4b280f,0 0 0 3px #c89849,inset 0 0 12px #000}
+.temple-knob-rotor{position:absolute;inset:0;background:url('/assets/temple-fortune/knob.png') center/contain no-repeat;transform:rotate(var(--knob-turn));transition:transform .16s ease-out,filter .2s;pointer-events:none}
+.temple-knob-bezel{position:absolute;inset:0;background:url('/assets/temple-fortune/knob.png') center/contain no-repeat;mask-image:radial-gradient(circle,transparent 57%,#000 59%);pointer-events:none}
+.temple-knob-scale{position:absolute;inset:-2%;pointer-events:none}.temple-knob-scale i{position:absolute;left:49%;top:2%;width:2%;height:5%;border-radius:2px;background:#d8b36d;transform-origin:50% 960%;transform:rotate(calc(-120deg + var(--tick)*24deg));box-shadow:0 0 2px #32190a}
+.temple-knob-scale i:nth-child(1),.temple-knob-scale i:nth-child(11){background:#fff0bb}
+.temple-knob-caption{position:absolute;left:27%;right:27%;bottom:10%;padding:2px 0;border:1px solid #c79343;border-radius:8px;background:#30100de8;color:#ffe9b5;font-size:clamp(10px,1.1vw,14px);font-weight:700;line-height:1.3;text-align:center;text-shadow:0 1px 2px #000;pointer-events:none}
+.temple-knob[data-firing=true] .temple-knob-rotor{filter:brightness(1.15) drop-shadow(0 0 4px #ffc76188)}
+.temple-knob:hover::before{box-shadow:0 0 0 2px #4b280f,0 0 0 3px #f3ce83,0 0 12px #e8b44b55,inset 0 0 12px #000}
+.temple-knob:active .temple-knob-rotor{filter:brightness(1.22)}.temple-knob:focus-visible{outline:2px solid #fff0b7;outline-offset:5px}.temple-knob[aria-disabled=true]{opacity:.55;cursor:default}
+@media(prefers-reduced-motion:reduce){.temple-knob-rotor{transition:none}}
+@media(max-width:760px){.temple-panel{padding:18px}.temple-controls button{min-height:46px}.temple-knob-caption{font-size:10px;padding:1px 0}}
