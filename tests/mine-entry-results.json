@@ -1,177 +1,11 @@
 {
-  "model": "Isolated physical shots, 200 launch variations per left strength and right mode; both train states. Comparison removes only the four new guard pins in this test process. Concurrent gameplay may differ.",
+  "model": "Isolated physical shots, 200 launch variations per left strength and right mode; compare short-train left edge604 versus extended edge560 using identical pins and full collision simulation. No direction-based pocket rejection. Concurrent gameplay may differ.",
   "pins": 173,
+  "train": {
+    "left": 560,
+    "right": 902
+  },
   "before": [
-    {
-      "train": "parked",
-      "leftBlueRate": 0.1605,
-      "rightBlueRate": 0.295,
-      "powers": [
-        {
-          "power": 1,
-          "samples": 200,
-          "blue": 10,
-          "score": 101,
-          "blueRate": 0.05
-        },
-        {
-          "power": 2,
-          "samples": 200,
-          "blue": 22,
-          "score": 86,
-          "blueRate": 0.11
-        },
-        {
-          "power": 3,
-          "samples": 200,
-          "blue": 22,
-          "score": 79,
-          "blueRate": 0.11
-        },
-        {
-          "power": 4,
-          "samples": 200,
-          "blue": 33,
-          "score": 56,
-          "blueRate": 0.165
-        },
-        {
-          "power": 5,
-          "samples": 200,
-          "blue": 40,
-          "score": 38,
-          "blueRate": 0.2
-        },
-        {
-          "power": 6,
-          "samples": 200,
-          "blue": 43,
-          "score": 38,
-          "blueRate": 0.215
-        },
-        {
-          "power": 7,
-          "samples": 200,
-          "blue": 41,
-          "score": 37,
-          "blueRate": 0.205
-        },
-        {
-          "power": 8,
-          "samples": 200,
-          "blue": 30,
-          "score": 78,
-          "blueRate": 0.15
-        },
-        {
-          "power": 9,
-          "samples": 200,
-          "blue": 33,
-          "score": 67,
-          "blueRate": 0.165
-        },
-        {
-          "power": 10,
-          "samples": 200,
-          "blue": 47,
-          "score": 20,
-          "blueRate": 0.235
-        },
-        {
-          "power": 11,
-          "samples": 200,
-          "blue": 59,
-          "score": 2,
-          "blueRate": 0.295
-        }
-      ]
-    },
-    {
-      "train": "away",
-      "leftBlueRate": 0.4105,
-      "rightBlueRate": 1,
-      "powers": [
-        {
-          "power": 1,
-          "samples": 200,
-          "blue": 12,
-          "score": 101,
-          "blueRate": 0.06
-        },
-        {
-          "power": 2,
-          "samples": 200,
-          "blue": 33,
-          "score": 85,
-          "blueRate": 0.165
-        },
-        {
-          "power": 3,
-          "samples": 200,
-          "blue": 40,
-          "score": 75,
-          "blueRate": 0.2
-        },
-        {
-          "power": 4,
-          "samples": 200,
-          "blue": 65,
-          "score": 51,
-          "blueRate": 0.325
-        },
-        {
-          "power": 5,
-          "samples": 200,
-          "blue": 76,
-          "score": 33,
-          "blueRate": 0.38
-        },
-        {
-          "power": 6,
-          "samples": 200,
-          "blue": 92,
-          "score": 31,
-          "blueRate": 0.46
-        },
-        {
-          "power": 7,
-          "samples": 200,
-          "blue": 116,
-          "score": 32,
-          "blueRate": 0.58
-        },
-        {
-          "power": 8,
-          "samples": 200,
-          "blue": 81,
-          "score": 75,
-          "blueRate": 0.405
-        },
-        {
-          "power": 9,
-          "samples": 200,
-          "blue": 131,
-          "score": 62,
-          "blueRate": 0.655
-        },
-        {
-          "power": 10,
-          "samples": 200,
-          "blue": 175,
-          "score": 18,
-          "blueRate": 0.875
-        },
-        {
-          "power": 11,
-          "samples": 200,
-          "blue": 200,
-          "score": 0,
-          "blueRate": 1
-        }
-      ]
-    }
-  ],
-  "after": [
     {
       "train": "parked",
       "leftBlueRate": 0.108,
@@ -341,5 +175,176 @@
       ]
     }
   ],
-  "parkedLeftRelativeReduction": 0.3271028037383178
+  "after": [
+    {
+      "train": "parked",
+      "leftBlueRate": 0.042,
+      "rightBlueRate": 0.03,
+      "powers": [
+        {
+          "power": 1,
+          "samples": 200,
+          "blue": 3,
+          "score": 102,
+          "blueRate": 0.015
+        },
+        {
+          "power": 2,
+          "samples": 200,
+          "blue": 6,
+          "score": 88,
+          "blueRate": 0.03
+        },
+        {
+          "power": 3,
+          "samples": 200,
+          "blue": 5,
+          "score": 85,
+          "blueRate": 0.025
+        },
+        {
+          "power": 4,
+          "samples": 200,
+          "blue": 15,
+          "score": 58,
+          "blueRate": 0.075
+        },
+        {
+          "power": 5,
+          "samples": 200,
+          "blue": 9,
+          "score": 52,
+          "blueRate": 0.045
+        },
+        {
+          "power": 6,
+          "samples": 200,
+          "blue": 12,
+          "score": 43,
+          "blueRate": 0.06
+        },
+        {
+          "power": 7,
+          "samples": 200,
+          "blue": 12,
+          "score": 52,
+          "blueRate": 0.06
+        },
+        {
+          "power": 8,
+          "samples": 200,
+          "blue": 9,
+          "score": 83,
+          "blueRate": 0.045
+        },
+        {
+          "power": 9,
+          "samples": 200,
+          "blue": 6,
+          "score": 69,
+          "blueRate": 0.03
+        },
+        {
+          "power": 10,
+          "samples": 200,
+          "blue": 7,
+          "score": 21,
+          "blueRate": 0.035
+        },
+        {
+          "power": 11,
+          "samples": 200,
+          "blue": 6,
+          "score": 9,
+          "blueRate": 0.03
+        }
+      ]
+    },
+    {
+      "train": "away",
+      "leftBlueRate": 0.3895,
+      "rightBlueRate": 1,
+      "powers": [
+        {
+          "power": 1,
+          "samples": 200,
+          "blue": 11,
+          "score": 101,
+          "blueRate": 0.055
+        },
+        {
+          "power": 2,
+          "samples": 200,
+          "blue": 32,
+          "score": 85,
+          "blueRate": 0.16
+        },
+        {
+          "power": 3,
+          "samples": 200,
+          "blue": 34,
+          "score": 75,
+          "blueRate": 0.17
+        },
+        {
+          "power": 4,
+          "samples": 200,
+          "blue": 60,
+          "score": 51,
+          "blueRate": 0.3
+        },
+        {
+          "power": 5,
+          "samples": 200,
+          "blue": 72,
+          "score": 33,
+          "blueRate": 0.36
+        },
+        {
+          "power": 6,
+          "samples": 200,
+          "blue": 81,
+          "score": 31,
+          "blueRate": 0.405
+        },
+        {
+          "power": 7,
+          "samples": 200,
+          "blue": 110,
+          "score": 32,
+          "blueRate": 0.55
+        },
+        {
+          "power": 8,
+          "samples": 200,
+          "blue": 76,
+          "score": 75,
+          "blueRate": 0.38
+        },
+        {
+          "power": 9,
+          "samples": 200,
+          "blue": 129,
+          "score": 62,
+          "blueRate": 0.645
+        },
+        {
+          "power": 10,
+          "samples": 200,
+          "blue": 174,
+          "score": 18,
+          "blueRate": 0.87
+        },
+        {
+          "power": 11,
+          "samples": 200,
+          "blue": 200,
+          "score": 0,
+          "blueRate": 1
+        }
+      ]
+    }
+  ],
+  "parkedLeftRelativeReduction": 0.6111111111111112,
+  "parkedRightRelativeReduction": 0.8823529411764706
 }

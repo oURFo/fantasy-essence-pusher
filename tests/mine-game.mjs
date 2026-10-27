@@ -27,3 +27,5 @@ console.log('Passed: independent right rail, physical roof, pins across slot, no
 
 const quick=new GoldMine(new PlayerWallet(),()=>0);quick.slotQueue=2;quick.step();const spinStart=quick.time;while(quick.time-spinStart<1.55)quick.step();assert.equal(quick.slotPhase,'spin');while(quick.time-spinStart<1.65)quick.step();assert.equal(quick.slotPhase,'result');assert.equal(quick.slotWins,1);const resultAt=quick.slotAt;while(quick.time-resultAt<.7)quick.step();assert.equal(quick.slotPhase,'result');while(quick.time-resultAt<.9)quick.step();assert.equal(quick.slotPhase,'spin');assert.equal(quick.slotQueue,0);assert.equal(quick.slotWins,1,'faster result advance must not award twice');
 console.log('Passed: faster 1.6s spin, 0.8s result hold, queued next spin and one-time awards.');
+
+assert.ok(right[0]>0&&right[0]<.1,'parked train reduces right-shot access but never uses complete closure');

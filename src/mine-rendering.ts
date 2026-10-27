@@ -1,5 +1,5 @@
 import {GoldMine} from './mine-game.ts';
-import {MINE,MINE_PORTS,MINE_PINS,MINE_SLOT,MINE_SLOT_TIMING,MINE_RIGHT_ROOF,mineBowl} from './mine-rules.ts';
+import {MINE,MINE_PORTS,MINE_PINS,MINE_SLOT,MINE_SLOT_TIMING,MINE_RIGHT_ROOF,MINE_TRAIN,mineBowl} from './mine-rules.ts';
 const background=new Image(),sheet=new Image(),sprites:HTMLCanvasElement[]=[];let ready:Promise<void>|undefined;
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 export function loadMineArtwork(){return ready??=Promise.all([['cabinet',background],['sprites',sheet]].map(async([name,img])=>{const image=img as HTMLImageElement;image.src=new URL(`./assets/gold-mine/${name}.png`,document.baseURI).href;await image.decode();})).then(()=>{for(const [x,y,w,h] of [[0,160,490,300],[495,155,340,310],[860,175,275,300],[1160,145,365,340],[15,560,370,370],[400,560,370,370],[785,545,355,390],[1160,565,365,365]]){const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d')!.drawImage(sheet,x,y,w,h,0,0,w,h);sprites.push(c);}}).catch(e=>{ready=undefined;throw e;});}
@@ -29,7 +29,10 @@ export function renderMine(g:GoldMine){const canvas=document.getElementById('gam
  text(c,spinning?'礦脈探測中…':g.slotPhase==='result'?(g.lastSlotAward?`大當り ＋${g.lastSlotAward} 珠`:'再挑戰！'):'三圖相同 · 採礦車派珠',512,751,19);
  c.drawImage(minePins(),0,0);
  // Train artwork and collider move together, exposing the right-shot route.
- c.save();c.beginPath();c.rect(120,270,780,960);c.clip();if(g.time-g.scoreFlash<.4){c.shadowColor='#fff5a5';c.shadowBlur=32;}art(c,0,752+g.trainX,844,305,95);c.restore();
+ c.save();c.beginPath();c.rect(120,270,780,960);c.clip();if(g.time-g.scoreFlash<.4){c.shadowColor='#fff5a5';c.shadowBlur=32;}// Stretch only the AI coal-wagon section; keep the locomotive at its original scale.
+ const splitX=170,scale=305/sprites[0].width,frontX=752-152.5+splitX*scale;
+ c.drawImage(sprites[0],20,0,splitX-20,300,MINE_TRAIN.left-4+g.trainX,796,frontX-(MINE_TRAIN.left-4),95);
+ c.drawImage(sprites[0],splitX,0,sprites[0].width-splitX,300,frontX+g.trainX,796,(sprites[0].width-splitX)*scale,95);c.restore();
  if(g.train==='departing'||g.train==='returning'){for(let i=0;i<16;i++){const age=(g.time*1.3+i*.13)%2,x=825+g.trainX-age*65,y=790-age*100;c.save();c.globalAlpha=(1-age/2)*.4;c.fillStyle='#e4e2cf';c.beginPath();c.ellipse(x,y,10+age*24,8+age*18,0,0,Math.PI*2);c.fill();c.restore();}}
  const cartAge=g.time-g.lastReward,cartGlow=reduced.matches?(g.pendingBalls>0||cartAge<.5?1:0):Math.max(0,1-cartAge/.24);
  c.save();if(cartGlow>0){c.shadowColor='#ffe47b';c.shadowBlur=14+24*cartGlow;c.filter=`brightness(${1+cartGlow*.75})`;}

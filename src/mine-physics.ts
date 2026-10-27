@@ -1,4 +1,4 @@
-import {MINE,MINE_PINS,MINE_PORTS,MINE_RIGHT_ROOF,mineBowl} from './mine-rules.ts';
+import {MINE,MINE_PINS,MINE_PORTS,MINE_RIGHT_ROOF,MINE_TRAIN,mineBowl} from './mine-rules.ts';
 export type MineBall={id:number;x:number;y:number;vx:number;vy:number;age:number;rail:number;right:boolean;power:number;variation:number;done:boolean;result:'score'|'slot'|'out'|null;reward:boolean};
 export function mineLaunch(id:number,power:number,right:boolean,unit=.5):MineBall{return{id,x:right?912:140,y:1250,vx:0,vy:0,age:0,rail:0,right,power:Math.max(1,Math.min(10,power)),variation:Math.max(0,Math.min(1,unit))-.5,done:false,result:null,reward:false};}
 export function mineRewardBall(id:number,x:number,unit:number):MineBall{return{id,x,y:290,vx:(unit-.5)*140,vy:55,age:0,rail:1,right:false,power:5,variation:unit-.5,done:false,result:null,reward:true};}
@@ -13,8 +13,8 @@ export function stepMineBall(b:MineBall,trainX=0,dt=1/120){if(b.done)return;b.ag
  if(b.x>MINE_RIGHT_ROOF.left&&b.x<MINE_RIGHT_ROOF.right&&b.y<MINE_RIGHT_ROOF.y+MINE.ballRadius&&oldY>=MINE_RIGHT_ROOF.y){b.y=MINE_RIGHT_ROOF.y+MINE.ballRadius;b.vy=Math.abs(b.vy)*.25;}
  // Pocket capture uses an actual swept segment to prevent fast balls tunnelling through a mouth.
  for(const p of MINE_PORTS){if(p.kind==='out')continue;const radius=p.kind==='score'?20:24,dy=b.y-oldY,t=dy?Math.max(0,Math.min(1,(p.y-oldY)/dy)):0,px=b.x-b.vx*dt*(1-t),py=oldY+dy*t;if(Math.hypot(px-p.x,py-p.y)<radius){b.done=true;b.result=p.kind;return;}}
- for(const p of MINE_PINS)contact(b,p.x,p.y,p.r);
- if(trainX<420&&b.x>604+trainX&&b.x<902+trainX&&b.y>803&&b.y<887){if(oldY<=814){b.y=802;b.vy=-Math.abs(b.vy)*.25;b.vx=-220;}else{b.x=594+trainX;b.vx=-90;}}
+ for(const p of MINE_PINS){if(trainX<420&&p.x>MINE_TRAIN.left+trainX&&p.x<MINE_TRAIN.right+trainX&&p.y>MINE_TRAIN.top&&p.y<MINE_TRAIN.bottom)continue;contact(b,p.x,p.y,p.r);}
+ if(trainX<420&&b.x>MINE_TRAIN.left+trainX&&b.x<MINE_TRAIN.right+trainX&&b.y>MINE_TRAIN.top&&b.y<MINE_TRAIN.bottom){if(oldY<=814){b.y=802;b.vy=-Math.abs(b.vy)*.25;b.vx=-220;}else{b.x=MINE_TRAIN.left-10+trainX;b.vx=-90;}}
  // Right-side inclined return rail leads into the blue pocket only after passing the train.
  if(b.x>664&&b.x<890){const railY=1114-.58*(b.x-640);if(b.y>railY-9&&oldY<railY+20){b.y=railY-9;b.vx-=160*dt;b.vy=Math.min(0,b.vy)*.1;}}
  const floor=mineBowl(b.x);if(b.y>floor){b.y=floor;const slope=-.0021*(b.x-500);b.vx+=slope*240*dt;b.vy=-Math.abs(b.vy)*.12;}
