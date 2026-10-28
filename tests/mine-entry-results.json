@@ -8,7 +8,7 @@
   "before": [
     {
       "train": "parked",
-      "leftBlueRate": 0.2285,
+      "leftBlueRate": 0.20033333333333334,
       "rightBlueRate": 0.39,
       "powers": [
         {
@@ -21,68 +21,103 @@
         {
           "power": 2,
           "samples": 200,
-          "blue": 21,
-          "score": 65,
-          "blueRate": 0.105
+          "blue": 9,
+          "score": 77,
+          "blueRate": 0.045
         },
         {
           "power": 3,
           "samples": 200,
-          "blue": 26,
-          "score": 58,
-          "blueRate": 0.13
+          "blue": 9,
+          "score": 65,
+          "blueRate": 0.045
         },
         {
           "power": 4,
           "samples": 200,
-          "blue": 38,
-          "score": 36,
-          "blueRate": 0.19
+          "blue": 29,
+          "score": 61,
+          "blueRate": 0.145
         },
         {
           "power": 5,
           "samples": 200,
-          "blue": 53,
-          "score": 26,
-          "blueRate": 0.265
+          "blue": 34,
+          "score": 65,
+          "blueRate": 0.17
         },
         {
           "power": 6,
           "samples": 200,
-          "blue": 47,
-          "score": 26,
-          "blueRate": 0.235
+          "blue": 30,
+          "score": 52,
+          "blueRate": 0.15
         },
         {
           "power": 7,
           "samples": 200,
-          "blue": 66,
-          "score": 18,
-          "blueRate": 0.33
+          "blue": 49,
+          "score": 34,
+          "blueRate": 0.245
         },
         {
           "power": 8,
           "samples": 200,
-          "blue": 45,
-          "score": 71,
-          "blueRate": 0.225
+          "blue": 34,
+          "score": 37,
+          "blueRate": 0.17
         },
         {
           "power": 9,
           "samples": 200,
-          "blue": 62,
-          "score": 57,
-          "blueRate": 0.31
+          "blue": 55,
+          "score": 28,
+          "blueRate": 0.275
         },
         {
           "power": 10,
+          "samples": 200,
+          "blue": 63,
+          "score": 25,
+          "blueRate": 0.315
+        },
+        {
+          "power": 11,
+          "samples": 200,
+          "blue": 55,
+          "score": 26,
+          "blueRate": 0.275
+        },
+        {
+          "power": 12,
+          "samples": 200,
+          "blue": 38,
+          "score": 74,
+          "blueRate": 0.19
+        },
+        {
+          "power": 13,
+          "samples": 200,
+          "blue": 50,
+          "score": 63,
+          "blueRate": 0.25
+        },
+        {
+          "power": 14,
+          "samples": 200,
+          "blue": 47,
+          "score": 58,
+          "blueRate": 0.235
+        },
+        {
+          "power": 15,
           "samples": 200,
           "blue": 85,
           "score": 18,
           "blueRate": 0.425
         },
         {
-          "power": 11,
+          "power": 16,
           "samples": 200,
           "blue": 78,
           "score": 0,
@@ -92,7 +127,7 @@
     },
     {
       "train": "away",
-      "leftBlueRate": 0.4195,
+      "leftBlueRate": 0.3516666666666667,
       "rightBlueRate": 1,
       "powers": [
         {
@@ -105,68 +140,103 @@
         {
           "power": 2,
           "samples": 200,
-          "blue": 27,
-          "score": 65,
-          "blueRate": 0.135
+          "blue": 14,
+          "score": 77,
+          "blueRate": 0.07
         },
         {
           "power": 3,
           "samples": 200,
-          "blue": 44,
-          "score": 57,
-          "blueRate": 0.22
+          "blue": 11,
+          "score": 65,
+          "blueRate": 0.055
         },
         {
           "power": 4,
           "samples": 200,
-          "blue": 58,
-          "score": 34,
-          "blueRate": 0.29
+          "blue": 43,
+          "score": 59,
+          "blueRate": 0.215
         },
         {
           "power": 5,
           "samples": 200,
-          "blue": 78,
-          "score": 25,
-          "blueRate": 0.39
+          "blue": 34,
+          "score": 65,
+          "blueRate": 0.17
         },
         {
           "power": 6,
           "samples": 200,
-          "blue": 91,
-          "score": 23,
-          "blueRate": 0.455
+          "blue": 50,
+          "score": 52,
+          "blueRate": 0.25
         },
         {
           "power": 7,
           "samples": 200,
-          "blue": 125,
-          "score": 16,
-          "blueRate": 0.625
+          "blue": 78,
+          "score": 33,
+          "blueRate": 0.39
         },
         {
           "power": 8,
           "samples": 200,
-          "blue": 93,
-          "score": 67,
-          "blueRate": 0.465
+          "blue": 43,
+          "score": 35,
+          "blueRate": 0.215
         },
         {
           "power": 9,
           "samples": 200,
-          "blue": 132,
-          "score": 57,
-          "blueRate": 0.66
+          "blue": 96,
+          "score": 27,
+          "blueRate": 0.48
         },
         {
           "power": 10,
+          "samples": 200,
+          "blue": 103,
+          "score": 23,
+          "blueRate": 0.515
+        },
+        {
+          "power": 11,
+          "samples": 200,
+          "blue": 91,
+          "score": 26,
+          "blueRate": 0.455
+        },
+        {
+          "power": 12,
+          "samples": 200,
+          "blue": 97,
+          "score": 72,
+          "blueRate": 0.485
+        },
+        {
+          "power": 13,
+          "samples": 200,
+          "blue": 97,
+          "score": 63,
+          "blueRate": 0.485
+        },
+        {
+          "power": 14,
+          "samples": 200,
+          "blue": 107,
+          "score": 58,
+          "blueRate": 0.535
+        },
+        {
+          "power": 15,
           "samples": 200,
           "blue": 176,
           "score": 18,
           "blueRate": 0.88
         },
         {
-          "power": 11,
+          "power": 16,
           "samples": 200,
           "blue": 200,
           "score": 0,
@@ -178,7 +248,7 @@
   "after": [
     {
       "train": "parked",
-      "leftBlueRate": 0.113,
+      "leftBlueRate": 0.103,
       "rightBlueRate": 0.105,
       "powers": [
         {
@@ -191,68 +261,103 @@
         {
           "power": 2,
           "samples": 200,
-          "blue": 10,
-          "score": 69,
-          "blueRate": 0.05
+          "blue": 4,
+          "score": 79,
+          "blueRate": 0.02
         },
         {
           "power": 3,
           "samples": 200,
-          "blue": 12,
+          "blue": 5,
           "score": 67,
-          "blueRate": 0.06
+          "blueRate": 0.025
         },
         {
           "power": 4,
           "samples": 200,
-          "blue": 24,
-          "score": 47,
-          "blueRate": 0.12
+          "blue": 15,
+          "score": 64,
+          "blueRate": 0.075
         },
         {
           "power": 5,
           "samples": 200,
-          "blue": 21,
-          "score": 38,
-          "blueRate": 0.105
+          "blue": 7,
+          "score": 74,
+          "blueRate": 0.035
         },
         {
           "power": 6,
           "samples": 200,
-          "blue": 31,
-          "score": 41,
-          "blueRate": 0.155
+          "blue": 21,
+          "score": 59,
+          "blueRate": 0.105
         },
         {
           "power": 7,
           "samples": 200,
-          "blue": 32,
-          "score": 29,
-          "blueRate": 0.16
+          "blue": 29,
+          "score": 46,
+          "blueRate": 0.145
         },
         {
           "power": 8,
           "samples": 200,
-          "blue": 24,
-          "score": 79,
-          "blueRate": 0.12
+          "blue": 21,
+          "score": 47,
+          "blueRate": 0.105
         },
         {
           "power": 9,
           "samples": 200,
-          "blue": 26,
-          "score": 65,
-          "blueRate": 0.13
+          "blue": 33,
+          "score": 36,
+          "blueRate": 0.165
         },
         {
           "power": 10,
+          "samples": 200,
+          "blue": 32,
+          "score": 37,
+          "blueRate": 0.16
+        },
+        {
+          "power": 11,
+          "samples": 200,
+          "blue": 21,
+          "score": 37,
+          "blueRate": 0.105
+        },
+        {
+          "power": 12,
+          "samples": 200,
+          "blue": 27,
+          "score": 79,
+          "blueRate": 0.135
+        },
+        {
+          "power": 13,
+          "samples": 200,
+          "blue": 24,
+          "score": 69,
+          "blueRate": 0.12
+        },
+        {
+          "power": 14,
+          "samples": 200,
+          "blue": 24,
+          "score": 65,
+          "blueRate": 0.12
+        },
+        {
+          "power": 15,
           "samples": 200,
           "blue": 36,
           "score": 22,
           "blueRate": 0.18
         },
         {
-          "power": 11,
+          "power": 16,
           "samples": 200,
           "blue": 21,
           "score": 9,
@@ -262,7 +367,7 @@
     },
     {
       "train": "away",
-      "leftBlueRate": 0.4195,
+      "leftBlueRate": 0.3516666666666667,
       "rightBlueRate": 1,
       "powers": [
         {
@@ -275,68 +380,103 @@
         {
           "power": 2,
           "samples": 200,
-          "blue": 27,
-          "score": 65,
-          "blueRate": 0.135
+          "blue": 14,
+          "score": 77,
+          "blueRate": 0.07
         },
         {
           "power": 3,
           "samples": 200,
-          "blue": 44,
-          "score": 57,
-          "blueRate": 0.22
+          "blue": 11,
+          "score": 65,
+          "blueRate": 0.055
         },
         {
           "power": 4,
           "samples": 200,
-          "blue": 58,
-          "score": 34,
-          "blueRate": 0.29
+          "blue": 43,
+          "score": 59,
+          "blueRate": 0.215
         },
         {
           "power": 5,
           "samples": 200,
-          "blue": 78,
-          "score": 25,
-          "blueRate": 0.39
+          "blue": 34,
+          "score": 65,
+          "blueRate": 0.17
         },
         {
           "power": 6,
           "samples": 200,
-          "blue": 91,
-          "score": 23,
-          "blueRate": 0.455
+          "blue": 50,
+          "score": 52,
+          "blueRate": 0.25
         },
         {
           "power": 7,
           "samples": 200,
-          "blue": 125,
-          "score": 16,
-          "blueRate": 0.625
+          "blue": 78,
+          "score": 33,
+          "blueRate": 0.39
         },
         {
           "power": 8,
           "samples": 200,
-          "blue": 93,
-          "score": 67,
-          "blueRate": 0.465
+          "blue": 43,
+          "score": 35,
+          "blueRate": 0.215
         },
         {
           "power": 9,
           "samples": 200,
-          "blue": 132,
-          "score": 57,
-          "blueRate": 0.66
+          "blue": 96,
+          "score": 27,
+          "blueRate": 0.48
         },
         {
           "power": 10,
+          "samples": 200,
+          "blue": 103,
+          "score": 23,
+          "blueRate": 0.515
+        },
+        {
+          "power": 11,
+          "samples": 200,
+          "blue": 91,
+          "score": 26,
+          "blueRate": 0.455
+        },
+        {
+          "power": 12,
+          "samples": 200,
+          "blue": 97,
+          "score": 72,
+          "blueRate": 0.485
+        },
+        {
+          "power": 13,
+          "samples": 200,
+          "blue": 97,
+          "score": 63,
+          "blueRate": 0.485
+        },
+        {
+          "power": 14,
+          "samples": 200,
+          "blue": 107,
+          "score": 58,
+          "blueRate": 0.535
+        },
+        {
+          "power": 15,
           "samples": 200,
           "blue": 176,
           "score": 18,
           "blueRate": 0.88
         },
         {
-          "power": 11,
+          "power": 16,
           "samples": 200,
           "blue": 200,
           "score": 0,
@@ -345,6 +485,6 @@
       ]
     }
   ],
-  "parkedLeftRelativeReduction": 0.5054704595185996,
+  "parkedLeftRelativeReduction": 0.4858569051580699,
   "parkedRightRelativeReduction": 0.7307692307692308
 }

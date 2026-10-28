@@ -1,5 +1,6 @@
 {
   "model": "Concurrent reference; random left strength every5s, switch to right during gold, 4000 paid balls per seed then drain ALL free rewards and spins, including train re-triggers. Player strategy, random outcomes and exit conversion tails change returns. This is not a guaranteed RTP.",
+  "leftPowerSteps": 15,
   "target": 0.92,
   "spinSeconds": 1.6,
   "resultSeconds": 0.8,
@@ -9,47 +10,47 @@
   "greenPoints": 14,
   "meanSlotBalls": 2.3000000000000003,
   "shots": 12000,
-  "points": 90426,
-  "referenceRtp": 0.75355,
+  "points": 81494,
+  "referenceRtp": 0.6791166666666666,
   "samples": [
     {
       "seed": 123456789,
       "shots": 4000,
-      "scored": 2015,
-      "slotEntries": 1922,
-      "wins": 389,
-      "rewards": 4405,
-      "points": 28210,
-      "rtp": 0.70525,
-      "goldSeconds": 900.1,
-      "maxBalls": 47,
-      "seconds": 4694.366666682502
+      "scored": 1792,
+      "slotEntries": 1582,
+      "wins": 297,
+      "rewards": 3120,
+      "points": 25088,
+      "rtp": 0.6272000000000001,
+      "goldSeconds": 900.0666666666667,
+      "maxBalls": 44,
+      "seconds": 4120.333333357522
     },
     {
       "seed": 246813579,
       "shots": 4000,
-      "scored": 2008,
-      "slotEntries": 2009,
-      "wins": 390,
-      "rewards": 4195,
-      "points": 28112,
-      "rtp": 0.7028,
-      "goldSeconds": 800.1333333333333,
-      "maxBalls": 48,
-      "seconds": 4909.550000012704
+      "scored": 1987,
+      "slotEntries": 2062,
+      "wins": 392,
+      "rewards": 4280,
+      "points": 27818,
+      "rtp": 0.69545,
+      "goldSeconds": 904.4666666666667,
+      "maxBalls": 45,
+      "seconds": 5063.033333343804
     },
     {
       "seed": 987654321,
       "shots": 4000,
-      "scored": 2436,
-      "slotEntries": 2629,
-      "wins": 489,
-      "rewards": 6220,
-      "points": 34104,
-      "rtp": 0.8526,
-      "goldSeconds": 1200.1333333333334,
-      "maxBalls": 44,
-      "seconds": 6465.966666656722
+      "scored": 2042,
+      "slotEntries": 1639,
+      "wins": 302,
+      "rewards": 4305,
+      "points": 28588,
+      "rtp": 0.7147,
+      "goldSeconds": 500.06666666666666,
+      "maxBalls": 48,
+      "seconds": 4132.60000002401
     }
   ]
 }

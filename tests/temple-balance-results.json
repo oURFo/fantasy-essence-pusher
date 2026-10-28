@@ -1,4 +1,6 @@
 {
+  "leftPowerSteps": 15,
+  "basePocketPoints": 20,
   "calendar": [
     {
       "label": "初一",
@@ -27,39 +29,39 @@
     }
   ],
   "shots": 30000,
-  "points": 270960,
-  "referenceRtp": 0.9032,
+  "points": 445670,
+  "referenceRtp": 1.4855666666666667,
   "results": [
     {
       "seed": 123456789,
       "shots": 10000,
-      "points": 52530,
-      "rtp": 0.5253,
-      "slot": 478,
-      "bonusCount": 4,
-      "seconds": 5097.0500000099755,
+      "points": 172300,
+      "rtp": 1.723,
+      "slot": 818,
+      "bonusCount": 19,
+      "seconds": 6120.483333328416,
       "phase": "base",
       "balls": 0
     },
     {
       "seed": 246813579,
       "shots": 10000,
-      "points": 129220,
-      "rtp": 1.2922,
-      "slot": 511,
-      "bonusCount": 15,
-      "seconds": 5638.100000002102,
+      "points": 157070,
+      "rtp": 1.5707,
+      "slot": 817,
+      "bonusCount": 17,
+      "seconds": 5839.783333332501,
       "phase": "base",
       "balls": 0
     },
     {
       "seed": 987654321,
       "shots": 10000,
-      "points": 89210,
-      "rtp": 0.8921,
-      "slot": 523,
-      "bonusCount": 9,
-      "seconds": 5415.850000005336,
+      "points": 116300,
+      "rtp": 1.163,
+      "slot": 851,
+      "bonusCount": 11,
+      "seconds": 5567.566666669795,
       "phase": "base",
       "balls": 0
     }

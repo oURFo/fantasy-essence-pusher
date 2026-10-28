@@ -1,12 +1,13 @@
+import {clampLeftPower,physicalLaunchPower} from './pachinko-launch.ts';
 import {MINE,MINE_PINS,MINE_PORTS,MINE_RIGHT_ROOF,MINE_TRAIN,mineBowl} from './mine-rules.ts';
 export type MineBall={id:number;x:number;y:number;vx:number;vy:number;age:number;rail:number;right:boolean;power:number;variation:number;done:boolean;result:'score'|'slot'|'out'|null;reward:boolean};
-export function mineLaunch(id:number,power:number,right:boolean,unit=.5):MineBall{return{id,x:right?912:140,y:1250,vx:0,vy:0,age:0,rail:0,right,power:Math.max(1,Math.min(10,power)),variation:Math.max(0,Math.min(1,unit))-.5,done:false,result:null,reward:false};}
+export function mineLaunch(id:number,power:number,right:boolean,unit=.5):MineBall{return{id,x:right?912:140,y:1250,vx:0,vy:0,age:0,rail:0,right,power:clampLeftPower(power),variation:Math.max(0,Math.min(1,unit))-.5,done:false,result:null,reward:false};}
 export function mineRewardBall(id:number,x:number,unit:number):MineBall{return{id,x,y:290,vx:(unit-.5)*140,vy:55,age:0,rail:1,right:false,power:5,variation:unit-.5,done:false,result:null,reward:true};}
 function contact(b:MineBall,x:number,y:number,r:number){const dx=b.x-x,dy=b.y-y,d=Math.hypot(dx,dy),min=MINE.ballRadius+r;if(d>=min)return;const nx=d?dx/d:.3,ny=d?dy/d:-1;b.x=x+nx*(min+.02);b.y=y+ny*(min+.02);const v=b.vx*nx+b.vy*ny;if(v<0){b.vx-=1.42*v*nx;b.vy-=1.42*v*ny;}if(Math.abs(nx)<.03&&ny<0)b.vx+=(x%2?1:-1)*12;}
 export function stepMineBall(b:MineBall,trainX=0,dt=1/120){if(b.done)return;b.age+=dt;
  if(b.rail<1){b.rail=Math.min(1,b.rail+dt/1.05);const t=b.rail;
- if(b.right){if(t<.8){b.x=912;b.y=1250-950*t/.8;}else{const q=(t-.8)/.2;b.x=912+(855+b.variation*12-912)*q;b.y=300-30*q-10*Math.sin(q*Math.PI);}}else if(t<.55){b.x=132-18*Math.sin(t/.55*Math.PI);b.y=1250-980*(t/.55);}else{const q=(t-.55)/.45,end=165+b.power*53+b.variation*12;b.x=132+(end-132)*q;b.y=270-35*Math.sin(q*Math.PI);}
- if(b.rail===1){b.vx=(b.right?-15:35+b.power*7)*(1+b.variation*.16);b.vy=70*(1+b.variation*.1);}return;
+ if(b.right){if(t<.8){b.x=912;b.y=1250-950*t/.8;}else{const q=(t-.8)/.2;b.x=912+(855+b.variation*12-912)*q;b.y=300-30*q-10*Math.sin(q*Math.PI);}}else if(t<.55){b.x=132-18*Math.sin(t/.55*Math.PI);b.y=1250-980*(t/.55);}else{const q=(t-.55)/.45,end=165+physicalLaunchPower(b.power)*53+b.variation*12;b.x=132+(end-132)*q;b.y=270-35*Math.sin(q*Math.PI);}
+ if(b.rail===1){b.vx=(b.right?-15:35+physicalLaunchPower(b.power)*7)*(1+b.variation*.16);b.vy=70*(1+b.variation*.1);}return;
  }
  const oldY=b.y;b.vy+=MINE.gravity*dt;b.vx*=Math.exp(-.14*dt);b.x+=b.vx*dt;b.y+=b.vy*dt;
  if(b.x<138){b.x=138;b.vx=Math.abs(b.vx)*.45;}if(b.x>886){b.x=886;b.vx=-Math.abs(b.vx)*.45;}

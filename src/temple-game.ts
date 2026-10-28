@@ -1,15 +1,16 @@
+import {LEFT_POWER_STEPS} from './pachinko-launch.ts';
 import {PlayerWallet} from './wallet.ts';
 import {TEMPLE,templeCalendar,type TempleDate} from './temple-rules.ts';
 import {templeBall,stepTempleBall,templeBallContacts,type TempleBall} from './temple-physics.ts';
 export class TempleFortune{
  readonly wallet:PlayerWallet;private random:()=>number;
- time=0;points=0;totalPoints=0;shots=0;scored=0;recycled=0;slotEntries=0;balls:TempleBall[]=[];power=5;firing=false;lastShot=-Infinity;pendingBalls=0;lastReward=-Infinity;lastCloud=-Infinity;cloudBalls=0;slotQueue=0;slotPhase:'idle'|'spin'|'result'='idle';slotAt=0;date:TempleDate={month:1,day:3,kind:'miss',balls:0};
+ time=0;points=0;totalPoints=0;shots=0;scored=0;recycled=0;slotEntries=0;balls:TempleBall[]=[];power=7;firing=false;lastShot=-Infinity;pendingBalls=0;lastReward=-Infinity;lastCloud=-Infinity;cloudBalls=0;slotQueue=0;slotPhase:'idle'|'spin'|'result'='idle';slotAt=0;date:TempleDate={month:1,day:3,kind:'miss',balls:0};
  phase:'base'|'drain-up'|'opening'|'bonus'|'drain-down'|'closing'='base';phaseAt=0;winAt=-Infinity;scoreAt=-Infinity;lastScore=0;message='福德正神 · 左打祈福，天公爐入珠翻曆';disposed=false;private nextId=0;private outcome:TempleDate=this.date;
  constructor(wallet:PlayerWallet,random:()=>number=Math.random){this.wallet=wallet;this.random=random;}
  get spinDate(){return this.outcome;}
  get gold(){return this.wallet.gold;}get exchangeGold(){return Math.floor(this.points/10);}get bonus(){return this.phase==='bonus'||this.phase==='drain-down'||this.phase==='closing';}get inputLocked(){return this.disposed||!(this.phase==='base'||this.phase==='bonus');}get remaining(){return this.phase==='bonus'?Math.max(0,100-(this.time-this.phaseAt)):0;}get cloudX(){return 512+Math.sin(this.time*.7)*290;}
  get doorOpen(){return this.phase==='opening'?Math.min(1,(this.time-this.phaseAt)/4):this.phase==='closing'?Math.max(0,1-(this.time-this.phaseAt)/4):this.bonus?1:0;}
- setDial(value:number){if(this.disposed)return;const n=Math.max(0,Math.min(10,Math.round(value)));this.firing=n>0;if(n)this.power=n;}
+ setDial(value:number){if(this.disposed)return;const n=Math.max(0,Math.min(LEFT_POWER_STEPS,Math.round(value)));this.firing=n>0;if(n)this.power=n;}
  shoot(){if(this.inputLocked||this.time-this.lastShot<.5-1e-9||!this.wallet.spend(1))return false;this.lastShot=this.time;this.shots++;this.balls.push(templeBall(++this.nextId,this.power,this.random(),this.bonus));return true;}
  redeem(){if(this.disposed)return 0;const n=this.exchangeGold;if(n&&this.wallet.credit(n)){this.points-=n*10;return n;}return 0;}
  private receive(b:TempleBall){if(b.result==='slot'){this.slotEntries++;this.slotQueue++;}else if(b.result==='score'){this.scored++;this.points+=b.points;this.totalPoints+=b.points;this.scoreAt=this.time;this.lastScore=b.points;}else this.recycled++;}

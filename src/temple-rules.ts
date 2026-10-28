@@ -1,4 +1,4 @@
-export const TEMPLE={cost:1,cooldown:.5,radius:9,gravity:440,pointsPerGold:10,score:10,bonusSeconds:100,transitionSeconds:4,slotSeconds:2.4,resultSeconds:1.2} as const;
+export const TEMPLE={cost:1,cooldown:.5,radius:9,gravity:440,pointsPerGold:10,score:20,bonusSeconds:100,transitionSeconds:4,slotSeconds:2.4,resultSeconds:1.2} as const;
 export type TempleDate={month:number;day:number;kind:'miss'|'small'|'medium'|'bonus';balls:number};
 export const TEMPLE_CALENDAR_PAYTABLE=[
  {label:'初一',chance:10,balls:10},
@@ -20,7 +20,7 @@ export function templeCalendar(unit:number,dateUnit:number):TempleDate{
 }
 export const TEMPLE_MONTHS=['正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 export function templeDay(day:number){const digits=['一','二','三','四','五','六','七','八','九'];return day<10?'初'+digits[day-1]:day===10?'初十':day<20?'十'+digits[day-11]:day===20?'二十':day<30?'廿'+digits[day-21]:'三十';}
-export const TEMPLE_BASE_PORTS=[{x:512,y:740,kind:'slot',points:0},{x:290,y:955,kind:'score',points:10},{x:735,y:955,kind:'score',points:10}] as const;
+export const TEMPLE_BASE_PORTS=[{x:512,y:740,kind:'slot',points:0},{x:290,y:955,kind:'score',points:TEMPLE.score},{x:735,y:955,kind:'score',points:TEMPLE.score}] as const;
 export const TEMPLE_GOLD_PORTS=[{x:220,y:1090,kind:'score',points:10},{x:365,y:1090,kind:'score',points:20},{x:512,y:1090,kind:'score',points:200},{x:659,y:1090,kind:'score',points:50},{x:804,y:1090,kind:'score',points:100}] as const;
 export type TemplePin={x:number;y:number;r:number};
 export function templePins(bonus=false){const ports=bonus?TEMPLE_GOLD_PORTS:TEMPLE_BASE_PORTS,pins:TemplePin[]=[];

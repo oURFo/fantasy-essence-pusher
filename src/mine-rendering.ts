@@ -1,3 +1,4 @@
+import {RIGHT_SHOT_DIAL} from './pachinko-launch.ts';
 import {GoldMine} from './mine-game.ts';
 import {MINE,MINE_PORTS,MINE_PINS,MINE_SLOT,MINE_SLOT_TIMING,MINE_RIGHT_ROOF,MINE_TRAIN,mineBowl} from './mine-rules.ts';
 const background=new Image(),sheet=new Image(),sprites:HTMLCanvasElement[]=[];let ready:Promise<void>|undefined;
@@ -42,7 +43,7 @@ export function renderMine(g:GoldMine){const canvas=document.getElementById('gam
  panel(c,252,1322,412,102);
  text(c,g.firing?(g.right?'右打發射中':'左打 '+g.power+' 段'):'旋轉下方旋鈕開始',458,1355,28,'#fff8dc');
  text(c,'停止 ← 左打 1～10 → 右打',458,1395,23,'#ffe49b');
- const dialAngle=(g.firing?(g.right?11:g.power):0)/11*Math.PI*1.5-Math.PI*.75;c.save();c.translate(790,1370);c.rotate(dialAngle);c.strokeStyle='#f7edb0';c.lineWidth=8;c.beginPath();c.moveTo(0,-58);c.lineTo(0,-87);c.stroke();c.restore();
+ const dialAngle=(g.firing?(g.right?RIGHT_SHOT_DIAL:g.power):0)/RIGHT_SHOT_DIAL*Math.PI*1.5-Math.PI*.75;c.save();c.translate(790,1370);c.rotate(dialAngle);c.strokeStyle='#f7edb0';c.lineWidth=8;c.beginPath();c.moveTo(0,-58);c.lineTo(0,-87);c.stroke();c.restore();
  if(bonus||grand){
   const pulse=reduced.matches?.7:.55+.25*Math.sin(g.time*3);c.save();c.globalAlpha=pulse;c.shadowColor='#ffce38';c.shadowBlur=reduced.matches?0:38;c.strokeStyle='#ffe17b';c.lineWidth=18;c.strokeRect(18,18,988,1500);c.restore();
   if(!reduced.matches)for(let i=0;i<42;i++){const a=i*2.399,t=(g.time*.5+i*.19)%1;c.save();c.globalAlpha=(1-t)*.65;c.fillStyle=i%2?'#ffde5d':'#fff7ce';c.beginPath();c.arc(512+Math.cos(a)*t*700,740+Math.sin(a)*t*1000,2+3*t,0,Math.PI*2);c.fill();c.restore();}

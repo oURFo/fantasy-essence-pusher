@@ -1,8 +1,9 @@
+import {RIGHT_SHOT_DIAL} from './pachinko-launch.ts';
 import {PlayerWallet} from './wallet.ts';
 import {MINE,MINE_SLOT,MINE_SLOT_TIMING,mineSlotDraw} from './mine-rules.ts';
 import {mineLaunch,mineRewardBall,stepMineBall,mineBallContacts,type MineBall} from './mine-physics.ts';
 export class GoldMine{
- time=0;points=0;totalPoints=0;shots=0;scored=0;recycled=0;slotEntries=0;paidBalls=0;balls:MineBall[]=[];power=5;right=false;firing=false;lastShot=-Infinity;pendingBalls=0;lastReward=-Infinity;slotQueue=0;slotPhase:'idle'|'spin'|'result'='idle';slotAt=0;slotIndex=-1;lastSlotAward=0;slotWins=0;train:'parked'|'departing'|'gold'|'returning'='parked';trainAt=0;scoreFlash=-Infinity;winAt=-Infinity;message='左打尋礦 · 綠口得分可喚醒列車';disposed=false;private nextId=0;private result=-1;
+ time=0;points=0;totalPoints=0;shots=0;scored=0;recycled=0;slotEntries=0;paidBalls=0;balls:MineBall[]=[];power=7;right=false;firing=false;lastShot=-Infinity;pendingBalls=0;lastReward=-Infinity;slotQueue=0;slotPhase:'idle'|'spin'|'result'='idle';slotAt=0;slotIndex=-1;lastSlotAward=0;slotWins=0;train:'parked'|'departing'|'gold'|'returning'='parked';trainAt=0;scoreFlash=-Infinity;winAt=-Infinity;message='左打尋礦 · 綠口得分可喚醒列車';disposed=false;private nextId=0;private result=-1;
  readonly wallet:PlayerWallet;private random:()=>number;
  constructor(wallet:PlayerWallet,random:()=>number=Math.random){this.wallet=wallet;this.random=random;}
  get spinResult(){return this.result;}
@@ -10,7 +11,7 @@ export class GoldMine{
  get goldRemaining(){return this.train==='gold'?Math.max(0,MINE.goldSeconds-(this.time-this.trainAt)):0;}
  get trainX(){return this.train==='parked'?0:this.train==='departing'?Math.min(1,(this.time-this.trainAt)/MINE.departSeconds)*480:this.train==='returning'?(1-Math.min(1,(this.time-this.trainAt)/MINE.returnSeconds))*480:480;}
  get cartX(){return 512+Math.sin(this.time*.65)*310;}
- setDial(value:number){if(this.disposed)return;const v=Math.max(0,Math.min(11,Math.round(value)));this.firing=v>0;this.right=v===11;if(v>0&&v<11)this.power=v;}
+ setDial(value:number){if(this.disposed)return;const v=Math.max(0,Math.min(RIGHT_SHOT_DIAL,Math.round(value)));this.firing=v>0;this.right=v===RIGHT_SHOT_DIAL;if(v>0&&v<RIGHT_SHOT_DIAL)this.power=v;}
  shoot(){if(this.disposed||this.time-this.lastShot<MINE.cooldown-1e-9||!this.wallet.spend(MINE.cost))return false;this.lastShot=this.time;this.shots++;this.balls.push(mineLaunch(++this.nextId,this.power,this.right,this.random()));return true;}
  redeem(){if(this.disposed)return 0;const n=this.exchangeGold;if(n&&this.wallet.credit(n)){this.points-=n*10;return n;}return 0;}
  private receive(b:MineBall){if(b.result==='score'){this.scored++;this.points+=MINE.greenPoints;this.totalPoints+=MINE.greenPoints;this.scoreFlash=this.time;this.message=`得分口 ＋${MINE.greenPoints} 積分`;if(this.train==='parked'&&this.random()<MINE.trainChance){this.train='departing';this.trainAt=this.time;this.message='列車發車！金礦時間即將開啟！';}}else if(b.result==='slot'){this.slotEntries++;this.slotQueue++;this.message='藍口入球 · SLOT ＋1';}else this.recycled++;}

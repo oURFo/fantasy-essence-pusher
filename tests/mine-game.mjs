@@ -1,9 +1,10 @@
+import {physicalLaunchPower} from '../src/pachinko-launch.ts';
 import assert from 'node:assert/strict';
 import {GoldMine} from '../src/mine-game.ts';import {PlayerWallet} from '../src/wallet.ts';import {ArcadeSession} from '../src/arcade-session.ts';
 import {MINE,MINE_SLOT,MINE_SLOT_TIMING,MINE_PINS,MINE_PORTS,mineSlotDraw} from '../src/mine-rules.ts';import {mineLaunch,mineRewardBall,stepMineBall} from '../src/mine-physics.ts';
 const ticks=(g,n)=>{for(let i=0;i<n;i++)g.step();};
 function pocket(g,kind){const p=MINE_PORTS.find(p=>p.kind===kind),b=mineRewardBall(123,p.x,.5);b.y=p.y-1;b.vy=5;g.balls.push(b);g.step();}
-const g=new GoldMine(new PlayerWallet(),()=>.5);g.setDial(1);g.step();assert.equal(g.shots,1);assert.equal(g.gold,999);ticks(g,29);assert.equal(g.shots,1);g.step();assert.equal(g.shots,2);assert.equal(g.gold,998);g.setDial(0);ticks(g,60);assert.equal(g.shots,2);g.setDial(11);assert.equal(g.right,true);g.setDial(7);assert.equal(g.right,false);assert.equal(g.power,7);g.setDial(0);
+const g=new GoldMine(new PlayerWallet(),()=>.5);g.setDial(1);g.step();assert.equal(g.shots,1);assert.equal(g.gold,999);ticks(g,29);assert.equal(g.shots,1);g.step();assert.equal(g.shots,2);assert.equal(g.gold,998);g.setDial(0);ticks(g,60);assert.equal(g.shots,2);g.setDial(16);assert.equal(g.right,true);g.setDial(7);assert.equal(g.right,false);assert.equal(g.power,7);g.setDial(0);
 const score=new GoldMine(new PlayerWallet(),()=>.5);pocket(score,'score');assert.equal(score.points,MINE.greenPoints);assert.equal(score.train,'parked');const points=score.points;ticks(score,5);assert.equal(score.points,points);pocket(score,'out');assert.equal(score.points,points);
 const train=new GoldMine(new PlayerWallet(),()=>.004999);pocket(train,'score');assert.equal(train.train,'departing');assert.equal(train.scoreFlash,train.time);ticks(train,181);assert.equal(train.train,'gold');assert.ok(train.trainX>=479);const started=train.trainAt;train.time=started+99.98;train.step();assert.equal(train.train,'gold');train.step();assert.equal(train.train,'returning');ticks(train,181);assert.equal(train.train,'parked');assert.equal(train.trainX,0);
 const noTrain=new GoldMine(new PlayerWallet(),()=>.005);pocket(noTrain,'score');assert.equal(noTrain.train,'parked','0.5% is a strict independent probability');
@@ -14,7 +15,7 @@ const session=new ArcadeSession(new PlayerWallet());assert.ok(session.enter('gol
 const right=[];for(const open of [false,true]){let blue=0;for(let i=0;i<120;i++){const b=mineLaunch(i,10,true,(i+.5)/120);for(let j=0;j<3000&&!b.done;j++)stepMineBall(b,open?480:0);assert.equal(b.done,true);if(b.result==='slot')blue++;}right.push(blue/120);}assert.ok(right[1]>.8&&right[1]>right[0]*2,'physical train must obstruct direct right-shot path');
 console.log(JSON.stringify({passed:'cost, rate limit, dial, green scoring, 0.5% train boundary, 100s expiry, slot queue, free 2/s reward stream, wallet, leave freeze, all pins and physical train',pins:MINE_PINS.length,rightBlueRates:right},null,2));
 
-const greenSeen=new Set();for(let p=1;p<=10;p++)for(let i=0;i<30;i++){const b=mineLaunch(i,p,false,(i+.5)/30);for(let j=0;j<3000&&!b.done;j++)stepMineBall(b,0);if(b.result==='score'){const closest=MINE_PORTS.map((v,index)=>({index,d:Math.hypot(v.x-b.x,v.y-b.y)})).sort((a,b)=>a.d-b.d)[0];greenSeen.add(closest.index);}}assert.equal(greenSeen.size,3,'all three green pockets are naturally reachable through the pin field');
+const greenSeen=new Set();for(let p=1;p<=15;p++)for(let i=0;i<30;i++){const b=mineLaunch(i,p,false,(i+.5)/30);for(let j=0;j<3000&&!b.done;j++)stepMineBall(b,0);if(b.result==='score'){const closest=MINE_PORTS.map((v,index)=>({index,d:Math.hypot(v.x-b.x,v.y-b.y)})).sort((a,b)=>a.d-b.d)[0];greenSeen.add(closest.index);}}assert.equal(greenSeen.size,3,'all three green pockets are naturally reachable through the pin field');
 
 let weight=0;for(const [i,prize] of MINE_SLOT.entries()){const unit=(weight+prize.weight/2)/1000,game=new GoldMine(new PlayerWallet(),()=>unit);assert.equal(mineSlotDraw(unit),i);game.slotQueue=1;ticks(game,Math.ceil(MINE_SLOT_TIMING.spin*60)+2);assert.equal(game.lastSlotAward,prize.balls);assert.equal(game.slotWins,1);assert.equal(game.pendingBalls+game.paidBalls,prize.balls);weight+=prize.weight;}
 const goldLocked=new GoldMine(new PlayerWallet(),()=>0);goldLocked.train='gold';goldLocked.trainAt=goldLocked.time;goldLocked.pendingBalls=10;goldLocked.slotQueue=3;const original=goldLocked.trainAt;pocket(goldLocked,'score');assert.equal(goldLocked.trainAt,original);goldLocked.time=101;goldLocked.step();assert.equal(goldLocked.train,'returning');assert.ok(goldLocked.pendingBalls>0&&goldLocked.slotQueue>0,'return does not silently discard queued rewards');
@@ -29,3 +30,7 @@ const quick=new GoldMine(new PlayerWallet(),()=>0);quick.slotQueue=2;quick.step(
 console.log('Passed: faster 1.6s spin, 0.8s result hold, queued next spin and one-time awards.');
 
 assert.ok(right[0]>0&&right[0]<.1,'parked train reduces right-shot access but never uses complete closure');
+
+for(let power=1;power<=15;power++){g.setDial(power);assert.equal(g.right,false);assert.equal(g.power,power);}g.setDial(16);assert.equal(g.right,true);g.setDial(0);
+
+assert.equal(physicalLaunchPower(1),1);assert.equal(physicalLaunchPower(15),10);for(let p=2;p<=15;p++)assert.ok(physicalLaunchPower(p)>physicalLaunchPower(p-1));
