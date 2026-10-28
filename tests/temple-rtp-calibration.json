@@ -1,0 +1,285 @@
+{
+  "model": "Full concurrent physics: all paid balls in both stages, all calendar reward chains, duplicate bonus conversion and 100 free cloud balls per complete bonus. Drain every ball/queue and return to base before measuring. Ratio of total returned gold to total paid gold; not an average of stage RTPs.",
+  "bonusChance": 0.012,
+  "calendar": [
+    {
+      "label": "初一",
+      "chance": 10,
+      "balls": 10
+    },
+    {
+      "label": "一般十五（不含八月）",
+      "chance": 10,
+      "balls": 10
+    },
+    {
+      "label": "八月十五",
+      "chance": 3,
+      "balls": 50
+    },
+    {
+      "label": "二月初二",
+      "chance": 1.2,
+      "balls": 0
+    },
+    {
+      "label": "其他日期",
+      "chance": 75.8,
+      "balls": 0
+    }
+  ],
+  "policy": "continuous",
+  "power": "uniform 1–15, change every five seconds",
+  "runs": 8,
+  "shotsPerRun": 8000,
+  "seedBase": 123456789,
+  "shots": 64000,
+  "points": 752850,
+  "referenceRtp": 1.176328125,
+  "runLevel95Interval": [
+    1.0624720447177314,
+    1.290184205282269
+  ],
+  "stages": {
+    "base": {
+      "paidBalls": 50654,
+      "freeBalls": 19670,
+      "paidPoints": 154420,
+      "freePoints": 59180,
+      "paidGold": 50654,
+      "returnedGold": 21360,
+      "stageRtp": 0.4216843684605362,
+      "contributionToTotal": 0.33375
+    },
+    "bonus": {
+      "paidBalls": 13346,
+      "freeBalls": 7000,
+      "paidPoints": 353300,
+      "freePoints": 185950,
+      "paidGold": 13346,
+      "returnedGold": 53925,
+      "stageRtp": 4.0405364903341825,
+      "contributionToTotal": 0.842578125
+    }
+  },
+  "ledger": {
+    "base": {
+      "paidBalls": 50654,
+      "freeBalls": 19670,
+      "paidPoints": 154420,
+      "freePoints": 59180
+    },
+    "bonus": {
+      "paidBalls": 13346,
+      "freeBalls": 7000,
+      "paidPoints": 353300,
+      "freePoints": 185950
+    },
+    "slotSpins": 5554,
+    "bonusAwards": 75,
+    "bonusRuns": 70,
+    "duplicateBonusAwards": 5
+  },
+  "samples": [
+    {
+      "seed": 123456789,
+      "shots": 8000,
+      "points": 87360,
+      "rtp": 1.092,
+      "seconds": 4457.833333352611,
+      "ledger": {
+        "base": {
+          "paidBalls": 6400,
+          "freeBalls": 2600,
+          "paidPoints": 20000,
+          "freePoints": 7220
+        },
+        "bonus": {
+          "paidBalls": 1600,
+          "freeBalls": 900,
+          "paidPoints": 38550,
+          "freePoints": 21590
+        },
+        "slotSpins": 664,
+        "bonusAwards": 9,
+        "bonusRuns": 9,
+        "duplicateBonusAwards": 0
+      }
+    },
+    {
+      "seed": 2777892550,
+      "shots": 8000,
+      "points": 88270,
+      "rtp": 1.103375,
+      "seconds": 4521.350000018353,
+      "ledger": {
+        "base": {
+          "paidBalls": 6600,
+          "freeBalls": 2390,
+          "paidPoints": 20180,
+          "freePoints": 7680
+        },
+        "bonus": {
+          "paidBalls": 1400,
+          "freeBalls": 800,
+          "paidPoints": 35660,
+          "freePoints": 24750
+        },
+        "slotSpins": 727,
+        "bonusAwards": 8,
+        "bonusRuns": 8,
+        "duplicateBonusAwards": 0
+      }
+    },
+    {
+      "seed": 1137361015,
+      "shots": 8000,
+      "points": 93920,
+      "rtp": 1.174,
+      "seconds": 4504.616666685263,
+      "ledger": {
+        "base": {
+          "paidBalls": 6385,
+          "freeBalls": 2570,
+          "paidPoints": 19580,
+          "freePoints": 8340
+        },
+        "bonus": {
+          "paidBalls": 1615,
+          "freeBalls": 900,
+          "paidPoints": 43620,
+          "freePoints": 22380
+        },
+        "slotSpins": 725,
+        "bonusAwards": 9,
+        "bonusRuns": 9,
+        "duplicateBonusAwards": 0
+      }
+    },
+    {
+      "seed": 3791796776,
+      "shots": 8000,
+      "points": 73160,
+      "rtp": 0.9145,
+      "seconds": 4145.23333335716,
+      "ledger": {
+        "base": {
+          "paidBalls": 6800,
+          "freeBalls": 2060,
+          "paidPoints": 20860,
+          "freePoints": 5900
+        },
+        "bonus": {
+          "paidBalls": 1200,
+          "freeBalls": 600,
+          "paidPoints": 31270,
+          "freePoints": 15130
+        },
+        "slotSpins": 664,
+        "bonusAwards": 6,
+        "bonusRuns": 6,
+        "duplicateBonusAwards": 0
+      }
+    },
+    {
+      "seed": 2151265241,
+      "shots": 8000,
+      "points": 103830,
+      "rtp": 1.297875,
+      "seconds": 4462.500000019209,
+      "ledger": {
+        "base": {
+          "paidBalls": 6000,
+          "freeBalls": 1730,
+          "paidPoints": 17520,
+          "freePoints": 5080
+        },
+        "bonus": {
+          "paidBalls": 2000,
+          "freeBalls": 1000,
+          "paidPoints": 54270,
+          "freePoints": 26960
+        },
+        "slotSpins": 591,
+        "bonusAwards": 12,
+        "bonusRuns": 10,
+        "duplicateBonusAwards": 2
+      }
+    },
+    {
+      "seed": 510733706,
+      "shots": 8000,
+      "points": 101050,
+      "rtp": 1.263125,
+      "seconds": 4406.9000000200185,
+      "ledger": {
+        "base": {
+          "paidBalls": 6200,
+          "freeBalls": 2510,
+          "paidPoints": 19160,
+          "freePoints": 7300
+        },
+        "bonus": {
+          "paidBalls": 1800,
+          "freeBalls": 900,
+          "paidPoints": 50000,
+          "freePoints": 24590
+        },
+        "slotSpins": 724,
+        "bonusAwards": 9,
+        "bonusRuns": 9,
+        "duplicateBonusAwards": 0
+      }
+    },
+    {
+      "seed": 3165169467,
+      "shots": 8000,
+      "points": 99150,
+      "rtp": 1.239375,
+      "seconds": 4342.550000020955,
+      "ledger": {
+        "base": {
+          "paidBalls": 6200,
+          "freeBalls": 2440,
+          "paidPoints": 18780,
+          "freePoints": 7420
+        },
+        "bonus": {
+          "paidBalls": 1800,
+          "freeBalls": 900,
+          "paidPoints": 48710,
+          "freePoints": 24240
+        },
+        "slotSpins": 706,
+        "bonusAwards": 10,
+        "bonusRuns": 9,
+        "duplicateBonusAwards": 1
+      }
+    },
+    {
+      "seed": 1524637932,
+      "shots": 8000,
+      "points": 106110,
+      "rtp": 1.326375,
+      "seconds": 4695.21666668249,
+      "ledger": {
+        "base": {
+          "paidBalls": 6069,
+          "freeBalls": 3370,
+          "paidPoints": 18340,
+          "freePoints": 10240
+        },
+        "bonus": {
+          "paidBalls": 1931,
+          "freeBalls": 1000,
+          "paidPoints": 51220,
+          "freePoints": 26310
+        },
+        "slotSpins": 753,
+        "bonusAwards": 12,
+        "bonusRuns": 10,
+        "duplicateBonusAwards": 2
+      }
+    }
+  ]
+}

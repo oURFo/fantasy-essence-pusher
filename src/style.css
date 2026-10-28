@@ -54,3 +54,5 @@ main{grid-template-columns:minmax(320px,1.35fr) minmax(260px,1fr);gap:40px}.mach
 .temple-knob:active .temple-knob-rotor{filter:brightness(1.22)}.temple-knob:focus-visible{outline:2px solid #fff0b7;outline-offset:5px}.temple-knob[aria-disabled=true]{opacity:.55;cursor:default}
 @media(prefers-reduced-motion:reduce){.temple-knob-rotor{transition:none}}
 @media(max-width:760px){.temple-panel{padding:18px}.temple-controls button{min-height:46px}.temple-knob-caption{font-size:10px;padding:1px 0}}
+
+.temple-calendar-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;color:#f8e4b8}.temple-calendar-table th,.temple-calendar-table td{padding:9px 5px;text-align:left;border-bottom:1px solid #b7864244}.temple-calendar-table th{color:#e9bf78}.temple-calendar-table td:nth-child(2){font-variant-numeric:tabular-nums;white-space:nowrap}.temple-calendar-table td:last-child{text-align:right;white-space:nowrap}

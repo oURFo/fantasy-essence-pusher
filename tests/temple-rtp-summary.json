@@ -1,0 +1,47 @@
+{
+  "target": 0.92,
+  "configuredBonusChance": 0.0081,
+  "projection": {
+    "baseReturnPerBaseCost": 0.41916548900068007,
+    "acceptedRunsPerBasePaidPerBonusProbability": 0.10222990566499254,
+    "goldPerBonusRun": 788.4151515151515,
+    "paidCostPerBonusRun": 197.9939393939394,
+    "solvedBonusChance": 0.00808084638423923,
+    "projectedRtp": 0.9210198900521392
+  },
+  "validation": {
+    "shots": 480000,
+    "referenceRtp": 0.9230583333333333,
+    "interval": [
+      0.8813529854691491,
+      0.9647636811975175
+    ],
+    "stages": {
+      "base": {
+        "paidBalls": 412391,
+        "freeBalls": 158810,
+        "paidPoints": 1258540,
+        "freePoints": 475360,
+        "paidGold": 412391,
+        "returnedGold": 173390,
+        "stageRtp": 0.42045049479741314,
+        "contributionToTotal": 0.36122916666666666
+      },
+      "bonus": {
+        "paidBalls": 67609,
+        "freeBalls": 34100,
+        "paidPoints": 1780640,
+        "freePoints": 916140,
+        "paidGold": 67609,
+        "returnedGold": 269678,
+        "stageRtp": 3.988788474907187,
+        "contributionToTotal": 0.5618291666666667
+      }
+    },
+    "bonusRuns": 341
+  },
+  "before": {
+    "shots": 32000,
+    "referenceRtp": 1.61184375
+  }
+}

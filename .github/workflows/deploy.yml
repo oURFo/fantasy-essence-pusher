@@ -28,6 +28,8 @@ jobs:
       - run: node tests/temple-game.mjs
       - run: node tests/temple-ui.mjs
       - run: node tests/temple-doors.mjs
+      - run: node tests/temple-ledger.mjs
+      - run: node tests/temple-rtp-fixture.mjs
       - run: node tests/mine-game.mjs
       - run: node tests/mine-ui.mjs
       - run: node tests/mine-layout.mjs
