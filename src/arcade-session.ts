@@ -1,3 +1,4 @@
+import {ThunderForge} from './forge-game.ts';
 import {TempleFortune} from './temple-game.ts';
 import {GoldMine} from './mine-game.ts';
 import {CoinPusher} from './physics.ts';
@@ -8,15 +9,16 @@ import {FruitPinball,FruitProgress} from './fruit-game.ts';
 import {NightMarket} from './ring-game.ts';
 import {FateOrbit} from './fate-game.ts';
 export class ArcadeSession {
-  game:CoinPusher|FruitPinball|NightMarket|FateOrbit|GoldMine|TempleFortune|null=null;
+  game:CoinPusher|FruitPinball|NightMarket|FateOrbit|GoldMine|TempleFortune|ThunderForge|null=null;
   machineId:MachineId|null=null;
   leaveRequested=false;
   readonly wallet:PlayerWallet;
   readonly fruitProgress:FruitProgress;
-  constructor(wallet:PlayerWallet,fruitProgress=new FruitProgress()){this.wallet=wallet;this.fruitProgress=fruitProgress;}
+  private storage?:import('./wallet.ts').WalletStorage;
+  constructor(wallet:PlayerWallet,fruitProgress=new FruitProgress(),storage?:import('./wallet.ts').WalletStorage){this.storage=storage;this.wallet=wallet;this.fruitProgress=fruitProgress;}
   enter(id:MachineId) {
     if(this.game||!MACHINES.some(m=>m.id===id))return false;
-    this.game=id==='temple-fortune'?new TempleFortune(this.wallet):id==='gold-mine'?new GoldMine(this.wallet):id==='fate-orbit'?new FateOrbit(this.wallet):id==='night-market'?new NightMarket(this.wallet):id==='fruit-banquet'?new FruitPinball(this.wallet,this.fruitProgress):id==='sky-wings'?new SkyWings(this.wallet):new CoinPusher(undefined,undefined,this.wallet);this.machineId=id;return true;
+    this.game=id==='thunder-forge'?new ThunderForge(this.wallet,undefined,this.storage):id==='temple-fortune'?new TempleFortune(this.wallet):id==='gold-mine'?new GoldMine(this.wallet):id==='fate-orbit'?new FateOrbit(this.wallet):id==='night-market'?new NightMarket(this.wallet):id==='fruit-banquet'?new FruitPinball(this.wallet,this.fruitProgress):id==='sky-wings'?new SkyWings(this.wallet):new CoinPusher(undefined,undefined,this.wallet);this.machineId=id;return true;
   }
   requestLeave(){if(!this.game)return false;this.leaveRequested=true;return true;}
   cancelLeave(){this.leaveRequested=false;}
