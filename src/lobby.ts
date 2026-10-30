@@ -1,6 +1,7 @@
 import {MACHINES,type MachineId} from './machines.ts';
 import {LobbyWorld,HALL,paymentLabel,type AvatarBody} from './lobby-world.ts';
 import type {WalletStorage} from './wallet.ts';
+import {drawCabinetSprite} from './lobby-sprites.ts';
 import './lobby.css';
 
 const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
@@ -33,7 +34,7 @@ export function initLobby(storage:WalletStorage|undefined,enter:(id:MachineId)=>
    if(p.x<camera-180||p.x>camera+viewWidth+180)continue;
    const near=world.nearby?.id===p.id,m=MACHINES.find(m=>m.id===p.id)!;
    ctx.fillStyle=near?'#ffb64f55':p.section===world.layout.sections-1?'#f8a9c044':'#64cecb44';ctx.beginPath();ctx.ellipse(p.x,466,132,28,0,0,Math.PI*2);ctx.fill();
-   ctx.save();ctx.shadowColor=near?'#fff8a8':'#73482644';ctx.shadowBlur=near?20:8;sprite(images[1],p.art,p.x,465,250,332);ctx.restore();
+   ctx.save();ctx.shadowColor=near?'#fff8a8':'#73482644';ctx.shadowBlur=near?20:8;drawCabinetSprite(ctx,images[1],p.art,p.x,465,250,332);ctx.restore();
    pill(p.x-132,83,264,36,near?'#fff5cf':'#ffffffef');ctx.fillStyle='#3b4163';ctx.font='700 19px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.fillText(m.name,p.x,107);
    if(near){pill(p.x+50,475,100,28,'#ec5d87');ctx.fillStyle='white';ctx.font='700 13px sans-serif';ctx.fillText('開始冒險',p.x+100,494);}
    if(!reduced){const glow=(Math.sin(time*.002+p.art)+1)*.5;ctx.globalAlpha=.25+glow*.4;ctx.fillStyle='#fff1a0';for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(p.x-70+i*70,449,3,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;}

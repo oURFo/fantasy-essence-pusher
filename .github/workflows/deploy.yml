@@ -26,6 +26,7 @@ jobs:
       - run: node tests/essence-return.mjs
       - run: node tests/lobby-session.mjs
       - run: node tests/lobby-world.mjs
+      - run: node tests/lobby-sprites.mjs
       - run: node tests/temple-game.mjs
       - run: node tests/temple-ui.mjs
       - run: node tests/temple-doors.mjs
