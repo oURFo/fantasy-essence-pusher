@@ -27,6 +27,9 @@ jobs:
       - run: node tests/lobby-session.mjs
       - run: node tests/lobby-world.mjs
       - run: node tests/lobby-sprites.mjs
+      - run: node tests/avatar-motion.mjs
+      - run: node tests/avatar-artwork.mjs
+      - run: node tests/wardrobe.mjs
       - run: node tests/temple-game.mjs
       - run: node tests/temple-ui.mjs
       - run: node tests/temple-doors.mjs

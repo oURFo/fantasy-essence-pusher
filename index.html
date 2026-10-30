@@ -5,7 +5,7 @@
 <header class="app-header"><div><span class="eyebrow">FANTASY ARCADE</span><h1 id="page-title">冒險大廳</h1><p id="page-subtitle">選擇一台機台，展開你的下一段冒險。</p></div><div class="lobby-wallet" id="lobby-wallet"><span>共用金幣</span><strong id="lobby-gold">1,000</strong><small>本機保存 · 所有機台共用</small><button id="lobby-refill" type="button">領取 500 金幣</button><small id="lobby-refill-timer">每 4 小時可領一次</small><span id="lobby-refill-message" role="status" aria-live="polite"></span></div></header>
 <nav id="machine-nav" class="return-nav" hidden><button id="back-to-lobby" class="back-button">← 返回大廳</button><span>離開機台將重置盤面，金幣保留</span></nav>
 <section id="lobby-screen" class="lobby-screen" aria-label="歡樂遊樂場">
-  <div class="hall-toolbar"><span class="hall-welcome">好玩的下一站，就在前方！</span><button id="change-avatar" type="button">切換角色</button></div>
+  <div class="hall-toolbar"><span class="hall-welcome">好玩的下一站，就在前方！</span><button id="change-avatar" type="button">角色／衣櫃</button></div>
   <div class="hall-stage">
     <canvas id="lobby-canvas" tabindex="0" role="img" aria-label="可走動的遊樂場。點擊地板移動、點擊機台走到機台前；鍵盤方向鍵或WASD走動，E進入附近機台。也可使用下方機台選單。"></canvas>
     <button id="hall-prev" class="hall-direction" type="button" aria-label="走到前一台機台">‹</button><button id="hall-next" class="hall-direction" type="button" aria-label="走到下一台機台">›</button>
@@ -17,7 +17,15 @@
   <p id="lobby-error" role="status" aria-live="polite"></p>
   <p class="lobby-footnote">金幣與角色儲存在目前瀏覽器。離開一般機台會重置盤面；雷神鍛造保留能量與等級。</p>
 </section>
-<dialog id="avatar-picker" class="avatar-picker" aria-labelledby="avatar-picker-title"><h2 id="avatar-picker-title">歡迎光臨！選擇你的角色</h2><p>今天想用哪個造型逛遊樂場？之後隨時可以切換。</p><div class="avatar-choices"><button data-avatar="male" type="button"><span class="avatar-preview" aria-hidden="true"></span>男角色</button><button data-avatar="female" type="button"><span class="avatar-preview female" aria-hidden="true"></span>女角色</button></div><button id="avatar-picker-cancel" type="button" hidden>保留目前角色</button></dialog>
+<dialog id="avatar-picker" class="avatar-picker wardrobe-dialog" aria-labelledby="avatar-picker-title">
+ <h2 id="avatar-picker-title">我的衣櫃</h2><p>自由搭配，今天想用什麼造型出發？</p>
+ <div class="wardrobe-layout"><div class="wardrobe-model">
+  <div class="wardrobe-bodies" role="group" aria-label="角色選擇"><button type="button" data-wardrobe-body="male" aria-pressed="true">男角色</button><button type="button" data-wardrobe-body="female" aria-pressed="false">女角色</button></div>
+  <canvas id="wardrobe-preview" width="240" height="290" role="img" aria-label="角色即時換裝與行走預覽"></canvas>
+  <div class="avatar-motion-controls"><button id="avatar-preview-turn" type="button">轉向預覽</button><button id="avatar-preview-walk" type="button" aria-pressed="false">預覽走路</button></div><p id="avatar-preview-status" class="avatar-preview-status" role="status">待機 · 正面</p>
+ </div><div class="wardrobe-closet"><div id="wardrobe-tabs" class="wardrobe-tabs" role="group" aria-label="換裝部位"></div><p class="wardrobe-free">開幕衣櫃 · 全部免費</p><div id="wardrobe-items" class="wardrobe-items" role="group" aria-label="可穿戴物品"></div><p id="wardrobe-equipped" class="wardrobe-equipped"></p><button id="wardrobe-reset" type="button">還原已儲存搭配</button></div></div>
+ <p class="wardrobe-note">男、女角色各自保留搭配。按儲存才會套用到大廳。</p><div class="wardrobe-actions"><button id="avatar-picker-cancel" type="button" hidden>取消</button><button id="wardrobe-save" type="button">儲存造型</button></div>
+</dialog>
 <main id="machine-screen" hidden>
 <section class="machine">
   <div class="wallet" aria-label="金幣餘額"><span class="wallet-symbol" aria-hidden="true">◈</span><div><span class="wallet-label">金幣</span><strong id="gold-balance" aria-label="目前金幣">1,000</strong></div></div>

@@ -29,3 +29,6 @@ Transparent PNG GAME SPRITE ATLAS of EXACTLY EIGHT separate chibi arcade cabinet
 ### avatars.png
 
 Transparent PNG character sprite sheet, EXACTLY 8 equal cells in 4 columns by 2 rows. Orthographic slightly elevated FRONT view cute chibi young adult visitors for bright cheerful arcade game. TOP ROW: same male character with brown short hair, turquoise varsity jacket white shirt navy pants white sneakers: front idle, walking left foot forward, walking right foot forward, front happy wave. BOTTOM ROW: same female character with brown ponytail, coral pink jacket cream skirt navy leggings white sneakers: front idle, walking left foot forward, walking right foot forward, front happy wave. Consistent identical body proportions across all cells, 2.5 heads tall, full body visible, feet at same baseline in every cell. Warm friendly faces, polished softly lit 3D toy illustration, no text, no logos, no background, true transparent alpha, generous padding around every cell, no overlapping. These are game sprites not a decorated poster.
+
+## 紙娃娃與行走更新
+`avatars.png` 為舊版兩幀角色素材。正式行走已改用 avatar-male-walk.png／avatar-female-walk.png，新增 headwear.png；完整提示詞與生成紀錄見同目錄 PAPERDOLL-ARTWORK.md。
