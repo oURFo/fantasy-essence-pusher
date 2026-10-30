@@ -1,8 +1,8 @@
 import {MACHINES,type MachineId} from './machines.ts';
-import {LobbyWorld,HALL,paymentLabel,type AvatarBody} from './lobby-world.ts';
+import {LobbyWorld,HALL,paymentLabel} from './lobby-world.ts';
 import type {WalletStorage} from './wallet.ts';
 import {drawCabinetSprite} from './lobby-sprites.ts';
-import {prepareAvatar,prepareHeadwear,drawDressedAvatar,type PreparedAvatar,type HeadwearArtwork} from './avatar-rendering.ts';
+import {prepareRigArtwork,drawRigAvatar,RIG_ASSETS,type RigArtwork} from './avatar-rendering.ts';
 import {WardrobeProfile} from './wardrobe.ts';
 import {initWardrobe} from './wardrobe-ui.ts';
 import './lobby.css';
@@ -13,14 +13,14 @@ export function initLobby(storage:WalletStorage|undefined,enter:(id:MachineId)=>
  const picker=$<HTMLDialogElement>('avatar-picker'),play=$<HTMLButtonElement>('lobby-play'),select=$<HTMLSelectElement>('lobby-machine-select');
  let active=false,loaded=false,camera=0,viewWidth=1080,scale=1,selected:MachineId=world.layout.placements[0].id,previousNearby='',error=false;
  const keys=new Set<string>(),images:HTMLImageElement[]=[];
- let avatars:Record<AvatarBody,PreparedAvatar>|undefined;
- let headwear:HeadwearArtwork|undefined;
+ let artwork:RigArtwork|undefined;
+
  const wardrobeProfile=new WardrobeProfile(storage),wardrobe=initWardrobe(world,wardrobeProfile,()=>canvas.focus({preventScroll:true}));
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  for(const p of world.layout.placements){const m=MACHINES.find(m=>m.id===p.id)!,o=document.createElement('option');o.value=m.id;o.textContent=`${m.name} · ${paymentLabel(m.id)}`;select.append(o);}
  async function load(){
   error=false;$('hall-loading').hidden=false;$('hall-loading-text').textContent='正在點亮遊樂場…';$('hall-retry').hidden=true;
-  try{const loadedImages=await Promise.all(['hall','cabinets','avatar-male-walk','avatar-female-walk','headwear'].map(name=>new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=new URL(`./assets/lobby/${name}.png`,document.baseURI).href;})));images.splice(0,images.length,...loadedImages);avatars={male:prepareAvatar(images[2],'male'),female:prepareAvatar(images[3],'female')};headwear=prepareHeadwear(images[4]);loaded=true;$('hall-loading').hidden=true;}catch(errorDetail){error=true;console.error(errorDetail);$('hall-loading-text').textContent='遊樂場素材尚未載入，請重試。';$('hall-retry').hidden=false;}
+  try{const loadedImages=await Promise.all(['hall','cabinets','headwear',...RIG_ASSETS.map(name=>'rig-v2/'+name)].map(name=>new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=new URL(`./assets/lobby/${name}.png`,document.baseURI).href;})));images.splice(0,images.length,...loadedImages);artwork=prepareRigArtwork(images.slice(3),images[2]);loaded=true;$('hall-loading').hidden=true;}catch(errorDetail){error=true;console.error(errorDetail);$('hall-loading-text').textContent='遊樂場素材尚未載入，請重試。';$('hall-retry').hidden=false;}
  }
  void load();$('hall-retry').addEventListener('click',()=>{if(error)void load();});
  function resize(){const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;scale=r.height/HALL.height;viewWidth=r.width/scale;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);}
@@ -32,7 +32,7 @@ export function initLobby(storage:WalletStorage|undefined,enter:(id:MachineId)=>
   if(!locked)world.step(dt,(keys.has('ArrowRight')||keys.has('d')?1:0)-(keys.has('ArrowLeft')||keys.has('a')?1:0),(keys.has('ArrowDown')||keys.has('s')?1:0)-(keys.has('ArrowUp')||keys.has('w')?1:0));
   const desired=Math.max(0,Math.min(Math.max(0,world.layout.width-viewWidth),world.x-viewWidth*.45));camera+= (desired-camera)*(reduced?1:Math.min(1,dt*9));
   if(!loaded)return;
-  wardrobe.draw(avatars!,headwear!,time,reduced);
+  wardrobe.draw(artwork!,time,reduced);
   ctx.setTransform(canvas.width/viewWidth,0,0,canvas.height/HALL.height,0,0);ctx.clearRect(0,0,viewWidth,HALL.height);ctx.save();ctx.translate(-camera,0);
   // Alternating reflection shares identical edge pixels: every future section joins cleanly.
   for(let s=Math.max(0,Math.floor(camera/HALL.sectionWidth));s<Math.min(world.layout.sections,Math.ceil((camera+viewWidth)/HALL.sectionWidth));s++){ctx.save();ctx.translate(s*HALL.sectionWidth,0);if(s%2){ctx.translate(HALL.sectionWidth,0);ctx.scale(-1,1);}ctx.drawImage(images[0],0,0,HALL.sectionWidth,HALL.height);ctx.restore();}
@@ -48,8 +48,8 @@ export function initLobby(storage:WalletStorage|undefined,enter:(id:MachineId)=>
   if(world.target){ctx.strokeStyle='#eb6b90';ctx.lineWidth=3;ctx.setLineDash([5,6]);ctx.beginPath();ctx.ellipse(world.target.x,world.target.y,20,7,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}
   if(world.appearance){
    ctx.fillStyle='#76523c30';ctx.beginPath();ctx.ellipse(world.x,world.y-4,31,10,0,0,Math.PI*2);ctx.fill();
-   drawDressedAvatar(ctx,avatars![world.appearance.body],world.appearance.body,wardrobeProfile.look(world.appearance.body),headwear!,world.direction,world.walking,world.walkDistance,world.x,world.y,reduced);
-   const labelY=world.y-(wardrobeProfile.look(world.appearance.body).head==='none'?160:188);pill(world.x-24,labelY,48,22,'#ffffffed');ctx.fillStyle='#505b7b';ctx.font='700 12px sans-serif';ctx.textAlign='center';ctx.fillText('你',world.x,labelY+16);
+   drawRigAvatar(ctx,artwork!,wardrobeProfile.look(world.appearance.body),world.direction,world.walking,world.walkDistance,world.x,world.y,reduced);
+   const labelY=world.y-(wardrobeProfile.look(world.appearance.body).accessory==='none'?160:188);pill(world.x-24,labelY,48,22,'#ffffffed');ctx.fillStyle='#505b7b';ctx.font='700 12px sans-serif';ctx.textAlign='center';ctx.fillText('你',world.x,labelY+16);
   }
   ctx.restore();
   const nearby=world.nearby,key=nearby?.id??'';
