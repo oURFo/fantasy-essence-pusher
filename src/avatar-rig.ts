@@ -1,23 +1,36 @@
 import {WALK_STRIDE,type AvatarDirection} from './avatar-motion.ts';
-
-/** All dimensions in the shared 136px avatar coordinate space. No sex variants. */
+/** One complete 136px master silhouette. Clothes never redefine its head or limb proportions. */
 export const AVATAR_RIG={
- id:'shared-v2',height:136,
- head:{front:{x:-28,y:-136,w:56,h:54},side:{x:-25,y:-136,w:54,h:54},back:{x:-28,y:-136,w:56,h:54}},
- neck:{x:0,y:-83},shoulder:{x:14,y:-76},hip:{x:7,y:-44},knee:{x:7,y:-23},ankle:{x:7,y:-5},
- torso:{x:-18,y:-85,w:36,h:43},arm:{w:11,h:33},thigh:{w:11,h:24},calf:{w:10,h:21},shoe:{w:15,h:9},
- face:{front:{x:-17,y:-119,w:34,h:25},side:{x:9,y:-120,w:16,h:24}},
+ id:'shared-v3',height:136,frameWidth:128,headBottom:-80,
+ face:{front:{x:-19,y:-111,w:38,h:24},side:{x:16,y:-111,w:16,h:23}},
+ hair:{
+  short:[{x:-33,y:-140,w:66,h:54},{x:-31,y:-140,w:60,h:60},{x:-33,y:-140,w:66,h:57}],
+  bob:[{x:-33,y:-140,w:66,h:61},{x:-32,y:-139,w:61,h:61},{x:-33,y:-139,w:66,h:59}],
+  ponytail:[{x:-41,y:-146,w:76,h:68},{x:-42,y:-145,w:72,h:67},{x:-33,y:-142,w:66,h:69}],
+ },
  mounts:{
-  cap:[{x:-31,y:-144,w:62,h:36},{x:-27,y:-144,w:65,h:36},{x:-31,y:-144,w:62,h:36}],
-  crown:[{x:-21,y:-151,w:42,h:26},{x:-20,y:-151,w:40,h:26},{x:-21,y:-151,w:42,h:26}],
-  cat:[{x:-30,y:-151,w:60,h:51},{x:-12,y:-150,w:31,h:49},{x:-30,y:-151,w:60,h:51}],
-  star:[{x:-27,y:-124,w:22,h:24},{x:-15,y:-125,w:22,h:24},{x:8,y:-124,w:22,h:24}],
+  cap:[{x:-32,y:-140,w:64,h:34},{x:-31,y:-140,w:74,h:34},{x:-32,y:-140,w:64,h:34}],
+  crown:[{x:-21,y:-150,w:42,h:25},{x:-14,y:-149,w:29,h:25},{x:-21,y:-150,w:42,h:25}],
+  cat:[{x:-34,y:-150,w:68,h:51},{x:-12,y:-150,w:17,h:51},{x:-34,y:-150,w:68,h:51}],
+  star:[{x:-29,y:-120,w:22,h:13},{x:-19,y:-121,w:18,h:15},{x:12,y:-120,w:22,h:13}],
  },
 } as const;
 export function rigMotion(direction:AvatarDirection,walking:boolean,distance:number,reduced=false){
- const phase=walking&&!reduced?Math.max(0,distance)/WALK_STRIDE*Math.PI*2:0,s=Math.sin(phase),active=walking&&!reduced;
- return {view:direction==='up'?2:direction==='left'||direction==='right'?1:0,flip:direction==='left',phase,active,bob:active?s*s*2:0,
-  legs:[0,1].map(i=>{const p=phase+i*Math.PI;return {thigh:active?-Math.sin(p)*.34:0,knee:active?Math.max(0,-Math.cos(p))*.42:0,lift:active?Math.max(0,-Math.sin(p))*2:0};}),
-  arms:active?[s*.24,-s*.24]:[0,0]};
+ const phase=walking&&!reduced?Math.max(0,distance)/WALK_STRIDE*Math.PI*2:0,active=walking&&!reduced;
+ return {view:direction==='up'?2:direction==='left'||direction==='right'?1:0,flip:direction==='left',phase,active,frame:Math.floor(phase/(Math.PI*2)*4)%4,bob:active?Math.abs(Math.sin(phase))*.5:0};
+}
+/** Narrowest connected row between skull and shoulders: one neck anchor for a complete pose. */
+export function neckAnchor(rgba:Uint8ClampedArray,width:number,height:number){
+ let best={width:Infinity,x:width/2,y:Math.round(height*.44)};
+ for(let y=Math.floor(height*.34);y<height*.58;y++){
+  let left=width,right=-1;for(let x=0;x<width;x++)if(rgba[(y*width+x)*4+3]>=96){left=Math.min(left,x);right=Math.max(right,x);}
+  const span=right-left+1;if(span>width*.08&&span<best.width)best={width:span,x:(left+right)/2,y};
+ }
+ if(!Number.isFinite(best.width))throw new Error('Character has no neck anchor');return best;
 }
 export function rigMount(accessory:keyof typeof AVATAR_RIG.mounts,direction:AvatarDirection){return AVATAR_RIG.mounts[accessory][direction==='up'?2:direction==='left'||direction==='right'?1:0];}
+
+export function figurePlacement(width:number,height:number){
+ if(width<=0||height<=0)throw new Error('Empty character silhouette');
+ const scale=AVATAR_RIG.height/height;return {x:(AVATAR_RIG.frameWidth-width*scale)/2,y:0,width:width*scale,height:AVATAR_RIG.height,scale};
+}

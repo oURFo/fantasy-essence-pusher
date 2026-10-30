@@ -22,7 +22,7 @@ export function safeLook(value:unknown,fallback:WardrobeLook=defaultLook()):Ward
  if(!EFFECTS_ENABLED)look.effect='none';return look;
 }
 // Preset IDs are deliberately excluded: both saved looks use the exact same rig.
-export function lookKey(_preset:AvatarBody,look:WardrobeLook){return `shared-rig-v2:${look.hairStyle}:${look.hairColor}:${look.expression}:${look.suit}:${look.accessory}:${look.effect}`;}
+export function lookKey(_preset:AvatarBody,look:WardrobeLook){return `shared-rig-v3:${look.hairStyle}:${look.hairColor}:${look.expression}:${look.suit}:${look.accessory}:${look.effect}`;}
 export function migrateLook(old:unknown,preset:AvatarBody):WardrobeLook{
  const value=old&&typeof old==='object'?old as Record<string,unknown>:{};
  return safeLook({hairStyle:preset==='female'?'ponytail':'short',hairColor:value.hair,accessory:value.head,expression:'smile',suit:value.top==='berry'?'rose':value.top==='sky'?'denim':preset==='female'?'rose':'arcade',effect:'none'},defaultLook(preset));
@@ -36,5 +36,5 @@ export class WardrobeProfile {
   if(!restored)try{const old=JSON.parse(storage?.getItem(LEGACY_WARDROBE_KEY)??'null');if(old?.version===1)this.saved={male:migrateLook(old.male,'male'),female:migrateLook(old.female,'female')};}catch{}
  }
  look(preset:AvatarBody){return {...this.saved[preset]};}
- commit(looks:Record<AvatarBody,WardrobeLook>){this.saved={male:safeLook(looks.male),female:safeLook(looks.female,defaultLook('female'))};try{this.storage?.setItem(WARDROBE_KEY,JSON.stringify({version:2,rig:'shared-v2',...this.saved}));}catch{}}
+ commit(looks:Record<AvatarBody,WardrobeLook>){this.saved={male:safeLook(looks.male),female:safeLook(looks.female,defaultLook('female'))};try{this.storage?.setItem(WARDROBE_KEY,JSON.stringify({version:2,rig:'shared-v3',...this.saved}));}catch{}}
 }
