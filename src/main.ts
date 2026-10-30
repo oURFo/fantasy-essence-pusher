@@ -1,3 +1,4 @@
+import {initLobby} from './lobby.ts';
 import {ThunderForge} from './forge-game.ts';
 import {loadForgeArtwork,renderForge} from './forge-rendering.ts';
 import {initForgeUI} from './forge-ui.ts';
@@ -48,6 +49,7 @@ const fateUI=initFateUI(()=>session.game instanceof FateOrbit?session.game:null,
 const templeUI=initTempleUI(()=>session.game instanceof TempleFortune?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const mineUI=initMineUI(()=>session.game instanceof GoldMine?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const fateInput=bindFateInput(()=>session.game instanceof FateOrbit?session.game:null,()=>document.hidden||session.leaveRequested,updateUI,fateUI.unlock);
+const lobby=initLobby(storage,id=>{void enterMachine(id);},()=>entering||Boolean(session.game));
 function resetClock(){forgeUI.cancel();templeUI.cancel();mineUI.cancel();fateInput.cancel();gmCode.reset();ringInput.cancel();accumulator=0;previous=0;plunger.cancel();}
 function updateRefill(){
  const seconds=Math.ceil(wallet.refillRemaining()/1000),button=$<HTMLButtonElement>('lobby-refill');
@@ -100,7 +102,7 @@ function updateUI(){
 }
 function showLobby(){
  $('lobby-screen').hidden=false;$('machine-screen').hidden=true;$('lobby-wallet').hidden=false;$('machine-nav').hidden=true;
- $('page-title').textContent='冒險大廳';$('page-subtitle').textContent='選擇一台機台，展開你的下一段冒險。';document.title='冒險大廳 · 秘境金庫';syncWallet();resetClock();
+ document.body.classList.add('in-lobby');lobby.setActive(true);$('page-title').textContent='歡樂遊樂場';$('page-subtitle').textContent='走走逛逛，發現你的下一台最愛。';document.title='歡樂遊樂場 · FANTASY ARCADE';syncWallet();resetClock();
 }
 async function ensureReady(id:MachineId){
  if(id==='thunder-forge'){await loadForgeArtwork();return;}
@@ -115,10 +117,10 @@ async function ensureReady(id:MachineId){
 function renderGame(){const game=session.game;if(game instanceof ThunderForge)renderForge(game);else if(game instanceof TempleFortune)renderTemple(game);else if(game instanceof GoldMine)renderMine(game);else if(game instanceof FateOrbit)renderFate(game);else if(game instanceof NightMarket)renderRing(game);else if(game instanceof FruitPinball)renderFruit(game);else if(game instanceof SkyWings)renderSky(game);else if(game)render(game);}
 async function enterMachine(id:MachineId){
  if(entering||session.game)return;entering=true;
- const button=$<HTMLButtonElement>(id==='thunder-forge'?'enter-forge':id==='temple-fortune'?'enter-temple':id==='gold-mine'?'enter-mine':id==='fate-orbit'?'enter-fate':id==='night-market'?'enter-ring':id==='fruit-banquet'?'enter-fruit':id==='sky-wings'?'enter-sky':'enter-machine');
- const label=button.textContent;document.querySelectorAll<HTMLButtonElement>('[data-machine]').forEach(b=>b.disabled=true);button.textContent='正在準備機台…';$('lobby-error').textContent='';
+ const button=$<HTMLButtonElement>('lobby-play');
+ const label=button.textContent;button.disabled=true;button.textContent='正在準備機台…';$('lobby-error').textContent='';
  try{
-  await ensureReady(id);if(!session.enter(id))return;
+  await ensureReady(id);if(!session.enter(id))return;lobby.setActive(false);document.body.classList.remove('in-lobby');
   $('lobby-screen').hidden=true;$('machine-screen').hidden=false;$('lobby-wallet').hidden=true;$('machine-nav').hidden=false;
   const machine=MACHINES.find(m=>m.id===id)!;const sky=id==='sky-wings',fruit=id==='fruit-banquet',ring=id==='night-market',fate=id==='fate-orbit',mine=id==='gold-mine',temple=id==='temple-fortune',forge=id==='thunder-forge';
   $('page-title').textContent=machine.name;$('page-subtitle').textContent=machine.description;document.title=`${machine.name} · 冒險遊藝場`;
@@ -140,7 +142,7 @@ async function enterMachine(id:MachineId){
   $('loading').style.display='none';resetClock();updateUI();renderGame();
   history.pushState({view:'machine',id},'',`#machine/${id}`);window.scrollTo({top:0,behavior:'auto'});$('back-to-lobby').focus({preventScroll:true});
  }catch(error){$('lobby-error').textContent='機台載入失敗，請稍後重試。';console.error(error);}
- finally{entering=false;document.querySelectorAll<HTMLButtonElement>('[data-machine]').forEach(b=>b.disabled=false);button.textContent=label;}
+ finally{entering=false;button.disabled=false;button.textContent=label;}
 }
 function requestLeave(){
  if(session.leaveRequested||!session.requestLeave())return;
@@ -149,7 +151,7 @@ function requestLeave(){
 function cancelLeave(){session.cancelLeave();dialog.close();resetClock();updateUI();$('back-to-lobby').focus({preventScroll:true});}
 function confirmLeave(){
  if(!session.confirmLeave())return;
- dialog.close();showLobby();history.replaceState({view:'lobby'},'','#lobby');window.scrollTo({top:0,behavior:'auto'});$('enter-machine').focus({preventScroll:true});
+ dialog.close();showLobby();history.replaceState({view:'lobby'},'','#lobby');window.scrollTo({top:0,behavior:'auto'});lobby.focus();
 }
 function drop(){if(session.game&&!document.hidden&&!session.leaveRequested){if(session.game instanceof FruitPinball)session.game.start();else if(session.game instanceof FateOrbit){fateUI.unlock();session.game.shoot();}else if(session.game instanceof GoldMine||session.game instanceof TempleFortune){session.game.shoot();}else if(!(session.game instanceof NightMarket))session.game.drop();updateUI();}}
 function frame(ms:number){
@@ -158,11 +160,11 @@ function frame(ms:number){
   accumulator+=delta;while(accumulator>=CONFIG.fixedStep){session.step();accumulator-=CONFIG.fixedStep;}
   renderGame();if(ms-lastUI>=100){updateUI();lastUI=ms;}
  }
+ if(!session.game)lobby.draw(ms,delta);
  requestAnimationFrame(frame);
 }
 $('drop').addEventListener('click',drop);
 $('auto-drop').addEventListener('click',()=>{if(session.game&&!document.hidden&&!session.leaveRequested){if(!(session.game instanceof FruitPinball)&&!(session.game instanceof NightMarket)&&!(session.game instanceof FateOrbit)&&!(session.game instanceof GoldMine)&&!(session.game instanceof TempleFortune))session.game.setAutoDrop(!session.game.autoDrop);updateUI();}});
-document.querySelectorAll<HTMLButtonElement>('[data-machine]').forEach(button=>button.addEventListener('click',()=>{void enterMachine(button.dataset.machine as MachineId);}));
 $('back-to-lobby').addEventListener('click',requestLeave);
 $('keep-playing').addEventListener('click',cancelLeave);$('confirm-leave').addEventListener('click',confirmLeave);
 dialog.addEventListener('cancel',event=>{event.preventDefault();cancelLeave();});
@@ -189,7 +191,7 @@ for(let i=0;i<SLOT_REWARDS.length;i++){
  const amount=document.createElement('b');amount.textContent=`${prize.amount} 顆`;
  const chance=document.createElement('small');chance.textContent=`${prize.weight/10}%`;row.append(icon,text,amount,chance);$('slot-paytable').append(row);
 }
-const machine=MACHINES[0];$('machine-card-name').textContent=machine.name;$('machine-card-description').textContent=machine.description;$<HTMLImageElement>('machine-preview').src=new URL(`./assets/${machine.image}`,document.baseURI).href;
+
 for(let tier=0;tier<3;tier++){
  const c=SKY_TIERS[tier],section=document.createElement('section'),heading=document.createElement('h3');heading.textContent=c.name;section.append(heading);
  const grouped=new Map<number,number>();for(let i=0;i<8;i++)grouped.set(c.rewards[i],(grouped.get(c.rewards[i])??0)+c.weights[i]);

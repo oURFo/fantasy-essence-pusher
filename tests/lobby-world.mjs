@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import {LobbyWorld,buildHall,HALL,LOBBY_PROFILE_KEY,paymentKind,CABINET_ART} from '../src/lobby-world.ts';
+import {MACHINES} from '../src/machines.ts';
+const data=new Map(),storage={getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v)};
+const world=new LobbyWorld(storage);assert.equal(world.appearance,null);world.moveTo(500,600);assert.equal(world.target,null);
+world.choose('female');world.approach('night-market');for(let i=0;i<700;i++)world.step(1/60);
+assert.equal(world.nearby.id,'night-market');world.stop();
+let restored=new LobbyWorld(storage);assert.equal(restored.appearance.body,'female');assert.equal(restored.nearby.id,'night-market');
+restored.choose('male');assert.equal(new LobbyWorld(storage).appearance.body,'male');assert.equal(new LobbyWorld(storage).nearby.id,'night-market');
+const snapshot=storage.getItem(LOBBY_PROFILE_KEY);restored.moveTo(NaN,0);assert.equal(restored.target,null);assert.equal(storage.getItem(LOBBY_PROFILE_KEY),snapshot);
+world.moveTo(-100,-100);for(let i=0;i<1000;i++)world.step(1/60);assert.ok(world.x>=65);assert.equal(world.y,HALL.aisleTop);
+world.moveTo(1e8,1e8);for(let i=0;i<1000;i++)world.step(1/60);assert.equal(world.x,world.layout.width-65);assert.equal(world.y,HALL.aisleBottom);
+world.approach('sky-wings');world.step(1/60,-1,0);assert.equal(world.target,null,'keyboard overrides pointer destination');world.stop();assert.equal(world.walking,false);
+const layout=buildHall(),continuous=layout.placements.filter(p=>paymentKind(p.id)==='continuous'),ticket=layout.placements.filter(p=>paymentKind(p.id)==='ticket');
+assert.equal(layout.placements.length,MACHINES.length);assert.equal(new Set(layout.placements.map(p=>p.id)).size,MACHINES.length);
+assert.ok(Math.max(...continuous.map(p=>p.section))<Math.min(...ticket.map(p=>p.section)));
+for(const p of layout.placements){assert.ok(p.x>0&&p.x<layout.width);assert.ok(Number.isInteger(CABINET_ART[p.id]));const w=new LobbyWorld();w.choose('male');w.approach(p.id);for(let i=0;i<700;i++)w.step(1/60);assert.equal(w.nearby?.id,p.id,'every cabinet is physically reachable');}
+const expanded=buildHall([...MACHINES,...Array.from({length:4},()=>({id:'night-market'}))]);assert.ok(expanded.width>layout.width);assert.deepEqual(expanded.placements.slice(0,layout.placements.length),layout.placements,'right expansion preserves existing placements');
+data.set(LOBBY_PROFILE_KEY,JSON.stringify({version:1,body:'female',x:-400,y:5000}));restored=new LobbyWorld(storage);assert.equal(restored.x,65);assert.equal(restored.y,HALL.aisleBottom);
+data.set(LOBBY_PROFILE_KEY,'broken');assert.equal(new LobbyWorld(storage).appearance,null);
+const denied=new LobbyWorld({getItem(){throw Error('denied');},setItem(){throw Error('denied');}});denied.choose('male');denied.approach('sky-wings');for(let i=0;i<300;i++)denied.step(1/60);assert.equal(denied.nearby.id,'sky-wings');
+console.log('Walkable lobby passed: 8 reachable cabinets, separate payment placement, right expansion, movement bounds, profile/position restoration, avatar switch and blocked storage.');
