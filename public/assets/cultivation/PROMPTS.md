@@ -49,3 +49,5 @@ Transparent game VFX sprite atlas THREE isolated objects in ONE horizontal row: 
 提示詞：
 
 A single full chibi ARCADE CABINET for Chinese xianxia survival game, front slightly three-quarter view matching cheerful toy arcade lobby props. Jade green and ivory cabinet with gold carved dragon columns, roof like small elegant Chinese immortal pavilion, warm glowing lanterns, large screen showing a tiny white-robed swordsman surrounded by colorful demons on a jade arena, two bright red joystick controls, coin slot, complete solid base with feet resting on same baseline. Joyful premium polished3D toy render, clear full silhouette with abundant transparent padding. No floor, external shadows, no words, letters, logos or labels. TRUE transparent background.
+
+無邊界第二版新增素材與提示見 [V2-PROMPTS.md](V2-PROMPTS.md)。

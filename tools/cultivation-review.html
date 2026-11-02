@@ -4,20 +4,26 @@ import {Cultivation} from '../src/cultivation-game.ts';
 import {PlayerWallet} from '../src/wallet.ts';
 import {loadCultivationArtwork,renderCultivation} from '../src/cultivation-rendering.ts';
 import {initCultivationUI} from '../src/cultivation-ui.ts';
-import {seeded} from '../src/cultivation-rules.ts';
+import {seeded,emptySkills,SKILLS,SKILL_NAMES} from '../src/cultivation-rules.ts';
 const parsed=new DOMParser().parseFromString(await(await fetch('/index.html')).text(),'text/html');parsed.querySelectorAll('script').forEach(s=>s.remove());document.body.innerHTML=parsed.body.innerHTML;
 const el=id=>document.getElementById(id);el('lobby-screen').hidden=true;el('machine-screen').hidden=false;el('machine-screen').dataset.machine='cultivation';el('lobby-wallet').hidden=true;el('machine-nav').hidden=false;el('page-title').textContent='萬妖問道';el('page-subtitle').textContent='開發畫面檢查 · 此頁不寫入玩家金幣、法力與進度';el('game').width=1024;el('game').height=1200;el('cult-battle').hidden=false;el('cultivation-panel').hidden=false;el('loading').style.display='none';document.querySelector('.play-controls').hidden=true;el('adventure-details').hidden=true;el('forge-cabinet-play').hidden=true;
-const select=document.createElement('select');select.setAttribute('aria-label','檢查場景');for(const [value,label]of [['ready','準備'],['battle','妖潮戰鬥'],['upgrade','三選一'],['jar','酒罈'],['boss','最終天魔'],['dragon','追加龍王'],['victory','大獎結算'],['dead','死亡結算']]){const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o);}document.querySelector('.app-header').append(select);
+const select=document.createElement('select');select.setAttribute('aria-label','檢查場景');for(const [value,label]of [['ready','準備'],['battle','妖潮戰鬥'],['horde','600追兵'],['warning','BOSS預告'],['award','BOSS獲獎'],['empty','法力耗盡'],['upgrade','三選一'],['jar','酒罈'],['boss','最終天魔'],['dragon','追加龍王'],['victory','大獎結算'],['dead','死亡結算'],...SKILLS.map(s=>[s,SKILL_NAMES[s]])]){const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o);}document.querySelector('.app-header').append(select);
+const live=document.createElement('input');live.type='checkbox';live.setAttribute('aria-label','播放場景模擬');document.querySelector('.app-header').append(live);
 let g;const ui=initCultivationUI(()=>g,()=>document.hidden,()=>ui.update(g));
-function scene(name){const wallet=new PlayerWallet();wallet.setBalance(10000);g=new Cultivation(wallet,undefined,seeded(71));g.buy(200);if(name==='ready'){ui.update(g);return;}g.start();g.level=23;g.player.maxHp=370;g.player.hp=340;g.time=600;g.skills={sword:4,fire:4,thunder:4};g.upgrades={power:4,vitality:2,guard:2,regen:2,boots:2};g.spawnAt=Infinity;g.bossIndex=3;g.jarAt=Infinity;
- for(let i=0;i<18;i++){const e=g.enemy(i%4);const a=i*Math.PI/9;e.x=512+Math.cos(a)*(180+i*7);e.y=450+Math.sin(a)*(170+i*5);}
+function scene(name){const wallet=new PlayerWallet();wallet.setBalance(10000);g=new Cultivation(wallet,undefined,seeded(71));g.buy(200);if(name==='ready'){ui.update(g);return;}g.start();g.choose(g.choices[0]);g.level=23;g.player.maxHp=370;g.player.hp=340;g.time=600;g.skills={...emptySkills(),sword:4,ice:4,dragon:4};g.upgrades={power:4,vitality:2,guard:2,regen:2,boots:2};g.spawnAt=Infinity;g.bossIndex=3;g.jarAt=Infinity;
+ for(let i=0;i<18;i++){const e=g.enemy([0,1,2,3,6,7,8,9,10,11][i%10]);const a=i*Math.PI/9;e.x=512+Math.cos(a)*(180+i*7);e.y=450+Math.sin(a)*(170+i*5);}
+ if(SKILLS.includes(name)){g.skills=emptySkills();g.skills[name]=5;g.player.direction='up';g.cast(name);g.clock+=.18;}
+ if(name==='horde'){g.enemies=[];for(let i=0;i<600;i++){const e=g.enemy([0,1,2,3,6,7,8,9,10,11][i%10]);const a=i*2.4,r=150+Math.sqrt(i)*30;e.x=g.player.x+Math.cos(a)*r;e.y=g.player.y+Math.sin(a)*r;}g.peakEnemies=600;}
+ if(name==='warning'){g.announceBoss('天魔即將降臨 · 五秒後迎戰');}
+ if(name==='award'){g.bossAward={title:'鎮境妖將',points:123.456,until:g.clock+4};g.effect('boss-kill',g.player.x,g.player.y,123.456);g.clock+=.2;}
+ if(name==='empty'){g.mana=0;g.step(.01);}
  if(name==='upgrade'){g.phase='upgrade';g.choices=['sword','regen','heal'];g.resumePhase='playing';g.player.hp=90;}
  if(name==='jar'){g.jar={x:939,y:95,hp:1,corner:1,expires:g.time+10};g.dragons=3;g.player.x=780;g.player.y=240;}
- if(name==='boss'){g.time=850;g.enemy(5,'final');}
+ if(name==='boss'){g.time=850;const e=g.enemy(5,'final');e.x=g.player.x-180;e.y=g.player.y-240;g.announceBoss('最終天魔降臨',false);g.clock+=.2;}
  if(name==='dragon'){g.time=900;g.dragons=5;g.normalCleared=true;g.phase='bonus-intro';g.beginBonus();}
  if(name==='victory'){g.phase='victory';g.dragons=5;g.normalCleared=true;g.bonusCleared=true;g.kills=2230;g.spentMana=9800;g.roundGold=938;g.message='龍王劫破！追加獎金100金幣已入帳，剩餘法力與積分保留。';g.effects=[{kind:'win',x:512,y:450,toX:512,toY:450,at:g.clock,value:100}];}
  if(name==='dead'){g.phase='dead';g.player.hp=0;g.message='道途未竟。法力與積分保留，可重新修煉。';}
  ui.update(g);
 }
-select.onchange=()=>scene(select.value);el('back-to-lobby').onclick=()=>location.href='/#lobby';await loadCultivationArtwork();scene('ready');let previous=0,last=0;function frame(t){if(previous&&!document.hidden)g.step(Math.min(.05,(t-previous)/1000));previous=t;renderCultivation(g);if(t-last>100){ui.update(g);last=t;}requestAnimationFrame(frame);}requestAnimationFrame(frame);
+select.onchange=()=>scene(select.value);el('back-to-lobby').onclick=()=>location.href='/#lobby';await loadCultivationArtwork();scene('ready');let previous=0,last=0;function frame(t){if(live.checked&&previous&&!document.hidden)g.step(Math.min(.05,(t-previous)/1000));previous=t;renderCultivation(g);if(t-last>100){ui.update(g);last=t;}requestAnimationFrame(frame);}requestAnimationFrame(frame);
 </script></body></html>
