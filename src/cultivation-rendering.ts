@@ -38,5 +38,8 @@ export function renderCultivation(g:Cultivation){const canvas=document.getElemen
   ctx.restore();
  }
  if(burstAge<1){ctx.save();const grad=ctx.createRadialGradient(512,650,150,512,650,850);grad.addColorStop(0,'#0000');grad.addColorStop(1,burst?.kind==='boss-kill'?'#ffd76b':'#d7284c');ctx.globalAlpha=(1-burstAge)*.7;ctx.fillStyle=grad;ctx.fillRect(0,0,1024,1200);ctx.restore();}
+ // Keep personal health above enemies and spell effects so it stays readable in a crowd.
+ const hp=Math.max(0,Math.min(1,g.player.hp/g.player.maxHp)),hero=project(g.player.x,g.player.y);
+ ctx.save();ctx.globalAlpha=1;ctx.fillStyle='#10252ff2';ctx.beginPath();ctx.roundRect(hero.x-58,hero.y+16,116,30,8);ctx.fill();ctx.strokeStyle='#e4f6e5cc';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#35434c';ctx.fillRect(hero.x-52,hero.y+22,104,18);ctx.fillStyle=hp<=.25?'#ef5266':hp<=.5?'#e8b854':'#54d991';ctx.fillRect(hero.x-52,hero.y+22,104*hp,18);ctx.font='bold 22px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.strokeStyle='#10252f';ctx.lineWidth=4;ctx.strokeText(`${Math.ceil(hp*100)}%`,hero.x,hero.y+31);ctx.fillStyle='#fff';ctx.fillText(`${Math.ceil(hp*100)}%`,hero.x,hero.y+31);ctx.restore();
  const boss=g.enemies.find(e=>e.boss);if(boss){ctx.fillStyle='#112c2be8';ctx.fillRect(190,210,644,46);ctx.fillStyle='#dd6972';ctx.fillRect(200,247,624*Math.max(0,boss.hp/boss.maxHp),6);ctx.fillStyle='#fff1c2';ctx.textAlign='center';ctx.font='bold 28px serif';ctx.fillText(boss.boss==='dragon'?'追加劫境 · 金龍王':boss.boss==='final'?'最終天魔':'鎮境妖將',512,239);}
 }

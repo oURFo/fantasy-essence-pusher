@@ -1,4 +1,4 @@
-export const CULTIVATION={targetRtp:1.10,duration:900,bonusDuration:120,width:1024,height:900,manaCap:2000,manaPerGold:10,pointsPerGold:10,clearGold:80,bonusGold:100,bountyBase:0.593715343273,bountyRate:0.0591392761719,enemyCap:600,dragonChance:.35} as const;
+export const CULTIVATION={targetRtp:1.10,enemyDamageMultiplier:1.4,duration:900,bonusDuration:120,width:1024,height:900,manaCap:2000,manaPerGold:10,pointsPerGold:10,clearGold:80,bonusGold:100,bountyBase:0.140550478482,bountyRate:0.0717741712641,enemyCap:600,dragonChance:.35} as const;
 export const CULT_KEY='fantasy-arcade.cultivation.v1';
 export const SKILLS=['sword','fire','thunder','ice','crescent','needle','bell','phoenix','void','dragon','spear'] as const;
 export type Skill=typeof SKILLS[number];
@@ -12,7 +12,7 @@ export function emptySkills(){return Object.fromEntries(SKILLS.map(s=>[s,0])) as
 export function spawnRate(minute:number){return 2+minute*.24+minute*minute*.025;}
 export function enemyStats(minute:number,kind:number){
  const m=Math.max(0,Math.min(16,minute)),hp=30*Math.pow(1.14,m)*(1+Math.pow(Math.max(0,m-8),2)*.035)*[1,.8,1.5,3,14,45,.55,5,1.5,1.4,1.6,2.6][kind];
- return {hp,speed:[64,96,55,44,64,65,145,48,58,82,84,92][kind]+m*2,damage:(7+m*2.2)*[1,.8,1.3,1.7,2.2,3,.7,2.5,1.1,1.2,1.3,1.6][kind],radius:[15,16,18,25,35,45,12,29,18,18,19,24][kind]};
+ return {hp,speed:[64,96,55,44,64,65,145,48,58,82,84,92][kind]+m*2,damage:CULTIVATION.enemyDamageMultiplier*(7+m*2.2)*[1,.8,1.3,1.7,2.2,3,.7,2.5,1.1,1.2,1.3,1.6][kind],radius:[15,16,18,25,35,45,12,29,18,18,19,24][kind]};
 }
 export function skillStats(skill:Skill,rank:number,level:number,_minute:number,power:number,buffs:readonly string[]=[]){
  const growth=(1+.035*(level-1))*Math.pow(1.09,power),i=SKILLS.indexOf(skill);

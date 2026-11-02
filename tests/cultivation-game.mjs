@@ -43,3 +43,8 @@ console.log('Cultivation passed: exact billing/caps, pause, shop capacity, persi
  observer.step(.01);assert.equal(observer.sessionConflict,false);
 }
 console.log('Cultivation multi-tab ownership passed.');
+
+// Damage is scaled once at the shared enemy source, including projectile and boss attacks.
+assert.ok(Math.abs(enemyStats(0,0).damage-9.8)<1e-9);
+assert.ok(Math.abs(enemyStats(0,5).damage-29.4)<1e-9);
+{const {g}=setup();g.buy(100);start(g);quiet(g);g.skills={};const e=g.enemy(0);e.x=g.player.x;e.y=g.player.y;e.attackAt=-10;const before=g.player.hp;g.step(.01);assert.ok(Math.abs(before-g.player.hp-9.8)<1e-9,'opening contact damage is 140% of the previous 7 HP');}
