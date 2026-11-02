@@ -19,4 +19,4 @@ const expanded=buildHall([...MACHINES,...Array.from({length:4},()=>({id:'night-m
 data.set(LOBBY_PROFILE_KEY,JSON.stringify({version:1,body:'female',x:-400,y:5000}));restored=new LobbyWorld(storage);assert.equal(restored.x,65);assert.equal(restored.y,HALL.aisleBottom);
 data.set(LOBBY_PROFILE_KEY,'broken');assert.equal(new LobbyWorld(storage).appearance,null);
 const denied=new LobbyWorld({getItem(){throw Error('denied');},setItem(){throw Error('denied');}});denied.choose('male');denied.approach('sky-wings');for(let i=0;i<300;i++)denied.step(1/60);assert.equal(denied.nearby.id,'sky-wings');
-console.log('Walkable lobby passed: 8 reachable cabinets, separate payment placement, right expansion, movement bounds, profile/position restoration, avatar switch and blocked storage.');
+console.log('Walkable lobby passed: 9 reachable cabinets, separate payment placement, right expansion, movement bounds, profile/position restoration, avatar switch and blocked storage.');

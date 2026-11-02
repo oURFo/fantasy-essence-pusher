@@ -1,3 +1,6 @@
+import {Cultivation} from './cultivation-game.ts';
+import {loadCultivationArtwork,renderCultivation} from './cultivation-rendering.ts';
+import {initCultivationUI} from './cultivation-ui.ts';
 import {initLobby} from './lobby.ts';
 import {ThunderForge} from './forge-game.ts';
 import {loadForgeArtwork,renderForge} from './forge-rendering.ts';
@@ -41,6 +44,7 @@ const wallet=new PlayerWallet(storage),session=new ArcadeSession(wallet,new Frui
 let lastUI=0;const gmCode=new LobbyGMCode();
 let accumulator=0,previous=0,entering=false,readyPromise:Promise<void>|undefined;
 const dialog=$<HTMLDialogElement>('leave-dialog');
+const cultivationUI=initCultivationUI(()=>session.game instanceof Cultivation?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const forgeUI=initForgeUI(()=>session.game instanceof ThunderForge?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const plunger=bindFruitPlunger(()=>session.game instanceof FruitPinball?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const ringInput=bindRingInput(()=>session.game instanceof NightMarket?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
@@ -50,7 +54,7 @@ const templeUI=initTempleUI(()=>session.game instanceof TempleFortune?session.ga
 const mineUI=initMineUI(()=>session.game instanceof GoldMine?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const fateInput=bindFateInput(()=>session.game instanceof FateOrbit?session.game:null,()=>document.hidden||session.leaveRequested,updateUI,fateUI.unlock);
 const lobby=initLobby(storage,id=>{void enterMachine(id);},()=>entering||Boolean(session.game));
-function resetClock(){forgeUI.cancel();templeUI.cancel();mineUI.cancel();fateInput.cancel();gmCode.reset();ringInput.cancel();accumulator=0;previous=0;plunger.cancel();}
+function resetClock(){cultivationUI.cancel();forgeUI.cancel();templeUI.cancel();mineUI.cancel();fateInput.cancel();gmCode.reset();ringInput.cancel();accumulator=0;previous=0;plunger.cancel();}
 function updateRefill(){
  const seconds=Math.ceil(wallet.refillRemaining()/1000),button=$<HTMLButtonElement>('lobby-refill');
  button.disabled=seconds>0||Boolean(session.game)||entering;
@@ -64,6 +68,7 @@ function syncWallet(){
 }
 function updateUI(){
  syncWallet();const game=session.game;if(!game)return;
+ if(game instanceof Cultivation){cultivationUI.update(game);$('machine-announcement').textContent=game.message;return;}
  if(game instanceof ThunderForge){forgeUI.update(game);$('machine-announcement').textContent=game.message;return;}
  if(game instanceof TempleFortune){templeUI.update(game);$('machine-announcement').textContent=game.message;return;}
  if(game instanceof GoldMine){mineUI.update(game);$('machine-announcement').textContent=game.message;return;}
@@ -105,6 +110,7 @@ function showLobby(){
  document.body.classList.add('in-lobby');lobby.setActive(true);$('page-title').textContent='歡樂遊樂場';$('page-subtitle').textContent='走走逛逛，發現你的下一台最愛。';document.title='歡樂遊樂場 · FANTASY ARCADE';syncWallet();resetClock();
 }
 async function ensureReady(id:MachineId){
+ if(id==='cultivation'){await loadCultivationArtwork();return;}
  if(id==='thunder-forge'){await loadForgeArtwork();return;}
  if(id==='temple-fortune'){await loadTempleArtwork();return;}
  if(id==='gold-mine'){await loadMineArtwork();return;}
@@ -114,7 +120,7 @@ async function ensureReady(id:MachineId){
  if(!readyPromise)readyPromise=Promise.all([RAPIER.init(),loadArtwork()]).then(()=>{}).catch(error=>{readyPromise=undefined;throw error;});
  await readyPromise;if(id==='sky-wings')await loadSkyArtwork();
 }
-function renderGame(){const game=session.game;if(game instanceof ThunderForge)renderForge(game);else if(game instanceof TempleFortune)renderTemple(game);else if(game instanceof GoldMine)renderMine(game);else if(game instanceof FateOrbit)renderFate(game);else if(game instanceof NightMarket)renderRing(game);else if(game instanceof FruitPinball)renderFruit(game);else if(game instanceof SkyWings)renderSky(game);else if(game)render(game);}
+function renderGame(){const game=session.game;if(game instanceof Cultivation)renderCultivation(game);else if(game instanceof ThunderForge)renderForge(game);else if(game instanceof TempleFortune)renderTemple(game);else if(game instanceof GoldMine)renderMine(game);else if(game instanceof FateOrbit)renderFate(game);else if(game instanceof NightMarket)renderRing(game);else if(game instanceof FruitPinball)renderFruit(game);else if(game instanceof SkyWings)renderSky(game);else if(game)render(game);}
 async function enterMachine(id:MachineId){
  if(entering||session.game)return;entering=true;
  const button=$<HTMLButtonElement>('lobby-play');
@@ -122,20 +128,22 @@ async function enterMachine(id:MachineId){
  try{
   await ensureReady(id);if(!session.enter(id))return;lobby.setActive(false);document.body.classList.remove('in-lobby');
   $('lobby-screen').hidden=true;$('machine-screen').hidden=false;$('lobby-wallet').hidden=true;$('machine-nav').hidden=false;
-  const machine=MACHINES.find(m=>m.id===id)!;const sky=id==='sky-wings',fruit=id==='fruit-banquet',ring=id==='night-market',fate=id==='fate-orbit',mine=id==='gold-mine',temple=id==='temple-fortune',forge=id==='thunder-forge';
+  const machine=MACHINES.find(m=>m.id===id)!;const sky=id==='sky-wings',fruit=id==='fruit-banquet',ring=id==='night-market',fate=id==='fate-orbit',mine=id==='gold-mine',temple=id==='temple-fortune',forge=id==='thunder-forge',cult=id==='cultivation';
   $('page-title').textContent=machine.name;$('page-subtitle').textContent=machine.description;document.title=`${machine.name} · 冒險遊藝場`;
-  const canvas=$<HTMLCanvasElement>('game');canvas.width=1024;canvas.height=fruit?1700:1536;canvas.setAttribute('aria-label',temple?'土地公賜福柏青哥，天公爐翻曆、蛇龜得分、祥雲金珠':mine?'金礦傳說柏青哥檯面，綠口得分、藍口啟動SLOT、紅口回收':fate?'命運星軌障礙射球，中央命運孔與積分孔及OUT':ring?'夜市套圈圈，六排各八件獎品與底部投擲圈圈':fruit?'水果星宴彈珠台，十五道水果配方及十六個水果格':'奇幻推幣機遊戲');
+  const canvas=$<HTMLCanvasElement>('game');canvas.width=1024;canvas.height=cult?1200:fruit?1700:1536;canvas.setAttribute('aria-label',temple?'土地公賜福柏青哥，天公爐翻曆、蛇龜得分、祥雲金珠':mine?'金礦傳說柏青哥檯面，綠口得分、藍口啟動SLOT、紅口回收':fate?'命運星軌障礙射球，中央命運孔與積分孔及OUT':ring?'夜市套圈圈，六排各八件獎品與底部投擲圈圈':fruit?'水果星宴彈珠台，十五道水果配方及十六個水果格':'奇幻推幣機遊戲');
   $('machine-screen').dataset.machine=id;
+  $('cultivation-panel').hidden=!cult;$('cult-battle').hidden=!cult;
   $('forge-panel').hidden=!forge;
-  document.querySelector<HTMLElement>('.return-nav span')!.textContent=forge?'能量與等級保留；獎金於投入時結算':'離開機台將重置盤面，金幣保留';
+  document.querySelector<HTMLElement>('.return-nav span')!.textContent=cult?'離場重置試煉，剩餘法力與積分保留':forge?'能量與等級保留；獎金於投入時結算':'離開機台將重置盤面，金幣保留';
+  if(cult)canvas.setAttribute('aria-label','萬妖問道修仙生存試煉，WASD或搖桿移動，自動施法；角落酒罈與五龍珠追加龍王');
   if(forge)canvas.setAttribute('aria-label','雷神彈珠台，七個洞口、十格雷電與彈出鍛造舞台');
   $('temple-panel').hidden=!temple;$('temple-knob').hidden=!temple;
   $('mine-panel').hidden=!mine;$('mine-knob').hidden=!mine;
   $('fate-aim-zone').hidden=!fate;$('fate-cannon-fire').hidden=!fate;$('fate-panel').hidden=!fate;
-  $('ring-throw-zone').hidden=!ring;$('ring-panel').hidden=!ring;document.querySelector<HTMLElement>('.play-controls')!.hidden=ring||fate||mine||temple||forge;
-  $('fruit-plunger-grip').hidden=!fruit;$('fruit-panel').hidden=!fruit;$('adventure-details').hidden=fruit||ring||fate||mine||temple||forge;$('auto-drop').hidden=fruit;$('slot-status').hidden=fruit;$('status').hidden=fruit;
+  $('ring-throw-zone').hidden=!ring;$('ring-panel').hidden=!ring;document.querySelector<HTMLElement>('.play-controls')!.hidden=ring||fate||mine||temple||forge||cult;
+  $('fruit-plunger-grip').hidden=!fruit;$('fruit-panel').hidden=!fruit;$('adventure-details').hidden=fruit||ring||fate||mine||temple||forge||cult;$('auto-drop').hidden=fruit;$('slot-status').hidden=fruit;$('status').hidden=fruit;
   if(!fruit)$('drop').innerHTML='投入精華 · 1 金幣 <kbd>SPACE</kbd>';
-  document.querySelectorAll<HTMLElement>('.vault-only').forEach(el=>el.hidden=sky||fruit||ring||fate||mine||temple||forge);document.querySelectorAll<HTMLElement>('.sky-only').forEach(el=>el.hidden=!sky);
+  document.querySelectorAll<HTMLElement>('.vault-only').forEach(el=>el.hidden=sky||fruit||ring||fate||mine||temple||forge||cult);document.querySelectorAll<HTMLElement>('.sky-only').forEach(el=>el.hidden=!sky);
   $('front-rule').textContent='中央 1/2 計入獎勵，左右各 1/4 系統回收';
   $('leave-pending').textContent=fruit?'本局彈珠、已點亮水果與未結算獎勵將清除，已支付的 20 金幣不退還。連敗紀錄保留，離場不累加連敗。':sky?'尚未完成的輪盤、升階進度、待轉次數與未派出的精華獎勵也會清除。':'尚未完成的 SLOT、待轉次數與未派出的精華獎勵也會清除。';
   $<HTMLDetailsElement>('adventure-details').open=false;
@@ -146,7 +154,7 @@ async function enterMachine(id:MachineId){
 }
 function requestLeave(){
  if(session.leaveRequested||!session.requestLeave())return;
- resetClock();if(session.game instanceof ThunderForge){$('leave-pending').textContent='能量與等級保存在目前瀏覽器。已抽出的獎金已入帳，離場不會取消；自動投入停止。';}if(session.game instanceof TempleFortune){const g=session.game;$('leave-pending').textContent=`離場自動兌換 ${g.exchangeGold} 金幣；不足10分尾數、場上鋼珠、待轉 ${g.slotQueue} 次、待派 ${g.pendingBalls} 珠與賜福時間會清除。`;}if(session.game instanceof GoldMine){const g=session.game;$('leave-pending').textContent=`目前 ${g.points} 積分，離場兌換 ${g.exchangeGold} 金幣；不足10分尾數、待轉 ${g.slotQueue} 次、待派 ${g.pendingBalls} 珠與金礦時間會清除。`;}if(session.game instanceof FateOrbit){const g=session.game;$('leave-pending').textContent=`目前 ${g.points} 積分，離開將兌換 ${g.exchangeGold} 金幣；不足 10 分的 ${g.points%10} 積分將清除。尚有 ${g.runs.length} 顆球未完成，離開將取消其獎勵。`;}if(session.game instanceof NightMarket){const g=session.game;$('leave-pending').textContent=`背包 ${g.bagCount} 件戰利品將自動售出 ${g.bagValue} 金幣；剩餘 ${g.rings} 個圈圈將清除，不退費。${g.active?'飛行中的圈圈會取消。':''}`;}dialog.showModal();$('keep-playing').focus();updateUI();
+ resetClock();if(session.game instanceof Cultivation){const g=session.game;$('leave-pending').textContent=`當局等級、技能、BUFF與${g.dragons}顆龍珠會清除。${g.mana}法力、${g.points.toFixed(3)}積分尾數及已領獎金保留。`;}if(session.game instanceof ThunderForge){$('leave-pending').textContent='能量與等級保存在目前瀏覽器。已抽出的獎金已入帳，離場不會取消；自動投入停止。';}if(session.game instanceof TempleFortune){const g=session.game;$('leave-pending').textContent=`離場自動兌換 ${g.exchangeGold} 金幣；不足10分尾數、場上鋼珠、待轉 ${g.slotQueue} 次、待派 ${g.pendingBalls} 珠與賜福時間會清除。`;}if(session.game instanceof GoldMine){const g=session.game;$('leave-pending').textContent=`目前 ${g.points} 積分，離場兌換 ${g.exchangeGold} 金幣；不足10分尾數、待轉 ${g.slotQueue} 次、待派 ${g.pendingBalls} 珠與金礦時間會清除。`;}if(session.game instanceof FateOrbit){const g=session.game;$('leave-pending').textContent=`目前 ${g.points} 積分，離開將兌換 ${g.exchangeGold} 金幣；不足 10 分的 ${g.points%10} 積分將清除。尚有 ${g.runs.length} 顆球未完成，離開將取消其獎勵。`;}if(session.game instanceof NightMarket){const g=session.game;$('leave-pending').textContent=`背包 ${g.bagCount} 件戰利品將自動售出 ${g.bagValue} 金幣；剩餘 ${g.rings} 個圈圈將清除，不退費。${g.active?'飛行中的圈圈會取消。':''}`;}dialog.showModal();$('keep-playing').focus();updateUI();
 }
 function cancelLeave(){session.cancelLeave();dialog.close();resetClock();updateUI();$('back-to-lobby').focus({preventScroll:true});}
 function confirmLeave(){
@@ -164,7 +172,7 @@ function frame(ms:number){
  requestAnimationFrame(frame);
 }
 $('drop').addEventListener('click',drop);
-$('auto-drop').addEventListener('click',()=>{if(session.game&&!document.hidden&&!session.leaveRequested){if(!(session.game instanceof FruitPinball)&&!(session.game instanceof NightMarket)&&!(session.game instanceof FateOrbit)&&!(session.game instanceof GoldMine)&&!(session.game instanceof TempleFortune))session.game.setAutoDrop(!session.game.autoDrop);updateUI();}});
+$('auto-drop').addEventListener('click',()=>{if(session.game&&!document.hidden&&!session.leaveRequested){if(!(session.game instanceof FruitPinball)&&!(session.game instanceof NightMarket)&&!(session.game instanceof FateOrbit)&&!(session.game instanceof GoldMine)&&!(session.game instanceof TempleFortune)&&!(session.game instanceof Cultivation))session.game.setAutoDrop(!session.game.autoDrop);updateUI();}});
 $('back-to-lobby').addEventListener('click',requestLeave);
 $('keep-playing').addEventListener('click',cancelLeave);$('confirm-leave').addEventListener('click',confirmLeave);
 dialog.addEventListener('cancel',event=>{event.preventDefault();cancelLeave();});

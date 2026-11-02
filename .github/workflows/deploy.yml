@@ -62,6 +62,10 @@ jobs:
       - run: node tests/sky-physics.mjs
       - run: node tests/sky-balance.mjs
       - run: node tests/slot.mjs
+      - run: node tests/cultivation-game.mjs
+      - run: node tests/cultivation-input.mjs
+      - run: node tests/cultivation-artwork.mjs
+      - run: node tests/cultivation-balance.mjs
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
