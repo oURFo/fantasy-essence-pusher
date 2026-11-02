@@ -12,6 +12,7 @@ export function simulate(seed,policy='normal',dt=1/60){
   if(g.mana<100){g.openShop();g.buy(200);g.closeShop();}
   let tx=g.player.x+Math.cos(g.time*.006)*600,ty=g.player.y+Math.sin(g.time*.006)*600;
   const collect=policy==='expert'||policy==='normal'&&(g.jar&&Math.floor((g.jar.expires-45)/40)%3!==0);
+  const loot=g.xpOrbs.filter(o=>!o.attracting&&Math.hypot(o.x-g.player.x,o.y-g.player.y)<650).sort((a,b)=>(Math.hypot(a.x-g.player.x,a.y-g.player.y)/Math.sqrt(a.value))-(Math.hypot(b.x-g.player.x,b.y-g.player.y)/Math.sqrt(b.value)))[0];if(policy!=='idle'&&policy!=='beginner'&&loot){tx=loot.x;ty=loot.y;}
   if(g.jar&&collect){tx=g.jar.x;ty=g.jar.y;}
   const boss=g.enemies.find(e=>e.boss);if(policy==='expert'&&boss&&(!g.jar||boss.boss==='final'||boss.boss==='dragon')){const d=Math.hypot(boss.x-g.player.x,boss.y-g.player.y);const a=Math.atan2(g.player.y-boss.y,g.player.x-boss.x)+.5;tx=boss.x+Math.cos(a)*230;ty=boss.y+Math.sin(a)*230;if(d>550){tx=boss.x;ty=boss.y;}}
   let dx=tx-g.player.x,dy=ty-g.player.y,dist=Math.hypot(dx,dy);if(dist>12){dx/=dist;dy/=dist;}else{dx=0;dy=0;}
@@ -32,6 +33,6 @@ export function simulate(seed,policy='normal',dt=1/60){
   if(policy==='expert'){dx=steer.x;dy=steer.y;}
   g.move(dx,dy);g.step(dt);
  }
- return {seed,policy,phase:g.phase,time:g.time,bonusTime:g.bonusTime,spent:g.spentMana/10,points:g.roundPointsMilli/10000,units:g.bountyUnits,bonuses:(g.normalCleared?C.clearGold:0)+(g.bonusCleared?C.bonusGold:0),clear:g.normalCleared,bonus:g.bonusCleared,jars:g.jarsBroken,dragons:g.dragons,kills:g.kills,level:g.level,hp:g.player.hp,peak:g.peakEnemies,build:SKILLS.filter(s=>g.skills[s]>0)};
+ return {seed,policy,phase:g.phase,time:g.time,bonusTime:g.bonusTime,spent:g.spentMana/10,points:g.roundPointsMilli/10000,units:g.bountyUnits,bonuses:(g.normalCleared?C.clearGold:0)+(g.bonusCleared?C.bonusGold:0),clear:g.normalCleared,bonus:g.bonusCleared,jars:g.jarsBroken,dragons:g.dragons,kills:g.kills,level:g.level,hp:g.player.hp,peak:g.peakEnemies,build:SKILLS.filter(s=>g.skills[s]>0),capacity:g.potentialHits,hits:g.hits,unusedSlots:g.potentialHits-g.hits,xpDropped:g.xpDropped,xpCollected:g.xpCollected,xpLeft:g.xpOrbs.reduce((n,o)=>n+o.value,0)};
 }
 if(process.argv[1]?.endsWith('cultivation-simulation.mjs')){const n=Number(process.argv[2]||12),rows=Array.from({length:n},(_,i)=>simulate(i+1));const sum=k=>rows.reduce((n,r)=>n+Number(r[k]),0);console.log(JSON.stringify({rows,aggregate:{cost:sum('spent'),units:sum('units'),bonus:sum('bonuses'),rtp:(sum('points')+sum('bonuses'))/sum('spent'),neededRate:(.95*sum('spent')-sum('bonuses'))/sum('units')*10}},null,2));}

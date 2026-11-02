@@ -1,9 +1,10 @@
 import {PlayerWallet,type WalletStorage} from './wallet.ts';
-import {CULTIVATION as C,CULT_KEY,enemyStats,skillStats,manaCost,xpRequired,SKILLS,SKILL_NAMES,isSkill,emptySkills,spawnRate,enemyKind,type Skill,type Upgrade} from './cultivation-rules.ts';
+import {CULTIVATION as C,CULT_KEY,enemyStats,skillStats,castCost,killPointsMilli,xpRequired,SKILLS,SKILL_NAMES,isSkill,emptySkills,spawnRate,enemyKind,type Skill,type Upgrade} from './cultivation-rules.ts';
 export type CultPhase='ready'|'playing'|'upgrade'|'shop'|'paused'|'bonus-intro'|'bonus'|'dead'|'victory';
 export interface CultEnemy {id:number;x:number;y:number;hp:number;maxHp:number;kind:number;speed:number;damage:number;radius:number;attackAt:number;waveAt:number;boss:'mini'|'final'|'dragon'|null;hitAt:number;slowUntil?:number;poison?:number;poisonUntil?:number;}
+export interface CultXpOrb {id:number;x:number;y:number;value:number;cell:string;attracting:boolean;pullTime:number;}
 export interface CultJar {x:number;y:number;hp:number;expires:number;corner:number;}
-export interface CultEffect {kind:Skill|'hit'|'heal'|'pearl'|'level'|'win'|'damage'|'boss-arrive'|'boss-kill';x:number;y:number;toX:number;toY:number;at:number;value:number;}
+export interface CultEffect {kind:Skill|'hit'|'heal'|'pearl'|'level'|'win'|'damage'|'boss-arrive'|'boss-kill'|'xp'|'learn';x:number;y:number;toX:number;toY:number;at:number;value:number;}
 export interface CultBolt {x:number;y:number;vx:number;vy:number;expires:number;damage:number;}
 export interface CultHazard {x:number;y:number;at:number;radius:number;damage:number;}
 export class Cultivation {
@@ -12,8 +13,9 @@ export class Cultivation {
  mana=0;pointsMilli=0;storageFailed=false;disposed=false;phase:CultPhase='ready';resumePhase:'playing'|'bonus'|'ready'='ready';
  time=0;bonusTime=0;clock=0;player={x:512,y:450,hp:120,maxHp:120,direction:'down' as 'down'|'right'|'up'|'left',moving:false};
  level=1;xp=0;skills:Record<Skill,number>=emptySkills();upgrades={power:0,vitality:0,guard:0,regen:0,boots:0};choices:Upgrade[]=[];
+ xpOrbs:CultXpOrb[]=[];xpDropped=0;xpCollected=0;private xpSerial=0;private xpFxAt=0;private xpCells=new Map<string,CultXpOrb>();
  enemies:CultEnemy[]=[];jar:CultJar|null=null;effects:CultEffect[]=[];hazards:CultHazard[]=[];bolts:CultBolt[]=[];buffs:Record<string,number>={};dragons=0;jarsBroken=0;kills=0;
- spentMana=0;roundPointsMilli=0;roundGold=0;normalCleared=false;bonusCleared=false;bountyUnits=0;casts=0;hits=0;message='御劍入世，問道萬妖。先購買法力，再開始試煉。';
+ spentMana=0;roundPointsMilli=0;roundGold=0;normalCleared=false;bonusCleared=false;bountyUnits=0;casts=0;hits=0;potentialHits=0;message='御劍入世，問道萬妖。先購買法力，再開始試煉。';
  bossNotice='';bossNoticeUntil=0;bossAward:{title:string;points:number;until:number}|null=null;peakEnemies=0;private announced=new Set<number>();
  private shopPhase:CultPhase='ready';private serial=0;private spawnAt=0;private jarAt=35;private bossIndex=0;private hitAt=-10;private skillAt:Record<Skill,number>=emptySkills();private dx=0;private dy=0;
  constructor(wallet:PlayerWallet,storage?:WalletStorage,random=Math.random){this.wallet=wallet;this.storage=storage;this.storageFailed=!storage;this.random=random;try{const d=JSON.parse(storage?.getItem(CULT_KEY)??'null');if(d?.version===1){if(Number.isSafeInteger(d.mana)&&d.mana>=0&&d.mana<=C.manaCap)this.mana=d.mana;if(Number.isSafeInteger(d.pointsMilli)&&d.pointsMilli>=0)this.pointsMilli=d.pointsMilli;}}catch{this.storageFailed=true;}}
@@ -26,12 +28,12 @@ export class Cultivation {
  get gold(){return this.wallet.gold;}get points(){return this.pointsMilli/1000;}get inputLocked(){return this.disposed;}get active(){return this.phase==='playing'||this.phase==='bonus';}
  get buffsNow(){return Object.keys(this.buffs).filter(k=>this.buffs[k]>this.clock);}get minute(){return Math.min(16,(this.time+this.bonusTime)/60);}get speed(){return 180+this.upgrades.boots*18;}
  purchaseQuote(request:number){if(!Number.isFinite(request)||request<=0)return 0;return Math.max(0,Math.min(Math.floor(request),Math.floor((C.manaCap-this.mana)/C.manaPerGold),this.gold));}
- buy(request:number){if(this.disposed||!['ready','shop','dead','victory','paused'].includes(this.phase)||!Number.isFinite(request)||request<=0)return 0;if(!this.claim())return 0;const cost=this.purchaseQuote(request);if(!cost||!this.wallet.spend(cost))return 0;this.mana+=cost*C.manaPerGold;this.persist();this.message=`補充 ${cost*10} 法力，花費 ${cost} 金幣；剩餘法力離場保留。`;return cost;}
- openShop(){if(this.disposed||this.phase==='upgrade')return false;if(this.phase==='shop')return true;this.shopPhase=this.phase;this.phase='shop';this.move(0,0);return true;}
+ buy(request:number){if(this.disposed||!['ready','shop','victory','paused'].includes(this.phase)||!Number.isFinite(request)||request<=0)return 0;if(!this.claim())return 0;const cost=this.purchaseQuote(request);if(!cost||!this.wallet.spend(cost))return 0;this.mana+=cost*C.manaPerGold;this.persist();this.message=`補充 ${cost*10} 法力，花費 ${cost} 金幣；剩餘法力離場保留。`;return cost;}
+ openShop(){if(this.disposed||(this.phase==='upgrade'||this.phase==='dead'))return false;if(this.phase==='shop')return true;this.shopPhase=this.phase;this.phase='shop';this.move(0,0);return true;}
  closeShop(){if(this.phase!=='shop')return;this.phase=this.shopPhase;}
  pause(){if(this.active){this.resumePhase=this.phase as 'playing'|'bonus';this.phase='paused';this.move(0,0);}else if(this.phase==='paused')this.phase=this.resumePhase;}
- start(){if(this.disposed||!['ready','dead','victory'].includes(this.phase))return false;if(!this.claim()||this.mana<2)return false;
-  this.time=0;this.bonusTime=0;this.announced.clear();this.bossNotice='';this.bossAward=null;this.peakEnemies=0;this.finalKilled=false;this.level=1;this.xp=0;this.skills=emptySkills();this.upgrades={power:0,vitality:0,guard:0,regen:0,boots:0};this.choices=[];this.enemies=[];this.jar=null;this.effects=[];this.hazards=[];this.bolts=[];this.buffs={};this.dragons=0;this.jarsBroken=0;this.kills=0;this.spentMana=0;this.roundPointsMilli=0;this.roundGold=0;this.normalCleared=false;this.bonusCleared=false;this.bountyUnits=0;this.casts=0;this.hits=0;this.spawnAt=0;this.jarAt=35;this.bossIndex=0;this.skillAt=emptySkills();this.hitAt=-10;this.player={x:512,y:450,hp:120,maxHp:120,direction:'down',moving:false};this.phase='upgrade';this.resumePhase='playing';this.makeChoices();this.message='選擇本命術法，每局最多三種。';return true;
+ start(){if(this.disposed||!['ready','dead','victory'].includes(this.phase))return false;const restarting=this.phase==='dead';if(!this.claim()||(!restarting&&this.mana<2))return false;
+  this.time=0;this.bonusTime=0;this.announced.clear();this.bossNotice='';this.bossAward=null;this.peakEnemies=0;this.finalKilled=false;this.level=1;this.xp=0;this.xpOrbs=[];this.xpCells.clear();this.xpSerial=0;this.xpFxAt=0;this.xpDropped=0;this.xpCollected=0;this.skills=emptySkills();this.upgrades={power:0,vitality:0,guard:0,regen:0,boots:0};this.choices=[];this.enemies=[];this.jar=null;this.effects=[];this.hazards=[];this.bolts=[];this.buffs={};this.dragons=0;this.jarsBroken=0;this.kills=0;this.spentMana=0;this.roundPointsMilli=0;this.roundGold=0;this.normalCleared=false;this.bonusCleared=false;this.bountyUnits=0;this.casts=0;this.hits=0;this.potentialHits=0;this.spawnAt=0;this.jarAt=35;this.bossIndex=0;this.skillAt=emptySkills();this.hitAt=-10;this.player={x:512,y:450,hp:120,maxHp:120,direction:'down',moving:false};if(this.mana<2){this.phase='ready';this.openShop();this.message='新試煉已重新開始，請先準備法力。';return true;}this.phase='upgrade';this.resumePhase='playing';this.makeChoices();this.message='選擇本命術法，每局最多三種。';return true;
  }
  move(dx:number,dy:number){if(!Number.isFinite(dx)||!Number.isFinite(dy))return;const len=Math.max(1,Math.hypot(dx,dy));this.dx=dx/len;this.dy=dy/len;this.player.moving=Boolean(dx||dy);}
  drop(){return this.start();}
@@ -68,8 +70,8 @@ export class Cultivation {
   return {s,targets};
  }
  private cast(skill:Skill){const {s,targets}=this.chooseTargets(skill);if(!targets.length){this.skillAt[skill]=this.clock+.12;return;}
-  const cost=manaCost(s.damage,targets.length,this.buffsNow.includes('conserve'));if(this.mana<cost){this.skillAt[skill]=this.clock+.15;return;}
-  this.mana-=cost;this.spentMana+=cost;this.casts++;this.hits+=targets.length;this.persist();this.skillAt[skill]=this.clock+s.cooldown;
+  const cost=castCost(s,this.buffsNow.includes('conserve'));if(this.mana<cost){this.skillAt[skill]=this.clock+.15;return;}
+  this.mana-=cost;this.spentMana+=cost;this.casts++;this.hits+=targets.length;this.potentialHits+=s.cap;this.persist();this.skillAt[skill]=this.clock+s.cooldown;
   let from={x:this.player.x,y:this.player.y};const anchor=targets[0];for(const e of targets){this.effect(skill,from.x,from.y,0,e.x,e.y);const dot=skill==='needle'&&'kind' in e?s.damage*.6:0;e.hp-=(s.damage-dot)*(('kind' in e&&e.kind===7)? .7:1);
    if('kind' in e){if(dot){e.poison=(e.poison??0)+dot;e.poisonUntil=this.clock+2;}if(skill==='ice')e.slowUntil=this.clock+2;
     if(skill==='bell'||skill==='void'){const cx=skill==='void'?anchor.x:this.player.x,cy=skill==='void'?anchor.y:this.player.y,dx=e.x-cx,dy=e.y-cy,d=Math.hypot(dx,dy)||1,force=skill==='bell'?45:-35;e.x+=dx/d*force;e.y+=dy/d*force;}
@@ -77,6 +79,18 @@ export class Cultivation {
    }this.effect('damage',e.x,e.y,Math.round(s.damage));if(skill==='thunder')from=e;
   }
   if(this.jar&&this.jar.hp<=0)this.breakJar();
+ }
+ private dropXp(x:number,y:number,value:number){const cell=`${Math.floor(x/32)},${Math.floor(y/32)}`,existing=this.xpCells.get(cell);this.xpDropped+=value;
+  if(existing&&!existing.attracting){const sum=existing.value+value;existing.x=(existing.x*existing.value+x*value)/sum;existing.y=(existing.y*existing.value+y*value)/sum;existing.value=sum;}
+  else{const orb:CultXpOrb={id:++this.xpSerial,x,y,value,cell,attracting:false,pullTime:0};this.xpOrbs.push(orb);this.xpCells.set(cell,orb);}
+ }
+ private collectXp(dt:number){let gained=0;
+  for(const orb of this.xpOrbs){const dx=this.player.x-orb.x,dy=this.player.y-orb.y,d=Math.hypot(dx,dy);
+   if(!orb.attracting&&d<=110){orb.attracting=true;if(this.xpCells.get(orb.cell)===orb)this.xpCells.delete(orb.cell);}
+   if(!orb.attracting)continue;orb.pullTime+=dt;const travel=(320+Math.min(700,orb.pullTime*900))*dt;
+   if(d<=18+travel){gained+=orb.value;orb.value=0;}else{orb.x+=dx/d*travel;orb.y+=dy/d*travel;}
+  }
+  if(gained){this.xp+=gained;this.xpCollected+=gained;this.xpOrbs=this.xpOrbs.filter(o=>o.value>0);if(this.clock>=this.xpFxAt){this.effect('xp',this.player.x,this.player.y,gained);this.xpFxAt=this.clock+.12;}}
  }
  private advanceLevel(){while(this.level<30&&this.xp>=xpRequired(this.level)){this.xp-=xpRequired(this.level);this.level++;this.player.maxHp+=6;this.player.hp=Math.min(this.player.maxHp,this.player.hp+6);this.makeChoices();this.phase='upgrade';this.resumePhase=this.time>=C.duration?'bonus':'playing';this.move(0,0);this.effect('level',this.player.x,this.player.y,this.level);return;}}
  private makeChoices(){const owned=SKILLS.filter(s=>this.skills[s]>0),pool:Upgrade[]=[];
@@ -87,7 +101,7 @@ export class Cultivation {
   if(this.level>1&&owned.length<3&&!this.choices.some(u=>isSkill(u)&&!this.skills[u])){const next=pool.find(u=>isSkill(u)&&!this.skills[u]);if(next)this.choices[0]=next;}
  }
  choose(upgrade:Upgrade){if(this.disposed||this.phase!=='upgrade'||!this.choices.includes(upgrade))return false;
-  if(isSkill(upgrade)){if(!this.skills[upgrade]&&SKILLS.filter(s=>this.skills[s]>0).length>=3)return false;this.skills[upgrade]++;}
+  if(isSkill(upgrade)){if(!this.skills[upgrade]&&SKILLS.filter(s=>this.skills[s]>0).length>=3)return false;this.skills[upgrade]++;this.effect('learn',this.player.x,this.player.y,this.skills[upgrade]);}
   else if(upgrade==='heal'){this.player.hp=this.player.maxHp;this.effect('heal',this.player.x,this.player.y);}else{this.upgrades[upgrade]++;if(upgrade==='vitality'){this.player.maxHp+=25;this.player.hp+=25;}}
   if(this.level===1&&isSkill(upgrade))this.message=`${SKILL_NAMES[upgrade]}已習得！持續移動、斬妖突破，每局最多三種術法。`;this.choices=[];this.phase=this.resumePhase;this.advanceLevel();return true;
  }
@@ -112,15 +126,16 @@ export class Cultivation {
   for(const h of this.hazards)if(this.clock>=h.at&&this.clock-h.at<dt+.00001&&Math.hypot(p.x-h.x,p.y-h.y)<h.radius)this.hurt(h.damage);
   this.hazards=this.hazards.filter(h=>this.clock<h.at+.3);if(p.hp<=0){this.die();return;}
   for(const s of SKILLS)if(this.active&&this.skills[s]>0&&this.clock>=this.skillAt[s])this.cast(s);
-  let dragonDead=false;for(const e of this.enemies)if(e.hp<=0){this.kills++;this.xp+=e.boss?18:e.kind===3?3:1;this.bountyUnits+=e.maxHp;this.earn(Math.max(1,Math.round(e.maxHp*C.bountyRate*1000)));if(e.boss==='final')this.finalKilled=true;if(e.boss==='dragon')dragonDead=true;this.effect('hit',e.x,e.y,Math.round(e.maxHp*C.bountyRate*10)/10);if(e.boss){const points=Math.max(1,Math.round(e.maxHp*C.bountyRate*1000))/1000;this.bossAward={title:e.boss==='dragon'?'金龍王':e.boss==='final'?'最終天魔':'鎮境妖將',points,until:this.clock+4};this.effect('boss-kill',e.x,e.y,points);this.message=`擊破${this.bossAward.title}！獲得 ${points.toFixed(3)} 積分（${(points/10).toFixed(3)} 金幣等值）。`;}}
+  let dragonDead=false;for(const e of this.enemies)if(e.hp<=0){this.kills++;this.dropXp(e.x,e.y,e.boss?18:e.kind===3?3:1);this.bountyUnits+=e.maxHp;this.earn(killPointsMilli(e.maxHp));if(e.boss==='final')this.finalKilled=true;if(e.boss==='dragon')dragonDead=true;this.effect('hit',e.x,e.y,Math.round(killPointsMilli(e.maxHp)/100)/10);if(e.boss){const points=killPointsMilli(e.maxHp)/1000;this.bossAward={title:e.boss==='dragon'?'金龍王':e.boss==='final'?'最終天魔':'鎮境妖將',points,until:this.clock+4};this.effect('boss-kill',e.x,e.y,points);this.message=`擊破${this.bossAward.title}！獲得 ${points.toFixed(3)} 積分（${(points/10).toFixed(3)} 金幣等值）。`;}}
   this.enemies=this.enemies.filter(e=>e.hp>0);
+  this.collectXp(dt);
   if(dragonDead){this.bonusCleared=true;this.wallet.credit(C.bonusGold);this.roundGold+=C.bonusGold;this.phase='victory';this.move(0,0);this.effect('win',512,450,C.bonusGold);this.message=`龍王劫破！追加獎金 ${C.bonusGold} 金幣入帳！`;this.persist();return;}
   if(bonus&&this.bonusTime>=C.bonusDuration){this.die('龍王劫時間結束；正常通關獎金、法力與積分保留。');return;}
   if(!bonus&&this.time>=C.duration){if(this.finalKilled)this.clear();else this.die('未能在十五分鐘內擊敗天魔；法力與已得積分保留。');return;}
   this.advanceLevel();
-  if(this.active&&this.mana<100){const owned=SKILLS.filter(s=>this.skills[s]>0),attacks=owned.map(s=>this.chooseTargets(s));const required=attacks.filter(a=>a.targets.length).map(a=>manaCost(a.s.damage,a.targets.length,this.buffsNow.includes('conserve')));const minimum=Math.min(...owned.map(s=>manaCost(skillStats(s,this.skills[s],this.level,this.minute,this.upgrades.power,this.buffsNow).damage,1,this.buffsNow.includes('conserve'))));if(this.mana<minimum||(required.length>0&&required.every(c=>c>this.mana))){this.message='法力不足，戰鬥已暫停。請確認是否補充法力。';this.openShop();}}
+  if(this.active&&this.mana<100){const owned=SKILLS.filter(s=>this.skills[s]>0),attacks=owned.map(s=>this.chooseTargets(s));const required=attacks.filter(a=>a.targets.length).map(a=>castCost(a.s,this.buffsNow.includes('conserve')));const minimum=Math.min(...owned.map(s=>castCost(skillStats(s,this.skills[s],this.level,this.minute,this.upgrades.power,this.buffsNow),this.buffsNow.includes('conserve'))));if(this.mana<minimum||(required.length>0&&required.every(c=>c>this.mana))){this.message='法力不足，戰鬥已暫停。請確認是否補充法力。';this.openShop();}}
  }
  private finalKilled=false;
  private hurt(damage:number){const reduction=Math.min(.6,this.upgrades.guard*.08+(this.buffsNow.includes('guard')?.35:0));this.player.hp-=damage*(1-reduction);this.hitAt=this.clock;this.effect('hit',this.player.x,this.player.y,-Math.round(damage*(1-reduction)));}
- dispose(){if(this.disposed)return;if(this.claimed&&this.checkOwner()){this.redeem();this.persist();}this.disposed=true;this.move(0,0);this.enemies=[];this.jar=null;this.hazards=[];this.bolts=[];}
+ dispose(){if(this.disposed)return;if(this.claimed&&this.checkOwner()){this.redeem();this.persist();}this.disposed=true;this.xpOrbs=[];this.xpCells.clear();this.move(0,0);this.enemies=[];this.jar=null;this.hazards=[];this.bolts=[];}
 }

@@ -1,4 +1,4 @@
-export const CULTIVATION={duration:900,bonusDuration:120,width:1024,height:900,manaCap:2000,manaPerGold:10,pointsPerGold:10,clearGold:80,bonusGold:100,bountyRate:0.0331777803855,enemyCap:600,dragonChance:.35} as const;
+export const CULTIVATION={targetRtp:1.10,duration:900,bonusDuration:120,width:1024,height:900,manaCap:2000,manaPerGold:10,pointsPerGold:10,clearGold:80,bonusGold:100,bountyBase:0.593715343273,bountyRate:0.0591392761719,enemyCap:600,dragonChance:.35} as const;
 export const CULT_KEY='fantasy-arcade.cultivation.v1';
 export const SKILLS=['sword','fire','thunder','ice','crescent','needle','bell','phoenix','void','dragon','spear'] as const;
 export type Skill=typeof SKILLS[number];
@@ -27,3 +27,8 @@ export const ENEMY_NAMES=['玉靈','狐妖','殭屍','石靈','妖將','龍王',
 export const STAGES=[{at:0,name:'竹林妖息',tint:'#608c72'},{at:180,name:'荒塚夜行',tint:'#6a668e'},{at:360,name:'蠱澤毒潮',tint:'#6b9460'},{at:540,name:'炎獄圍獵',tint:'#a16551'},{at:720,name:'萬妖天劫',tint:'#94577c'}];
 export function stageAt(seconds:number){return STAGES.filter(s=>s.at<=seconds).at(-1)!;}
 export function enemyKind(minute:number,r:number){const pools=minute<3?[0,0,0,1,1,2,6]:minute<6?[0,0,1,1,2,6,6,7,8]:minute<9?[0,1,1,2,3,6,6,7,8,9,10]:minute<12?[0,1,1,2,3,3,6,6,7,8,9,10,11]:[0,1,2,3,3,6,6,7,8,9,10,11,11];return pools[Math.min(pools.length-1,Math.floor(r*pools.length))];}
+
+/** Full cast price: reserved target capacity is billed even when fewer targets are hit. */
+export function castCost(stats:{damage:number;cap:number},discount=false){return manaCost(stats.damage,stats.cap,discount);}
+
+export function killPointsMilli(hp:number){return Math.max(1,Math.round((CULTIVATION.bountyBase+hp*CULTIVATION.bountyRate)*1000));}

@@ -16,7 +16,7 @@ function enemy(id,x,y,hp=10000){return {id,x,y,hp,maxHp:hp,kind:0,speed:0,damage
 {
  const {g}=setup();g.buy(200);start(g);quiet(g);g.skills={sword:5,fire:5,thunder:5};g.enemies=Array.from({length:12},(_,i)=>enemy(i,g.player.x+30+i*3,g.player.y));const before=g.mana;g.step(.01);
  const stats=['sword','fire','thunder'].map(s=>skillStats(s,5,g.level,g.minute,g.upgrades.power));assert.equal(g.hits,stats.reduce((n,s)=>n+s.cap,0),'unique per-cast targets obey caps');assert.equal(before-g.mana,stats.reduce((n,s)=>n+manaCost(s.damage,s.cap),0));
- assert.ok(manaCost(stats[0].damage,1)<manaCost(stats[0].damage,4),'bill actual target count, not maximum capacity');
+ assert.ok(manaCost(stats[0].damage,1)<manaCost(stats[0].damage,4),'generic cost curve grows with reserved capacity');
 }
 {
  const {g,w,storage}=setup();g.buy(100);start(g);quiet(g);g.random=()=>0;g.jar={x:g.player.x+20,y:g.player.y,hp:1,expires:10,corner:0};g.step(.01);assert.equal(g.dragons,1);assert.equal(g.jar,null);assert.equal(g.jarsBroken,1);assert.equal(g.pointsMilli,0,'jar itself has no kill payout');
