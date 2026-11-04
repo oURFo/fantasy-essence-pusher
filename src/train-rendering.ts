@@ -1,5 +1,5 @@
 import type {WonderTrain,TrainTarget} from './train-game.ts';
-import {TRAIN_ITEMS,trainChance} from './train-rules.ts';
+import {TRAIN_ITEMS} from './train-rules.ts';
 import {atlasComponents} from './avatar-rendering.ts';
 let scene:HTMLImageElement,items:HTMLCanvasElement[]=[],launcher:HTMLCanvasElement[],loading:Promise<void>|undefined;
 export function trainFrames(data:Uint8ClampedArray,w:number,h:number,kind='items'){return kind==='items'?atlasComponents(data,w,h,[4,4,4,4]):atlasComponents(data,w,h,[3]).filter(p=>p.indices.length>w*h*.02);}
@@ -11,8 +11,7 @@ export function renderTrain(g:WonderTrain){if(!scene||!items.length)return;const
  const bgWidth=scene.width/scene.height*1000,offset=g.time*12%bgWidth;for(let i=-1;i<2;i++){ctx.save();ctx.translate(i*bgWidth+offset,0);if((i+Math.floor(g.time*12/bgWidth))%2){ctx.translate(bgWidth,0);ctx.scale(-1,1);}ctx.drawImage(scene,0,0,bgWidth,1000);ctx.restore();}
  const text=(s:string,x:number,y:number,size=25,color='#fff')=>{ctx.font=`900 ${size}px "Microsoft JhengHei",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.strokeStyle='#573c39';ctx.lineWidth=5;ctx.strokeText(s,x,y);ctx.fillStyle=color;ctx.fillText(s,x,y);};
  const target=(t:TrainTarget)=>{const im=items[t.type];ctx.drawImage(im,t.x-t.w/2,t.bottom-t.h,t.w,t.h);};
- const aimed=g.targetAt(g.aimPoint.x,g.aimPoint.y);
- for(const t of g.targets){ctx.save();if(g.time-t.flash<.17){ctx.translate(Math.sin(g.time*120)*4,0);ctx.filter='brightness(1.55)';}target(t);ctx.restore();text(String(t.points),t.x,t.bottom-t.h/2,30,'#fff6c6');if(t.credit>0)text(`−${Number(t.credit.toFixed(1))}`,t.x,t.bottom-7,18,'#c2ffeb');}
+ for(const t of g.targets){ctx.save();if(g.time-t.flash<.17){ctx.translate(Math.sin(g.time*120)*4,0);ctx.filter='brightness(1.55)';}target(t);ctx.restore();text(String(t.points),t.x,t.bottom-t.h/2,30,'#fff6c6');}
  for(const f of g.falling){const age=g.time-f.at,t=f.target,material=TRAIN_ITEMS[t.type].material;ctx.save();ctx.globalAlpha=Math.max(0,1-(age-.5)/.9);const x=t.x+f.vx*age,y=t.bottom-70*age+260*age*age;
   if(!f.direct){ctx.translate(x,y);ctx.rotate(f.spin*age);ctx.drawImage(items[t.type],-t.w/2,-t.h,t.w,t.h);}
   else if(material==='metal'){ctx.translate(x,y);ctx.rotate(f.spin*age);ctx.scale(1+Math.min(age,.25),Math.max(.24,1-age*4));ctx.drawImage(items[t.type],-t.w/2,-t.h,t.w,t.h);}
@@ -24,7 +23,7 @@ export function renderTrain(g:WonderTrain){if(!scene||!items.length)return;const
  ctx.save();ctx.strokeStyle='#fff9d9cc';ctx.lineWidth=3;ctx.setLineDash([8,10]);ctx.beginPath();ctx.moveTo(512+Math.cos(g.angle)*70,825+Math.sin(g.angle)*70);ctx.lineTo(512+Math.cos(g.angle)*190,825+Math.sin(g.angle)*190);ctx.stroke();ctx.restore();
  for(const b of g.shots){const r=ctx.createRadialGradient(b.x-3,b.y-4,1,b.x,b.y,10);r.addColorStop(0,'#fff');r.addColorStop(.3,'#e0fbff');r.addColorStop(1,'#6699b5');ctx.fillStyle=r;ctx.beginPath();ctx.arc(b.x,b.y,10,0,Math.PI*2);ctx.fill();}
  ctx.fillStyle='#173d62e8';ctx.beginPath();ctx.roundRect(18,18,988,76,20);ctx.fill();text('奇趣列車',145,56,32,'#ffedb2');text(`金幣 ${g.gold.toLocaleString()}`,450,56,27);text(`積分 ${g.points} · 餘 ${g.tail}`,810,56,27,'#ffe9ac');
- if(aimed){const total=g.total(aimed),effective=g.effective(aimed),x=Math.max(128,Math.min(896,aimed.x)),y=aimed.bottom-aimed.h-78;ctx.fillStyle='#173d62ed';ctx.beginPath();ctx.roundRect(x-125,y,250,65,12);ctx.fill();text(`連帶獎勵 ${total}分`,x,y+20,22);text(`計算 ${Number(effective.toFixed(1))}分 · ${(trainChance(effective,g.bet)*100).toFixed(1)}%`,x,y+45,20,'#baffde');ctx.strokeStyle='#fff4a4';ctx.lineWidth=3;ctx.strokeRect(aimed.x-aimed.w/2-4,aimed.bottom-aimed.h-4,aimed.w+8,aimed.h+8);}
+
  ctx.save();ctx.strokeStyle='#ffefb0';ctx.lineWidth=2;ctx.beginPath();ctx.arc(g.aimPoint.x,g.aimPoint.y,12,0,Math.PI*2);ctx.moveTo(g.aimPoint.x-19,g.aimPoint.y);ctx.lineTo(g.aimPoint.x+19,g.aimPoint.y);ctx.moveTo(g.aimPoint.x,g.aimPoint.y-19);ctx.lineTo(g.aimPoint.x,g.aimPoint.y+19);ctx.stroke();ctx.restore();
  for(const a of g.awards){const age=g.time-a.at,fly=Math.max(0,Math.min(1,(age-.65)/.65)),ease=fly*fly*(3-2*fly),x=a.x+(810-a.x)*ease,y=a.y-35-age*15+(56-a.y+35+age*15)*ease;ctx.save();ctx.globalAlpha=a.paid?Math.max(0,1-(age-1.3)/.35):1;const label=a.kind==='mission'?`任務 +${a.points}`:`+${a.points}分`;text(label,x,y,a.kind==='mission'?25:36,a.kind==='mission'?'#bcffdb':'#fff09b');ctx.restore();}
  text(`${g.bet} 金幣／發${g.auto?' · 連射中':''}`,790,822,25,'#fff0be');

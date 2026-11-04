@@ -15,7 +15,7 @@ export class WonderTrain {
  constructor(wallet:PlayerWallet,storage?:WalletStorage,random=Math.random){this.wallet=wallet;this.storage=storage;this.random=random;try{const p=JSON.parse(storage?.getItem(TRAIN_KEY)??'null');if(Number.isInteger(p?.tail)&&p.tail>=0&&p.tail<10)this.tail=p.tail;}catch{}for(let i=0;i<3;i++)this.tasks.push(this.newTask());for(let i=0;i<6;i++)this.spawn(-135+i*205);}
  get gold(){return this.wallet.gold;}
  get pending(){return this.awards.filter(a=>!a.paid).reduce((s,a)=>s+a.points,0);}
- setBet(n:number){if(!this.disposed&&Number.isInteger(n)&&n>=1&&n<=5)this.bet=n;}
+ setBet(n:number){if(!this.disposed&&Number.isInteger(n)&&n>=1&&n<=TRAIN.maxBet)this.bet=n;}
  targetAt(x:number,y:number){return this.targets.filter(t=>t.live&&Math.abs(t.x-x)<=t.w/2&&y>=t.bottom-t.h&&y<=t.bottom).sort((a,b)=>Math.abs(a.bottom-a.h/2-y)-Math.abs(b.bottom-b.h/2-y))[0]??null;}
  aim(x:number,y:number){if(!Number.isFinite(x)||!Number.isFinite(y))return;this.aimPoint={x:Math.max(0,Math.min(1024,x)),y:Math.max(110,Math.min(720,y))};this.angle=Math.atan2(this.aimPoint.y-825,this.aimPoint.x-512);}
  setDirection(angle:number){if(!Number.isFinite(angle))return;const a=Math.max(-Math.PI+.12,Math.min(-.12,angle));this.aim(512+Math.cos(a)*500,825+Math.sin(a)*500);}
@@ -37,7 +37,7 @@ export class WonderTrain {
  private newTask():TrainTask {const types=this.tasks.map(t=>TRAIN_MISSIONS[t.template].type),pool=TRAIN_MISSIONS.filter(m=>!types.includes(m.type));const m=pool[Math.min(pool.length-1,Math.floor(this.random()*pool.length))];return {template:m.id,progress:0};}
  private award(points:number,x:number,y:number,kind:'hit'|'mission'){this.awards.push({id:++this.awardSerial,points,x,y,kind,at:this.time,paid:false});}
  private progress(type:number,x:number,y:number){const task=this.tasks.find(t=>TRAIN_MISSIONS[t.template].type===type);if(!task)return;const m=TRAIN_MISSIONS[task.template];task.progress++;if(task.progress>=m.count){this.missions++;this.award(m.reward,x,y-70,'mission');this.message=`任務完成！${m.label}，獲得${m.reward}積分。`;const index=this.tasks.indexOf(task);this.tasks.splice(index,1);this.tasks.splice(index,0,this.newTask());}}
- impact(target:TrainTarget,bet:number){if(!target.live)return false;this.hits++;target.flash=this.time;const carried=this.carried(target),total=carried.reduce((n,t)=>n+t.points,0);if(this.random()>=trainChance(this.effective(target),bet)){target.credit+=bet*TRAIN.pointsPerGold*TRAIN.failedCreditRate;this.message=`命中${TRAIN_ITEMS[target.type].name}未破壞，累積折減${target.credit}分；獎勵維持${total}分。`;return false;}
+ impact(target:TrainTarget,bet:number){if(!target.live)return false;this.hits++;target.flash=this.time;const carried=this.carried(target),total=carried.reduce((n,t)=>n+t.points,0);if(this.random()>=trainChance(this.effective(target),bet)){target.credit+=bet*TRAIN.pointsPerGold*TRAIN.failedCreditRate;this.message=`命中${TRAIN_ITEMS[target.type].name}，這次沒有破壞。`;return false;}
   // Remove the whole chain before awards/progress; another marble cannot claim it twice.
   const missionsBefore=this.missions;for(const t of carried)t.live=false;
   for(const t of carried){this.falling.push({target:{...t},at:this.time,direct:t.id===target.id,vx:(this.random()-.5)*180,spin:(this.random()-.5)*5});this.progress(t.type,t.x,t.bottom-t.h/2);}

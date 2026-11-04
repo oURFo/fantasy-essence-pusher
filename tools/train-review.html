@@ -1,5 +1,6 @@
 <!doctype html><html lang="zh-Hant"><meta charset="utf-8"><base href="/"><meta name="viewport" content="width=device-width,initial-scale=1"><title>奇趣列車 · 開發畫面檢查</title><body><script type="module">
 import '../src/style.css';
+import {initGameFullscreen} from '../src/fullscreen.ts';
 import {WonderTrain} from '../src/train-game.ts';
 import {PlayerWallet} from '../src/wallet.ts';
 import {loadTrainArtwork,renderTrain} from '../src/train-rendering.ts';
@@ -7,13 +8,13 @@ import {initTrainUI} from '../src/train-ui.ts';
 import {TRAIN_COMBOS,trainSeed} from '../src/train-rules.ts';
 const parsed=new DOMParser().parseFromString(await(await fetch('/index.html')).text(),'text/html');parsed.querySelectorAll('script').forEach(s=>s.remove());document.body.innerHTML=parsed.body.innerHTML;
 const el=id=>document.getElementById(id);el('lobby-screen').hidden=true;el('machine-screen').hidden=false;el('machine-screen').dataset.machine='wonder-train';el('lobby-wallet').hidden=true;el('machine-nav').hidden=false;el('page-title').textContent='奇趣列車';el('page-subtitle').textContent='開發檢查 · 使用獨立記憶體錢包，不寫入玩家進度';el('game').width=1024;el('game').height=900;el('loading').style.display='none';document.querySelector('.play-controls').hidden=true;el('adventure-details').hidden=true;el('forge-cabinet-play').hidden=true;
-const select=document.createElement('select');select.setAttribute('aria-label','檢查場景');for(const [value,label]of [['ready','場景'],['credit','100分物件累積折減'],['recycle','同物件繞回後紀錄'],['middle','精準命中第二層'],['click-middle','點擊第二層操作檢查'],['break','破壞與連帶倒落'],['shatter','木箱碎裂'],['fly','積分飛入'],['paid','入帳完成'],['mission','任務完成'],...TRAIN_COMBOS.map((c,i)=>['combo'+i,c.name])]){const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o);}document.querySelector('.app-header').append(select);
+const select=document.createElement('select');select.setAttribute('aria-label','檢查場景');for(const [value,label]of [['ready','場景'],['credit','命中未破壞'],['recycle','同物件循環'],['middle','精準命中第二層'],['click-middle','點擊第二層操作檢查'],['break','破壞與連帶倒落'],['shatter','木箱碎裂'],['fly','積分飛入'],['paid','入帳完成'],['mission','任務完成'],...TRAIN_COMBOS.map((c,i)=>['combo'+i,c.name])]){const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o);}document.querySelector('.app-header').append(select);
 const live=document.createElement('input');live.type='checkbox';live.setAttribute('aria-label','播放場景模擬');document.querySelector('.app-header').append(live);
-let g;const ui=initTrainUI(()=>g,()=>document.hidden,()=>ui.update(g));ui.show(true);
+initGameFullscreen();let g;const ui=initTrainUI(()=>g,()=>document.hidden,()=>ui.update(g));ui.show(true);
 function scene(name){const wallet=new PlayerWallet();wallet.setBalance(1000);g=new WonderTrain(wallet,undefined,trainSeed(43));g.targets=[];g.nextStack=Infinity;
  if(name.startsWith('combo'))g.spawn(512,Number(name.slice(5)));else{g.spawn(220,name==='shatter'?1:0);g.spawn(512,2);g.spawn(810,5);}
- if(['credit','recycle'].includes(name)){g.targets=[];g.spawn(512,0);const t=g.targets.at(-1);g.random=()=>.9999;g.aim(t.x,t.bottom-t.h/2);g.shoot();for(let i=0;i<30;i++)g.step();if(name==='recycle'){for(let i=0;i<1800;i++)g.step();g.message=`同物件 #${t.id} 已繞回（第${t.lap}圈），折減仍為${t.credit}分。`;}g.aim(t.x,t.bottom-t.h/2);}
- if(name==='click-middle'){g.targets=[];g.spawn(512,0);for(const t of g.targets)t.bottom-=59;g.random=()=>0;g.message='點擊畫布中心的150分鋁罐，驗證只倒中、上層。';}
+ if(['credit','recycle'].includes(name)){g.targets=[];g.spawn(512,0);const t=g.targets.at(-1);g.random=()=>.9999;g.aim(t.x,t.bottom-t.h/2);g.shoot();for(let i=0;i<30;i++)g.step();if(name==='recycle'){for(let i=0;i<1800;i++)g.step();g.message=`同一物件已再次進場。`;}g.aim(t.x,t.bottom-t.h/2);}
+ if(name==='click-middle'){g.targets=[];g.spawn(512,0);for(const t of g.targets)t.bottom-=59;g.random=()=>0;g.message='點擊畫布中心的90分鋁罐，驗證只倒中、上層。';}
  if(name==='middle'){g.targets=[];g.spawn(512,0);const t=g.targets[1];g.random=()=>0;g.aim(t.x,t.bottom-t.h/2);g.shoot();for(let i=0;i<24;i++)g.step();}
  if(['break','shatter','fly','paid','mission'].includes(name)){g.random=()=>0;if(name==='mission')g.tasks=[{template:0,progress:4},{template:2,progress:0},{template:4,progress:0}];g.impact(g.targets[0],5);const age=(name==='break'||name==='shatter')?.3:name==='fly'?.95:name==='paid'?1.4:.4;for(let i=0;i<Math.round(age*60);i++)g.step();}
  ui.update(g);renderTrain(g);

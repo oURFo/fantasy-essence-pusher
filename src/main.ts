@@ -1,3 +1,4 @@
+import {initGameFullscreen} from './fullscreen.ts';
 import {WonderTrain} from './train-game.ts';
 import {loadTrainArtwork,renderTrain} from './train-rendering.ts';
 import {initTrainUI} from './train-ui.ts';
@@ -47,6 +48,7 @@ const wallet=new PlayerWallet(storage),session=new ArcadeSession(wallet,new Frui
 let lastUI=0;const gmCode=new LobbyGMCode();
 let accumulator=0,previous=0,entering=false,readyPromise:Promise<void>|undefined;
 const dialog=$<HTMLDialogElement>('leave-dialog');
+const gameFullscreen=initGameFullscreen();
 const trainUI=initTrainUI(()=>session.game instanceof WonderTrain?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const cultivationUI=initCultivationUI(()=>session.game instanceof Cultivation?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
 const forgeUI=initForgeUI(()=>session.game instanceof ThunderForge?session.game:null,()=>document.hidden||session.leaveRequested,updateUI);
@@ -160,8 +162,9 @@ async function enterMachine(id:MachineId){
  }catch(error){$('lobby-error').textContent='機台載入失敗，請稍後重試。';console.error(error);}
  finally{entering=false;button.disabled=false;button.textContent=label;}
 }
-function requestLeave(){
+async function requestLeave(){
  if(session.leaveRequested||!session.requestLeave())return;
+ await gameFullscreen.exit();
  resetClock();if(session.game instanceof WonderTrain){$('leave-pending').textContent=`離場結清待入帳 ${session.game.pending} 積分；積分尾數保留。任務進度、場上物件與尚未命中的彈珠會重置，連射停止。`;}if(session.game instanceof Cultivation){const g=session.game;$('leave-pending').textContent=`當局等級、技能、BUFF與${g.dragons}顆龍珠會清除。${g.mana}法力、${g.points.toFixed(3)}積分尾數及已領獎金保留。`;}if(session.game instanceof ThunderForge){$('leave-pending').textContent='能量與等級保存在目前瀏覽器。已抽出的獎金已入帳，離場不會取消；自動投入停止。';}if(session.game instanceof TempleFortune){const g=session.game;$('leave-pending').textContent=`離場自動兌換 ${g.exchangeGold} 金幣；不足10分尾數、場上鋼珠、待轉 ${g.slotQueue} 次、待派 ${g.pendingBalls} 珠與賜福時間會清除。`;}if(session.game instanceof GoldMine){const g=session.game;$('leave-pending').textContent=`目前 ${g.points} 積分，離場兌換 ${g.exchangeGold} 金幣；不足10分尾數、待轉 ${g.slotQueue} 次、待派 ${g.pendingBalls} 珠與金礦時間會清除。`;}if(session.game instanceof FateOrbit){const g=session.game;$('leave-pending').textContent=`目前 ${g.points} 積分，離開將兌換 ${g.exchangeGold} 金幣；不足 10 分的 ${g.points%10} 積分將清除。尚有 ${g.runs.length} 顆球未完成，離開將取消其獎勵。`;}if(session.game instanceof NightMarket){const g=session.game;$('leave-pending').textContent=`背包 ${g.bagCount} 件戰利品將自動售出 ${g.bagValue} 金幣；剩餘 ${g.rings} 個圈圈將清除，不退費。${g.active?'飛行中的圈圈會取消。':''}`;}dialog.showModal();$('keep-playing').focus();updateUI();
 }
 function cancelLeave(){session.cancelLeave();dialog.close();resetClock();updateUI();$('back-to-lobby').focus({preventScroll:true});}

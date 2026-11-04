@@ -1,9 +1,9 @@
 import {writeFileSync,readFileSync} from 'node:fs';
 import {simulateTrain} from '../tests/train-simulation.mjs';
 import {TRAIN} from '../src/train-rules.ts';
-function batch(start,n){return [1,2,3,4,5].map(b=>simulateTrain(start+b,b,n));}
+function batch(start,n){return [1,2,3].map(b=>simulateTrain(start+b,b,n));}
 const pooled=rows=>rows.reduce((s,r)=>s+r.points/10,0)/rows.reduce((s,r)=>s+r.spent,0);
 if(process.argv.includes('--fit')){let lo=.4,hi=.9;for(let i=0;i<8;i++){TRAIN.coefficient=(lo+hi)/2;const rows=batch(1700,100000);const r=pooled(rows);console.log('Fit',TRAIN.coefficient,r);if(r<TRAIN.rtp)lo=TRAIN.coefficient;else hi=TRAIN.coefficient;}TRAIN.coefficient=Number(((lo+hi)/2).toFixed(7));const path='src/train-rules.ts';writeFileSync(path,readFileSync(path,'utf8').replace(/coefficient:[.\d]+/,`coefficient:${TRAIN.coefficient}`));}
-const reference=batch(8000,100000),top=[1,3,5].map(b=>simulateTrain(9100+b,b,5000,'top'));
-const casual=[1,3,5].map(b=>simulateTrain(10100+b,b,5000,'casual'));
+const reference=batch(8000,100000),top=[1,2,3].map(b=>simulateTrain(9100+b,b,5000,'top'));
+const casual=[1,2,3].map(b=>simulateTrain(10100+b,b,5000,'casual'));
 const report={date:'2026-11-04',config:TRAIN,definition:'All awarded object and mission points / 10 / actual shot coins. Includes missed shots, capped chances, travel, scrolling, retained item credits, aimed layer, pending payout settlement. No refund. Click-selected layers lead moving targets.',policy:'60Hz aimed-depth flight; select a stack base; choose carried value >= bet*10. Independent seeds from coefficient fit. Does not guarantee every aim policy or every session.',reference,rtp:pooled(reference),top,casual,misses:simulateTrain(11101,3,5000,'misses'),notes:'Three non-overlapping exact-type tasks. Reward per completion <= 10% of the minimum value of counted items. Missions reset on exit; no base reward for merely leaving. Misses and deliberate empty aiming can reduce actual RTP.'};writeFileSync('train-balance-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
