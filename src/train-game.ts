@@ -1,5 +1,5 @@
 import {PlayerWallet,type WalletStorage} from './wallet.ts';
-import {TRAIN,TRAIN_ITEMS,TRAIN_COMBOS,TRAIN_MISSIONS,TRAIN_KEY,trainChance} from './train-rules.ts';
+import {TRAIN,TRAIN_ITEMS,TRAIN_COMBOS,TRAIN_MISSIONS,TRAIN_KEY,trainChance,randomTrainCombo} from './train-rules.ts';
 export interface TrainTarget {id:number;stack:number;type:number;points:number;x:number;bottom:number;w:number;h:number;live:boolean;flash:number;credit:number;lap:number;}
 export interface TrainShot {x:number;y:number;vx:number;vy:number;bet:number;age:number;duration:number;goalX:number;goalY:number;targetId:number|null;lap:number;}
 export interface TrainFalling {target:TrainTarget;at:number;direct:boolean;vx:number;spin:number;}
@@ -27,9 +27,9 @@ export class WonderTrain {
   const t=this.targetAt(this.aimPoint.x,this.aimPoint.y);let duration=Math.hypot(this.aimPoint.x-512,this.aimPoint.y-825)/TRAIN.speed;for(let i=0;i<3;i++)duration=Math.hypot(this.aimPoint.x+(t?TRAIN.scroll*duration:0)-512,this.aimPoint.y-825)/TRAIN.speed;
   const goalX=this.aimPoint.x+(t?TRAIN.scroll*duration:0),goalY=this.aimPoint.y;duration=Math.max(.12,duration);this.shots.push({x:512,y:825,vx:(goalX-512)/duration,vy:(goalY-825)/duration,bet:this.bet,age:0,duration,goalX,goalY,targetId:t?.id??null,lap:t?.lap??0});return true;
  }
- spawn(x=-100,index=Math.floor(this.random()*TRAIN_COMBOS.length)){
-  const combo=TRAIN_COMBOS[index],stack=++this.stackSerial;this.lanes.push({stack,x});let bottom=620;
-  for(let i=0;i<combo.items.length;i++){const type=combo.items[i],item=TRAIN_ITEMS[type],points='values'in combo?combo.values[i]:item.points;this.targets.push({id:++this.serial,stack,type,points,x,bottom,w:item.w,h:item.h,live:true,flash:-10,credit:0,lap:0});bottom-=item.h-3;}
+ spawn(x=-100,index?:number){
+  const combo=index===undefined?randomTrainCombo(this.random):TRAIN_COMBOS[index],stack=++this.stackSerial;this.lanes.push({stack,x});let bottom=620;
+  for(let i=0;i<combo.items.length;i++){const type=combo.items[i],item=TRAIN_ITEMS[type],points='values'in combo?(combo.values as readonly number[])[i]:item.points;this.targets.push({id:++this.serial,stack,type,points,x,bottom,w:item.w,h:item.h,live:true,flash:-10,credit:0,lap:0});bottom-=item.h-3;}
  }
  carried(t:TrainTarget){return this.targets.filter(o=>o.live&&o.stack===t.stack&&o.bottom<=t.bottom);}
  total(t:TrainTarget){return this.carried(t).reduce((n,o)=>n+o.points,0);}

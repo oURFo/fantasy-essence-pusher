@@ -8,7 +8,7 @@
     "scroll": 42,
     "speed": 1450,
     "arcHeight": 55,
-    "coefficient": 0.6998047,
+    "coefficient": 0.6783203,
     "missionRatio": 0.1,
     "failedCreditRate": 0.25,
     "loopWidth": 1230
@@ -24,11 +24,11 @@
       "hits": 100000,
       "hitRate": 1,
       "spent": 100000,
-      "points": 987982,
-      "rtp": 0.9879819999999999,
-      "broken": 2699,
-      "missions": 43,
-      "seconds": 50991.400003319904
+      "points": 1017022,
+      "rtp": 1.0170219999999999,
+      "broken": 3825,
+      "missions": 87,
+      "seconds": 50998.56666998803
     },
     {
       "seed": 8002,
@@ -38,11 +38,11 @@
       "hits": 100000,
       "hitRate": 1,
       "spent": 200000,
-      "points": 1848696,
-      "rtp": 0.9243480000000001,
-      "broken": 4967,
-      "missions": 90,
-      "seconds": 51012.06666999078
+      "points": 1915214,
+      "rtp": 0.957607,
+      "broken": 7263,
+      "missions": 170,
+      "seconds": 51077.716670004156
     },
     {
       "seed": 8003,
@@ -52,14 +52,14 @@
       "hits": 100000,
       "hitRate": 1,
       "spent": 300000,
-      "points": 2972464,
-      "rtp": 0.9908213333333334,
-      "broken": 7560,
-      "missions": 148,
-      "seconds": 51071.50000333622
+      "points": 2883393,
+      "rtp": 0.961131,
+      "broken": 10849,
+      "missions": 265,
+      "seconds": 51384.01667006656
     }
   ],
-  "rtp": 0.9681903333333333,
+  "rtp": 0.9692714999999998,
   "top": [
     {
       "seed": 9101,
@@ -69,10 +69,10 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 5000,
-      "points": 49658,
-      "rtp": 0.99316,
-      "broken": 147,
-      "missions": 3,
+      "points": 53438,
+      "rtp": 1.06876,
+      "broken": 219,
+      "missions": 5,
       "seconds": 2564.8333333383803
     },
     {
@@ -83,11 +83,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 10000,
-      "points": 106202,
-      "rtp": 1.06202,
-      "broken": 335,
-      "missions": 6,
-      "seconds": 2565.5166666717223
+      "points": 87005,
+      "rtp": 0.87005,
+      "broken": 369,
+      "missions": 8,
+      "seconds": 2565.4833333383885
     },
     {
       "seed": 9103,
@@ -97,11 +97,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 15000,
-      "points": 143436,
-      "rtp": 0.95624,
-      "broken": 417,
-      "missions": 7,
-      "seconds": 2565.683333338391
+      "points": 136579,
+      "rtp": 0.9105266666666666,
+      "broken": 544,
+      "missions": 12,
+      "seconds": 2583.1166666719464
     }
   ],
   "casual": [
@@ -113,10 +113,10 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 5000,
-      "points": 31050,
-      "rtp": 0.621,
-      "broken": 108,
-      "missions": 3,
+      "points": 42076,
+      "rtp": 0.84152,
+      "broken": 207,
+      "missions": 7,
       "seconds": 2564.8333333383803
     },
     {
@@ -127,11 +127,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 10000,
-      "points": 91140,
-      "rtp": 0.9114,
-      "broken": 282,
-      "missions": 5,
-      "seconds": 2564.8333333383803
+      "points": 103019,
+      "rtp": 1.03019,
+      "broken": 389,
+      "missions": 7,
+      "seconds": 2566.1666666717306
     },
     {
       "seed": 10103,
@@ -141,11 +141,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 15000,
-      "points": 143908,
-      "rtp": 0.9593866666666666,
-      "broken": 354,
-      "missions": 5,
-      "seconds": 2579.1000000052286
+      "points": 132612,
+      "rtp": 0.8840800000000001,
+      "broken": 504,
+      "missions": 12,
+      "seconds": 2575.4000000051815
     }
   ],
   "misses": {
@@ -156,11 +156,11 @@
     "hits": 4240,
     "hitRate": 0.848,
     "spent": 15000,
-    "points": 120319,
-    "rtp": 0.8021266666666667,
-    "broken": 301,
-    "missions": 6,
-    "seconds": 2565.3500000050535
+    "points": 116977,
+    "rtp": 0.7798466666666667,
+    "broken": 448,
+    "missions": 10,
+    "seconds": 2569.6000000051076
   },
   "notes": "Three non-overlapping exact-type tasks. Reward per completion <= 10% of the minimum value of counted items. Missions reset on exit; no base reward for merely leaving. Misses and deliberate empty aiming can reduce actual RTP."
 }

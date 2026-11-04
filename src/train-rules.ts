@@ -1,4 +1,4 @@
-export const TRAIN={rtp:.95,maxBet:3,pointsPerGold:10,shotInterval:.5,scroll:42,speed:1450,arcHeight:55,coefficient:0.6998047,missionRatio:.1,failedCreditRate:.25,loopWidth:1230} as const;
+export const TRAIN={rtp:.95,maxBet:3,pointsPerGold:10,shotInterval:.5,scroll:42,speed:1450,arcHeight:55,coefficient:0.6783203,missionRatio:.1,failedCreditRate:.25,loopWidth:1230} as const;
 export const TRAIN_KEY='fantasy-arcade.train-tail.v1';
 export const TRAIN_ITEMS=[
  {name:'鋁罐',points:60,w:58,h:76,material:'metal'},
@@ -32,7 +32,15 @@ export const TRAIN_COMBOS=[
  {name:'奇趣全家福',items:[6,14,15]},
 ] as const;
 export const TRAIN_MISSIONS=TRAIN_ITEMS.slice(0,12).flatMap((item,type)=>[5,12].map(count=>({id:type*2+(count===12?1:0),type,count,reward:Math.max(1,Math.floor(item.points*count*TRAIN.missionRatio)),label:`破壞${count}個${item.name}`})));
-export function trainChance(total:number,bet:number,coefficient:number=TRAIN.coefficient){return total>0?Math.min(.98,Math.max(0,10*bet*coefficient/total)):0;}
+// Gameplay stacks are generated independently; templates remain for review fixtures.
+export function randomTrainCombo(random:()=>number){
+ const count=2+Math.min(1,Math.floor(random()*2));
+ const weights=TRAIN_ITEMS.map((_,i)=>i===15?1:i===14?2:8);
+ const sum=weights.reduce((a,b)=>a+b,0),items:number[]=[];
+ for(let i=0;i<count;i++){let roll=random()*sum,type=weights.length-1;for(let j=0;j<weights.length;j++){roll-=weights[j];if(roll<0){type=j;break;}}items.push(type);}
+ return {items};
+}
+export function trainChance(total:number,bet:number,coefficient:number=TRAIN.coefficient){return total>0?Math.min(.98,Math.max(.005,10*bet*coefficient/total)):0;}
 export function trainSeed(seed:number){return ()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
 
 export const TRAIN_BETS=[1,2,3] as const;

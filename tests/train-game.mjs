@@ -50,3 +50,11 @@ assert.ok(report.misses.hits<report.misses.shots);assert.equal(report.misses.spe
  const {g}=setup();g.spawn(512,0);const [bottom,middle,top]=g.targets;g.random=()=>.9999;g.impact(top,1);g.impact(middle,2);assert.equal(top.credit,2.5);assert.equal(middle.credit,5);assert.equal(g.effective(bottom),210-7.5);assert.equal(g.total(bottom),210);
 }
 console.log('Train v2 passed: persistent per-item failed-shot credit across loops, unmodified awards, carried credit sum and direct middle-layer targeting.');
+
+{
+ const {randomTrainCombo}=await import('../src/train-rules.ts');const random=trainSeed(20261104),seen=new Set();
+ for(let i=0;i<10000;i++){const combo=randomTrainCombo(random);assert.ok(combo.items.length===2||combo.items.length===3);assert.ok(combo.items.every(t=>Number.isInteger(t)&&t>=0&&t<TRAIN_ITEMS.length));seen.add(combo.items.join(','));let total=0;for(const type of [...combo.items].reverse()){total+=TRAIN_ITEMS[type].points;for(const bet of [1,2,3])assert.ok(trainChance(total,bet)>=.005);}}
+ assert.ok(seen.size>1000,'gameplay must generate new stacks rather than select a fixed template');
+ assert.equal(trainChance(1e9,1),.005,'even a high-value carried chain has the 0.5% floor');
+ console.log('Random stacks passed: 10,000 seeded groups, diverse independent layers and minimum 0.5% hit chance.');
+}
