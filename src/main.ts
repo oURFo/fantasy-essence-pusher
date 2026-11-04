@@ -142,7 +142,7 @@ async function enterMachine(id:MachineId){
   $('cultivation-panel').hidden=!cult;$('cult-battle').hidden=!cult;
   $('forge-panel').hidden=!forge;
   document.querySelector<HTMLElement>('.return-nav span')!.textContent=cult?'離場重置試煉，剩餘法力與積分保留':forge?'能量與等級保留；獎金於投入時結算':'離開機台將重置盤面，金幣保留';
-  if(train)canvas.setAttribute('aria-label','奇趣列車彈弓，點按場景瞄準，按發射或開啟連射');
+  if(train)canvas.setAttribute('aria-label','奇趣列車彈弓，點按場景直接朝該方向發射，亦可使用發射按鈕或連射');
   if(cult)canvas.setAttribute('aria-label','萬妖問道修仙生存試煉，WASD或搖桿移動，自動施法；角落酒罈與五龍珠追加龍王');
   if(forge)canvas.setAttribute('aria-label','雷神彈珠台，七個洞口、十格雷電與彈出鍛造舞台');
   $('temple-panel').hidden=!temple;$('temple-knob').hidden=!temple;

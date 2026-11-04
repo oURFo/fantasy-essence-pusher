@@ -8,7 +8,7 @@ export interface TrainTask {template:number;progress:number;}
 export class WonderTrain {
  time=0;bet=1;angle=-Math.PI/2;auto=false;disposed=false;lastShot=-10;nextStack=0;
  targets:TrainTarget[]=[];shots:TrainShot[]=[];falling:TrainFalling[]=[];awards:TrainAward[]=[];tasks:TrainTask[]=[];
- points=0;tail=0;goldWon=0;spent=0;fired=0;hits=0;broken=0;missions=0;message='指向想射擊的物件，按發射；打掉底座可獲得上方連帶積分。';
+ points=0;tail=0;goldWon=0;spent=0;fired=0;hits=0;broken=0;missions=0;message='點擊場景直接朝該方向發射；打掉底座可獲得上方連帶積分。';
  private serial=0;private stackSerial=0;private awardSerial=0;private storage?:WalletStorage;
  readonly wallet:PlayerWallet;random:()=>number;
  constructor(wallet:PlayerWallet,storage?:WalletStorage,random=Math.random){this.wallet=wallet;this.storage=storage;this.random=random;try{const p=JSON.parse(storage?.getItem(TRAIN_KEY)??'null');if(Number.isInteger(p?.tail)&&p.tail>=0&&p.tail<10)this.tail=p.tail;}catch{}for(let i=0;i<3;i++)this.tasks.push(this.newTask());for(let i=0;i<5;i++)this.spawn(70+i*205);this.nextStack=4.8;}
