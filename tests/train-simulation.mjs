@@ -7,7 +7,7 @@ export function simulateTrain(seed,bet,shots=3000,policy='base'){
   if(g.time-g.lastShot>=.5){let candidates=g.targets.filter(t=>t.live&&t.x>100&&t.x<870&&(policy==='casual'||policy==='misses'||g.total(t)>=bet*10));
    if(policy==='base'||policy==='casual'||policy==='misses')candidates=candidates.filter(t=>!g.targets.some(o=>o.live&&o.stack===t.stack&&o.bottom>t.bottom));
    if(policy==='top')candidates=candidates.filter(t=>!g.targets.some(o=>o.live&&o.stack===t.stack&&o.bottom<t.bottom));
-   candidates.sort((a,b)=>Math.abs(a.x-512)-Math.abs(b.x-512));const t=candidates[0];if(t){let travel=Math.hypot(t.x-512,t.bottom-t.h/2-825)/TRAIN.speed;for(let i=0;i<3;i++)travel=Math.hypot(t.x+TRAIN.scroll*travel-512,t.bottom-t.h/2-825-TRAIN.gravity*travel*travel/2)/TRAIN.speed;g.aim(t.x+TRAIN.scroll*travel,t.bottom-t.h/2-TRAIN.gravity*travel*travel/2);if(policy==='casual'){g.aim(t.x,t.bottom-t.h/2);g.angle+=(aiming()-.5)*.08;}if(policy==='misses'&&aiming()<.15)g.angle=-.13;g.shoot();}
+   candidates.sort((a,b)=>Math.abs(a.x-512)-Math.abs(b.x-512));const t=candidates[0];if(t){g.aim(t.x,t.bottom-t.h/2);if(policy==='casual')g.aim(t.x+(aiming()-.5)*12,t.bottom-t.h/2);if(policy==='misses'&&aiming()<.15)g.aim(10,150);g.shoot();}
   }
   g.step();steps++;
  }

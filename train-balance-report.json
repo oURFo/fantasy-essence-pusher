@@ -6,85 +6,87 @@
     "shotInterval": 0.5,
     "scroll": 42,
     "speed": 1450,
-    "gravity": 85,
-    "coefficient": 0.9447266,
-    "missionRatio": 0.1
+    "arcHeight": 55,
+    "coefficient": 0.7095703,
+    "missionRatio": 0.1,
+    "failedCreditRate": 0.25,
+    "loopWidth": 1230
   },
-  "definition": "All awarded object and mission points / 10 / actual shot coins. Includes missed shots, capped chances, travel, scrolling, occlusion, pending payout settlement. No refund or aim correction.",
-  "policy": "60Hz physical flight; predict moving stack base; choose carried value >= bet*10. Independent seeds from coefficient fit. Does not guarantee every aim policy or every session.",
+  "definition": "All awarded object and mission points / 10 / actual shot coins. Includes missed shots, capped chances, travel, scrolling, retained item credits, aimed layer, pending payout settlement. No refund. Click-selected layers lead moving targets.",
+  "policy": "60Hz aimed-depth flight; select a stack base; choose carried value >= bet*10. Independent seeds from coefficient fit. Does not guarantee every aim policy or every session.",
   "reference": [
     {
       "seed": 8001,
       "bet": 1,
       "policy": "base",
-      "shots": 20000,
-      "hits": 20000,
+      "shots": 100000,
+      "hits": 100000,
       "hitRate": 1,
-      "spent": 20000,
-      "points": 191633,
-      "rtp": 0.9581649999999999,
-      "broken": 5389,
-      "missions": 115,
-      "seconds": 12078.88333324171
+      "spent": 100000,
+      "points": 959877,
+      "rtp": 0.959877,
+      "broken": 1559,
+      "missions": 28,
+      "seconds": 50990.45000331971
     },
     {
       "seed": 8002,
       "bet": 2,
       "policy": "base",
-      "shots": 20000,
-      "hits": 20000,
+      "shots": 100000,
+      "hits": 100000,
       "hitRate": 1,
-      "spent": 40000,
-      "points": 378021,
-      "rtp": 0.9450525,
-      "broken": 9734,
-      "missions": 190,
-      "seconds": 18629.316666479725
+      "spent": 200000,
+      "points": 1818241,
+      "rtp": 0.9091205,
+      "broken": 2805,
+      "missions": 54,
+      "seconds": 50990.20000331966
     },
     {
       "seed": 8003,
       "bet": 3,
       "policy": "base",
-      "shots": 20000,
-      "hits": 20000,
+      "shots": 100000,
+      "hits": 100000,
       "hitRate": 1,
-      "spent": 60000,
-      "points": 578385,
-      "rtp": 0.963975,
-      "broken": 13477,
-      "missions": 270,
-      "seconds": 25351.48333304857
+      "spent": 300000,
+      "points": 2939699,
+      "rtp": 0.9798996666666667,
+      "broken": 4877,
+      "missions": 91,
+      "seconds": 51008.28333665668
     },
     {
       "seed": 8004,
       "bet": 4,
       "policy": "base",
-      "shots": 20000,
-      "hits": 20000,
+      "shots": 100000,
+      "hits": 100000,
       "hitRate": 1,
-      "spent": 80000,
-      "points": 773685,
-      "rtp": 0.96710625,
-      "broken": 16939,
-      "missions": 297,
-      "seconds": 34986.250000059226
+      "spent": 400000,
+      "points": 3981960,
+      "rtp": 0.99549,
+      "broken": 6019,
+      "missions": 110,
+      "seconds": 51027.33333666056
     },
     {
       "seed": 8005,
       "bet": 5,
       "policy": "base",
-      "shots": 20000,
-      "hits": 20000,
+      "shots": 100000,
+      "hits": 100000,
       "hitRate": 1,
-      "spent": 100000,
-      "points": 952740,
-      "rtp": 0.95274,
-      "broken": 20691,
-      "missions": 387,
-      "seconds": 42829.4500016571
+      "spent": 500000,
+      "points": 4739256,
+      "rtp": 0.9478512,
+      "broken": 7366,
+      "missions": 137,
+      "seconds": 51072.61667000312
     }
   ],
-  "rtp": 0.9581546666666667,
+  "rtp": 0.9626021999999999,
   "top": [
     {
       "seed": 9101,
@@ -94,11 +96,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 5000,
-      "points": 47465,
-      "rtp": 0.9493,
-      "broken": 1352,
-      "missions": 21,
-      "seconds": 2977.150000010297
+      "points": 45044,
+      "rtp": 0.9008799999999999,
+      "broken": 129,
+      "missions": 3,
+      "seconds": 2564.8333333383803
     },
     {
       "seed": 9103,
@@ -108,11 +110,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 15000,
-      "points": 141293,
-      "rtp": 0.9419533333333333,
-      "broken": 2247,
-      "missions": 34,
-      "seconds": 8864.549999955152
+      "points": 116065,
+      "rtp": 0.7737666666666667,
+      "broken": 178,
+      "missions": 5,
+      "seconds": 2564.8333333383803
     },
     {
       "seed": 9105,
@@ -122,11 +124,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 25000,
-      "points": 235374,
-      "rtp": 0.9414960000000001,
-      "broken": 3253,
-      "missions": 50,
-      "seconds": 14595.349999871758
+      "points": 203810,
+      "rtp": 0.81524,
+      "broken": 320,
+      "missions": 5,
+      "seconds": 2565.683333338391
     }
   ],
   "casual": [
@@ -138,11 +140,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 5000,
-      "points": 48480,
-      "rtp": 0.9696,
-      "broken": 1383,
-      "missions": 29,
-      "seconds": 3047.9500000111984
+      "points": 50280,
+      "rtp": 1.0056,
+      "broken": 87,
+      "missions": 1,
+      "seconds": 2564.8333333383803
     },
     {
       "seed": 10103,
@@ -152,11 +154,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 15000,
-      "points": 142944,
-      "rtp": 0.95296,
-      "broken": 3341,
-      "missions": 70,
-      "seconds": 6249.283333326542
+      "points": 159367,
+      "rtp": 1.0624466666666668,
+      "broken": 253,
+      "missions": 3,
+      "seconds": 2564.8333333383803
     },
     {
       "seed": 10105,
@@ -166,11 +168,11 @@
       "hits": 5000,
       "hitRate": 1,
       "spent": 25000,
-      "points": 243743,
-      "rtp": 0.974972,
-      "broken": 5593,
-      "missions": 105,
-      "seconds": 10305.249999934187
+      "points": 252696,
+      "rtp": 1.010784,
+      "broken": 449,
+      "missions": 8,
+      "seconds": 2569.9000000051115
     }
   ],
   "misses": {
@@ -181,11 +183,11 @@
     "hits": 4240,
     "hitRate": 0.848,
     "spent": 15000,
-    "points": 116675,
-    "rtp": 0.7778333333333334,
-    "broken": 2838,
-    "missions": 50,
-    "seconds": 5333.933333339862
+    "points": 110700,
+    "rtp": 0.738,
+    "broken": 209,
+    "missions": 5,
+    "seconds": 2564.8333333383803
   },
   "notes": "Three non-overlapping exact-type tasks. Reward per completion <= 10% of the minimum value of counted items. Missions reset on exit; no base reward for merely leaving. Misses and deliberate empty aiming can reduce actual RTP."
 }
