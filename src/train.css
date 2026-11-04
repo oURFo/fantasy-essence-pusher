@@ -1,0 +1,17 @@
+#machine-screen[data-machine="wonder-train"]{grid-template-columns:minmax(0,1.8fr) minmax(270px,1fr);gap:24px}
+#machine-screen[data-machine="wonder-train"] .machine{border:5px solid #eac580;border-radius:25px;overflow:hidden;background:#a4e6f4;box-shadow:0 14px 50px #07162355;max-width:none;aspect-ratio:1024/900;align-self:start}
+#machine-screen[data-machine="wonder-train"] #game{touch-action:none;cursor:crosshair;aspect-ratio:1024/900;height:auto}
+#train-panel{border:2px solid #e7bc77;border-radius:22px;padding:23px;background:linear-gradient(145deg,#fff8e6,#e9f8fa);color:#285678}
+#train-panel h2{display:block;margin:8px 0;font:900 32px sans-serif;color:#285678;letter-spacing:2px}#train-panel .train-top>span{font-size:10px;letter-spacing:3px;color:#bb7a37}#train-panel p{font-size:13px;line-height:1.8;color:#416983}#train-message{min-height:46px}
+.train-numbers{display:flex;gap:30px;border-block:1px solid #c2d9df;padding:15px 0;font-size:12px}.train-numbers strong{display:block;color:#ab662b;font-size:29px;margin-top:5px}
+.train-bets{border:0;padding:0;display:flex;gap:7px;margin:15px 0}.train-bets legend{font-size:12px;margin-bottom:9px}.train-bets button{padding:10px;background:#fff;color:#285678;border:2px solid #b5d4df}.train-bets button[aria-pressed="true"]{background:#f7c76c;border-color:#b77938;color:#4f3b27}
+.train-direction{display:grid;gap:10px;font-size:12px;margin:15px 0}.train-direction input{width:100%;accent-color:#219caf;touch-action:pan-y}.train-actions{display:grid;grid-template-columns:1.3fr 1fr;gap:9px}.train-actions button,.train-mobile-actions button{background:#ed9b4f;color:#4d351f;border:2px solid #ffde97;border-radius:15px;font-weight:900}.train-actions button[aria-pressed="true"],.train-mobile-actions button[aria-pressed="true"]{background:#28a7ac;color:white}#train-panel h3{font-size:16px;margin-top:25px}#train-panel h3 small{font-size:11px;font-weight:400;color:#687f8a;margin-left:6px}
+.train-task{display:grid;grid-template-columns:1fr auto;gap:7px;background:#ffffffb8;padding:12px;border-radius:12px;margin:9px 0;font-size:12px}.train-task span{color:#b67532}.train-task progress{width:100%;height:10px;accent-color:#26acac}.train-task small{font-size:10px}#train-panel details{font-size:12px;margin-top:22px;border-top:1px solid #b4ccd6;padding-top:15px}#train-panel summary{cursor:pointer}.train-mobile-actions{display:none}
+@media(max-width:760px){#machine-screen[data-machine="wonder-train"]{grid-template-columns:1fr;gap:15px}#machine-screen[data-machine="wonder-train"] .machine{border-width:3px;border-radius:16px}.train-mobile-actions:not([hidden]){display:flex;position:sticky;bottom:8px;z-index:7;gap:10px;padding:9px;background:#183e5de8;border-radius:16px;margin-top:9px}.train-mobile-actions button{padding:13px 8px;font-size:15px;flex:1}#train-panel{padding:18px}.train-actions{display:none}#machine-screen[data-machine="wonder-train"] aside{position:static}}
+
+#machine-screen[data-machine="wonder-train"] .wallet{display:none}
+#machine-screen[data-machine="wonder-train"]{align-items:start}
+
+#train-panel[data-celebrating="true"] .train-task{box-shadow:0 0 15px #f2c45b; border:1px solid #f2c45b}
+
+.train-mobile-actions label{display:grid;gap:3px;font-size:10px;color:#fff0ca}.train-mobile-actions select{border:1px solid #ffde97;border-radius:8px;padding:7px;background:#fff5df;color:#31536c;width:48px}
