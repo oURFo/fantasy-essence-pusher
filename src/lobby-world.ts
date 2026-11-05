@@ -5,7 +5,7 @@ import type {AvatarDirection} from './avatar-motion.ts';
 export type AvatarBody='male'|'female';
 export interface AvatarAppearance {body:AvatarBody;outfit:'arcade';}
 export const LOBBY_PROFILE_KEY='fantasy-arcade.visitor.v1';
-export const HALL={height:720,sectionWidth:1080,slots:3,aisleTop:520,aisleBottom:674,speed:180} as const;
+export const HALL={height:720,sectionWidth:1080,slots:3,aisleTop:520,aisleBottom:674,speed:360} as const;
 // Stable atlas cells; adding a cabinet never changes the existing artwork mapping.
 export const CABINET_ART:Record<MachineId,number>={'essence-vault':0,'sky-wings':1,'fruit-banquet':2,'night-market':3,'fate-orbit':4,'gold-mine':5,'temple-fortune':6,'thunder-forge':7,'cultivation':8,'wonder-train':9};
 export function paymentKind(id:MachineId){return id==='fruit-banquet'||id==='night-market'?'ticket':'continuous';}
