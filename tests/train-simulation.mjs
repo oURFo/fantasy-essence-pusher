@@ -2,7 +2,7 @@ import {WonderTrain} from '../src/train-game.ts';
 import {TRAIN,trainSeed} from '../src/train-rules.ts';
 import {PlayerWallet} from '../src/wallet.ts';
 export function simulateTrain(seed,bet,shots=3000,policy='base'){
- const wallet=new PlayerWallet();wallet.setBalance(1e8);const g=new WonderTrain(wallet,undefined,trainSeed(seed));g.setBet(bet);const aiming=trainSeed(seed^0x4517);let steps=0;
+ const wallet=new PlayerWallet();wallet.setBalance(1e8);const g=new WonderTrain(wallet,undefined,trainSeed(seed));g.setBet(bet);g.nextBird=Infinity;const aiming=trainSeed(seed^0x4517);let steps=0;
  while(g.fired<shots&&steps<shots*900){
   if(g.time-g.lastShot>=.5){let candidates=g.targets.filter(t=>t.live&&t.x>100&&t.x<870&&(policy==='casual'||policy==='misses'||g.total(t)>=bet*10));
    if(policy==='base'||policy==='casual'||policy==='misses')candidates=candidates.filter(t=>!g.targets.some(o=>o.live&&o.stack===t.stack&&o.bottom>t.bottom));
