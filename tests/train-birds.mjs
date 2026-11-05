@@ -20,3 +20,19 @@ for(const kind of ['rapid','rage','freeze']){
 }
 console.log('Train birds passed: moving target hits, paid 5/s rapid fire, 15s expiry, 10s world-only freeze, next-shot guaranteed chain destruction and disposal.');
 
+
+// Only resolved shots that hit nothing contribute their actual paid coin tier.
+const emptyShot=(g,bet)=>{g.setBet(bet);g.aim(10,150);assert.ok(g.shoot());for(let i=0;i<40;i++)g.step();};
+const spawnCandidate=g=>{g.birds=[];g.random=()=>.5;g.nextBird=g.time;g.step();return g.birds[0].kind;};
+{
+ const g=game();for(let i=0;i<33;i++)emptyShot(g,3);assert.equal(spawnCandidate(g),'freeze','99 missed coins cannot spawn rage');g.nextBird=Infinity;
+ emptyShot(g,1);assert.equal(spawnCandidate(g),'rage','100 missed coins unlock chance for rage');assert.equal(spawnCandidate(g),'freeze','rage appearance consumes eligibility even before being hit');
+ g.nextBird=Infinity;for(let i=0;i<33;i++)emptyShot(g,3);assert.equal(spawnCandidate(g),'freeze');g.nextBird=Infinity;emptyShot(g,1);assert.equal(spawnCandidate(g),'rage','must earn another 100 after appearance');
+}
+{
+ const g=game();g.targets=[];g.spawn(500,0);g.random=()=>.999999;for(let i=0;i<100;i++){const t=g.targets.find(t=>t.live);g.aim(t.x,t.bottom-t.h/2);assert.ok(g.shoot());for(let j=0;j<40;j++)g.step();}assert.equal(spawnCandidate(g),'freeze','hits without breaking are not empty shots');
+}
+{
+ const g=game();g.activateBuff('rapid');g.birds=[{id:1,kind:'rage',x:500,y:295,speed:105}];g.aim(500,295);g.setAuto(true);g.shoot();for(let i=0;i<60;i++)g.step();assert.equal(g.auto,false);assert.equal(g.rageReady,true,'same-frame auto step must not consume the new golden shot');assert.ok(g.shots.every(s=>!s.rage));const paid=g.spent;for(let i=0;i<60;i++)g.step();assert.equal(g.spent,paid);assert.equal(g.rageReady,true);g.aim(500,500);assert.ok(g.shoot());assert.equal(g.rageReady,false);assert.ok(g.shots.at(-1).rage);
+}
+console.log('Rage eligibility passed: resolved empty shots by actual coins, 99/100 boundary, reset on appearance, hits excluded and auto interrupted without spending golden shot.');

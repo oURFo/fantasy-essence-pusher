@@ -11,9 +11,9 @@ export class WonderTrain {
  birds:{id:number;kind:TrainBuff;x:number;y:number;speed:number}[]=[];
  impacts:{x:number;y:number;at:number;success:boolean;rage:boolean}[]=[];
  rapidUntil=0;freezeUntil=0;rageReady=false;worldTime=0;nextBird=18;
- buffEvent:{kind:TrainBuff;at:number}|null=null;private birdSerial=0;
+ buffEvent:{kind:TrainBuff;at:number}|null=null;private birdSerial=0;private missedGold=0;
  get shotInterval(){return this.time<this.rapidUntil?.2:TRAIN.shotInterval;}
- activateBuff(kind:TrainBuff){if(kind==='rapid')this.rapidUntil=this.time+15;else if(kind==='freeze')this.freezeUntil=this.time+10;else this.rageReady=true;this.buffEvent={kind,at:this.time};this.message=`${TRAIN_BUFFS[kind].name}！${kind==='rage'?'下一發巨大金彈，命中物件必定擊毀':kind==='rapid'?'15秒內每秒5發':'展示物件停止移動10秒'}`;}
+ activateBuff(kind:TrainBuff){if(kind==='rapid')this.rapidUntil=this.time+15;else if(kind==='freeze')this.freezeUntil=this.time+10;else {this.rageReady=true;this.auto=false;}this.buffEvent={kind,at:this.time};this.message=`${TRAIN_BUFFS[kind].name}！${kind==='rage'?'已切換手動射擊，下一發巨大金彈命中必毀':kind==='rapid'?'15秒內每秒5發':'展示物件停止移動10秒'}`;}
  birdAt(x:number,y:number){return this.birds.find(b=>Math.hypot(b.x-x,b.y-y)<48)??null;}
 
  time=0;bet=1;angle=-Math.PI/2;auto=false;disposed=false;lastShot=-10;nextStack=0;
@@ -56,7 +56,7 @@ export class WonderTrain {
  private pay(a:TrainAward){if(a.paid)return;a.paid=true;this.points+=a.points;const total=this.tail+a.points,coins=Math.floor(total/10);this.tail=total%10;if(coins){this.wallet.credit(coins);this.goldWon+=coins;}try{this.storage?.setItem(TRAIN_KEY,JSON.stringify({version:1,tail:this.tail}));}catch{}}
  step(dt=1/60){if(this.disposed||!Number.isFinite(dt)||dt<=0)return;dt=Math.min(.1,dt);this.time+=dt;
   if(this.time>=this.freezeUntil)this.worldTime+=dt;
-  if(this.time>=this.nextBird){const kind=(['rapid','rage','freeze'] as const)[Math.min(2,Math.floor(this.random()*3))],right=this.random()<.5;this.birds.push({id:++this.birdSerial,kind,x:right?-60:1084,y:260+this.random()*95,speed:right?105:-105});this.nextBird=this.time+24+this.random()*22;}
+  if(this.time>=this.nextBird){const pool:TrainBuff[]=this.missedGold>=100?['rapid','rage','freeze']:['rapid','freeze'];const kind=pool[Math.min(pool.length-1,Math.floor(this.random()*pool.length))],right=this.random()<.5;if(kind==='rage')this.missedGold=0;this.birds.push({id:++this.birdSerial,kind,x:right?-60:1084,y:260+this.random()*95,speed:right?105:-105});this.nextBird=this.time+24+this.random()*22;}
   for(const bird of this.birds)bird.x+=bird.speed*dt;this.birds=this.birds.filter(b=>b.x>-100&&b.x<1124);
   this.impacts=this.impacts.filter(i=>this.time-i.at<.65);
 
@@ -64,7 +64,7 @@ export class WonderTrain {
   this.targets=this.targets.filter(t=>t.live);
   for(const lane of [...this.lanes]){lane.x+=(this.time<this.freezeUntil?0:TRAIN.scroll)*dt;const remaining=this.targets.filter(t=>t.stack===lane.stack);if(lane.x>=1140){lane.x-=TRAIN.loopWidth;if(!remaining.length&&this.time>=this.nextStack){this.spawn(lane.x);this.lanes.splice(this.lanes.indexOf(lane),1);continue;}for(const t of remaining)t.lap++;}for(const t of remaining)t.x=lane.x;}
   for(const b of this.shots){b.age+=dt;const f=Math.min(1,b.age/b.duration);b.x=512+(b.goalX-512)*f;b.y=825+(b.goalY-825)*f-Math.sin(f*Math.PI)*TRAIN.arcHeight;
-   if(f>=1){const bird=this.birds.find(o=>o.id===b.birdId);if(bird){this.birds=this.birds.filter(o=>o!==bird);this.impacts.push({x:bird.x,y:bird.y,at:this.time,success:true,rage:!!b.rage});this.activateBuff(bird.kind);}const t=b.birdId!==undefined?null:b.targetId===null?this.targetAt(b.goalX,b.goalY):this.targets.find(t=>t.id===b.targetId&&t.live&&t.lap===b.lap);if(t&&Math.abs(t.x-b.goalX)<=t.w/2+2&&b.goalY>=t.bottom-t.h&&b.goalY<=t.bottom)this.impact(t,b.bet,!!b.rage);b.age=99;}
+   if(f>=1){const bird=this.birds.find(o=>o.id===b.birdId);if(bird){this.birds=this.birds.filter(o=>o!==bird);this.impacts.push({x:bird.x,y:bird.y,at:this.time,success:true,rage:!!b.rage});this.activateBuff(bird.kind);}const t=b.birdId!==undefined?null:b.targetId===null?this.targetAt(b.goalX,b.goalY):this.targets.find(t=>t.id===b.targetId&&t.live&&t.lap===b.lap);const hit=!!t&&Math.abs(t.x-b.goalX)<=t.w/2+2&&b.goalY>=t.bottom-t.h&&b.goalY<=t.bottom;if(hit)this.impact(t!,b.bet,!!b.rage);if(!bird&&!hit)this.missedGold+=b.bet;b.age=99;}
   }
   this.shots=this.shots.filter(b=>b.age<2);
   for(const a of this.awards)if(!a.paid&&this.time-a.at>=1.3)this.pay(a);
