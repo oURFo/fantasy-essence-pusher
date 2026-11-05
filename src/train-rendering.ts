@@ -13,6 +13,10 @@ export function renderTrain(g:WonderTrain){if(!scene||!items.length)return;const
  const target=(t:TrainTarget)=>{const im=items[t.type];ctx.drawImage(im,t.x-t.w/2,t.bottom-t.h,t.w,t.h);};
  for(const b of g.birds){const index=['rapid','rage','freeze'].indexOf(b.kind),frame=birdArt.width/3;ctx.save();ctx.translate(b.x,b.y+Math.sin(g.time*10)*5);ctx.scale(b.speed<0?-1:1,reduced?1:1+Math.sin(g.time*12)*.04);ctx.shadowColor=TRAIN_BUFFS[b.kind].color;ctx.shadowBlur=18;ctx.drawImage(birdArt,index*frame,180,frame,650,-60,-66,120,132);ctx.restore();text(TRAIN_BUFFS[b.kind].name,b.x,b.y+62,19,TRAIN_BUFFS[b.kind].color);}
  for(const t of g.targets){ctx.save();if(g.time-t.flash<.17){ctx.translate(Math.sin(g.time*120)*4,0);ctx.filter='brightness(1.55)';}target(t);ctx.restore();text(String(t.points),t.x,t.bottom-t.h/2,30,'#fff6c6');}
+ const locked=g.lockedTarget,holding=g.lockHold?g.targets.find(t=>t.id===g.lockHold!.id&&t.live):null;
+ if(locked){ctx.save();ctx.strokeStyle='#66ffdd';ctx.shadowColor='#35eacc';ctx.shadowBlur=12;ctx.lineWidth=4;ctx.strokeRect(locked.x-locked.w/2-8,locked.bottom-locked.h-8,locked.w+16,locked.h+16);text('已鎖定',locked.x,locked.bottom-locked.h-28,21,'#8bffe1');ctx.restore();}
+ if(holding&&g.lockHold&&!g.lockHold.complete&&g.time-g.lockHold.at>=.5){const progress=Math.min(1,(g.time-g.lockHold.at-.5)/.5),x=Math.max(65,Math.min(959,holding.x)),y=holding.bottom-holding.h-32;ctx.save();ctx.fillStyle='#123653ed';ctx.fillRect(x-62,y-16,124,38);ctx.fillStyle='#5efbdd';ctx.fillRect(x-56,y+8,112*progress,7);text('鎖定中',x,y-4,18,'#beffed');ctx.restore();}
+ if(g.lockMode&&!g.lockHold)text('長按物件 1 秒鎖定',512,703,23,'#a6ffe7');
  for(const f of g.falling){const age=g.time-f.at,t=f.target,material=TRAIN_ITEMS[t.type].material;ctx.save();ctx.globalAlpha=Math.max(0,1-(age-.5)/.9);const x=t.x+f.vx*age,y=t.bottom-70*age+260*age*age;
   if(!f.direct){ctx.translate(x,y);ctx.rotate(f.spin*age);ctx.drawImage(items[t.type],-t.w/2,-t.h,t.w,t.h);}
   else if(material==='metal'){ctx.translate(x,y);ctx.rotate(f.spin*age);ctx.scale(1+Math.min(age,.25),Math.max(.24,1-age*4));ctx.drawImage(items[t.type],-t.w/2,-t.h,t.w,t.h);}

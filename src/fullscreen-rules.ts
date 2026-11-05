@@ -10,6 +10,6 @@ export const FULLSCREEN_CONTROLS:Record<MachineId,readonly string[]>={
  'temple-fortune':['temple-dial','temple-start','temple-stop','temple-fire','temple-redeem'],
  'thunder-forge':['forge-power','forge-play','forge-auto'],
  'cultivation':[], // Joystick, upgrades, mana shop and pause are already inside the game.
- 'wonder-train':['train-mobile-bet','train-fire','train-auto'],
+ 'wonder-train':['train-mobile-bet','train-fire','train-auto','train-lock'],
 };
 export function fullscreenSize(w:number,h:number,viewportW:number,viewportH:number,chromeH:number){const scale=Math.max(.01,Math.min(Math.max(1,viewportW-16)/w,Math.max(1,viewportH-chromeH-16)/h));return {width:w*scale,height:h*scale};}
