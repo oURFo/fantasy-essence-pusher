@@ -66,6 +66,7 @@ jobs:
       - run: node tests/train-game.mjs
       - run: node tests/train-birds.mjs
       - run: node tests/train-lock.mjs
+      - run: node tests/train-lock-input.mjs
       - run: node tests/cultivation-game.mjs
       - run: node tests/cultivation-xp.mjs
       - run: node tests/cultivation-v2.mjs

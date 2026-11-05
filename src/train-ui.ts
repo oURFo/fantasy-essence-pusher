@@ -1,3 +1,4 @@
+import {bindTrainLockInput} from './train-lock-input.ts';
 import type {WonderTrain} from './train-game.ts';
 import {TRAIN_MISSIONS,TRAIN_BETS} from './train-rules.ts';
 import './train.css';
@@ -15,14 +16,8 @@ export function initTrainUI(get:()=>WonderTrain|null,blocked:()=>boolean,refresh
  el('train-mobile-bet').addEventListener('change',()=>{can()?.setBet(Number((el('train-mobile-bet') as HTMLSelectElement).value));refresh();});
  el('train-angle').addEventListener('input',()=>{const g=can();if(g)g.setDirection(-Math.PI/2+Number((el('train-angle') as HTMLInputElement).value)*Math.PI/180);});
  const canvas=el('game') as HTMLCanvasElement;
- let press:{pointer:number;x:number;y:number;game:WonderTrain;at:number;moved:boolean}|null=null;
- const coords=(e:PointerEvent)=>{const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*1024,y:(e.clientY-r.top)/r.height*900};};
- const cancelPress=()=>{press?.game.cancelLockHold();press=null;};
- for(const id of ['train-lock','train-mobile-lock'])el(id).addEventListener('click',()=>{const g=can();if(!g)return;cancelPress();if(g.lockId!==null||g.lockMode)g.clearLock();else {g.lockMode=true;g.message='長按物件1秒鎖定，0.5秒後顯示進度。';}refresh();});
- canvas.addEventListener('pointerdown',e=>{const g=can();if(!e.isPrimary||e.button!==0||!g||press)return;e.preventDefault();const p=coords(e);press={pointer:e.pointerId,x:e.clientX,y:e.clientY,game:g,at:g.time,moved:false};g.beginLock(p.x,p.y);canvas.setPointerCapture(e.pointerId);});
- canvas.addEventListener('pointermove',e=>{const g=can();if(!g)return;if(press&&e.pointerId===press.pointer){if(Math.hypot(e.clientX-press.x,e.clientY-press.y)>12){press.moved=true;g.cancelLockHold();}}else if(e.pointerType==='mouse'&&g.lockId===null){const p=coords(e);g.aim(p.x,p.y);}});
- canvas.addEventListener('pointerup',e=>{if(!press||e.pointerId!==press.pointer)return;const current=press,g=can(),completed=current.game.lockHold?.complete;cancelPress();if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);if(g===current.game&&!current.moved&&!completed&&g!.time-current.at<.5){const p=coords(e);g!.clearLock();g!.aim(p.x,p.y);shoot();}refresh();});
- canvas.addEventListener('pointercancel',cancelPress);canvas.addEventListener('lostpointercapture',cancelPress);window.addEventListener('blur',cancelPress);
+ const {cancel:cancelPress}=bindTrainLockInput(canvas,can,refresh);
+ for(const id of ['train-lock','train-mobile-lock'])el(id).addEventListener('click',()=>{const g=can();if(!g)return;cancelPress();if(g.lockId!==null||g.lockMode)g.clearLock();else {g.lockMode=true;g.message='按住物件1秒即可鎖定，不必跟著物件移動。';}refresh();});
  window.addEventListener('pagehide',()=>{get()?.settle();});
  return {cancel(){cancelPress();const g=get();if(g)g.setAuto(false);},show(value:boolean){active=value;if(!value)cancelPress();panel.hidden=!value;controls.hidden=!value;missions.hidden=!value;},update(g:WonderTrain){if(!active)return;for(const id of ['train-lock','train-mobile-lock']){const b=el(id) as HTMLButtonElement;b.textContent=g.lockId!==null?'解除鎖定':g.lockMode?'長按物件鎖定':'鎖定目標';b.setAttribute('aria-pressed',String(g.lockId!==null||g.lockMode));b.disabled=blocked();}missions.dataset.celebrating=String(g.awards.some(a=>a.kind==='mission'&&g.time-a.at<1.3));el('train-gold').textContent=g.gold.toLocaleString();el('train-points').textContent=String(g.points);el('train-message').textContent=g.message;el('train-auto').title=`目前最多每秒${g.time<g.rapidUntil?5:2}發`;el('train-pending').textContent=`待入帳 ${g.pending}分 · 尾數 ${g.tail}/10 · 本次花費 ${g.spent} 金幣`;
   for(const id of ['train-fire','train-mobile-fire']){const b=el(id) as HTMLButtonElement;b.textContent=`發射 · ${g.bet} 金幣`;b.disabled=blocked()||g.gold<g.bet;}
