@@ -63,6 +63,7 @@ jobs:
       - run: node tests/sky-balance.mjs
       - run: node tests/slot.mjs
       - run: node tests/fullscreen.mjs
+      - run: node tests/guanyin-knob.mjs
       - run: node tests/guanyin-game.mjs
       - run: node tests/train-game.mjs
       - run: node tests/train-birds.mjs
