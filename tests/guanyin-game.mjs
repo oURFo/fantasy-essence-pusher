@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {GuanyinGrace} from '../src/guanyin-game.ts';
-import {GUANYIN,GUANYIN_PINS,GUANYIN_OUTS,GUANYIN_SYMBOLS,guanyinOutcome,guanyinReels,guanyinSeed} from '../src/guanyin-rules.ts';
+import {GUANYIN,GUANYIN_PINS,GUANYIN_OUTS,GUANYIN_SCORE,guanyinBowlY,GUANYIN_LAUNCH,guanyinRailPoint,GUANYIN_SYMBOLS,guanyinOutcome,guanyinReels,guanyinSeed} from '../src/guanyin-rules.ts';
 import {guanyinBall,stepGuanyinBall} from '../src/guanyin-physics.ts';
 import {PlayerWallet} from '../src/wallet.ts';
 import {ArcadeSession} from '../src/arcade-session.ts';
@@ -39,4 +39,18 @@ console.log('Guanyin passed: 3-coin billing, 20-paid refill, bottle accumulation
 {
  const {readRgba}=await import('./png-rgba.mjs');const bytes=readFileSync('public/assets/guanyin/cabinet.png');assert.ok(bytes.readUInt32BE(16)>=1024&&bytes.readUInt32BE(20)>=1536);for(const name of ['sprites','guanyin']){const im=readRgba(`public/assets/guanyin/${name}.png`);assert.ok(im.width>=1024&&im.height>=1024);if(name!=='cabinet')assert.ok(im.rgba.some((v,i)=>i%4===3&&v===0),'transparent art asset');}
  const {simulateGuanyin}=await import('../tools/guanyin-balance.mjs');assert.deepEqual(simulateGuanyin(report.rows[0].seed,report.rows[0].shots,report.rows[0].power),report.rows[0],'report reproduces current physical gameplay');
+}
+
+// Continuous rail motion and force-based free flight; no power-dependent teleport.
+{
+ const exits=[];for(const power of [1,8,15]){const b=guanyinBall(100+power,power,.5);let previous={x:b.x,y:b.y},steps=0;while(b.rail<1&&steps++<600){stepGuanyinBall(b,0);assert.ok(Math.hypot(b.x-previous.x,b.y-previous.y)<15,'rail motion remains continuous');previous={x:b.x,y:b.y};}assert.equal(b.rail,1);const exit=guanyinRailPoint(GUANYIN_LAUNCH.length);assert.ok(Math.hypot(b.x-exit.x,b.y-exit.y)<1e-8);assert.ok(b.vx>0);assert.ok(Math.abs(b.vy)<1e-6);const vx=b.vx,vy=b.vy,x=b.x,y=b.y;stepGuanyinBall(b,0);assert.ok(b.x>x);assert.ok(b.y>y);assert.ok(b.vy>vy);assert.ok(b.vx<=vx);exits.push(vx);}assert.ok(exits[0]<exits[1]&&exits[1]<exits[2],'power changes launch velocity, never rail exit position');
+}
+for(const x of [160,260,390,630,760,864]){
+ const b=guanyinBall(500+x,8,.5);Object.assign(b,{x,y:guanyinBowlY(x)-12,vx:0,vy:60,rail:1});let arrived=false;for(let i=0;i<2400&&!b.done;i++){stepGuanyinBall(b,0);if(b.done&&b.result==='score'){arrived=true;assert.ok(Math.hypot(b.x-GUANYIN_SCORE.x,b.y-GUANYIN_SCORE.y)<GUANYIN_SCORE.r+12,'only the center inlet pays');}}assert.ok(arrived,'both curved sides must deliver to the central inlet');
+}
+console.log('Guanyin v2 passed: continuous energy-driven launch, fixed tangent exit, ballistic force integration and one central scoring inlet fed by curved bowl.');
+{
+ const b=guanyinBall(900,8,.5);Object.assign(b,{x:210,y:1220,vx:0,vy:50,rail:1});stepGuanyinBall(b,0);assert.equal(b.done,false,'crossing the old flat bottom line outside center does not award');assert.equal(b.result,null);
+ const a=guanyinBall(901,8,.5);while(a.rail<1)stepGuanyinBall(a,0);const copy={...a,power:15};stepGuanyinBall(a,0);stepGuanyinBall(copy,0);assert.equal(a.x,copy.x);assert.equal(a.y,copy.y,'free flight is driven only by current velocity and force');
+ const {readRgba}=await import('./png-rgba.mjs');const im=readRgba('public/assets/guanyin/ports-v2.png');for(let row=0;row<2;row++)for(let col=0;col<2;col++){let n=0;for(let y=Math.floor(row*im.height/2);y<Math.floor((row+1)*im.height/2);y++)for(let x=Math.floor(col*im.width/2);x<Math.floor((col+1)*im.width/2);x++)if(im.rgba[(y*im.width+x)*4+3]>70)n++;assert.ok(n>1000,'each sculpted port/trough cell has artwork');}
 }

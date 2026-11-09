@@ -1,7 +1,11 @@
-export const GUANYIN={cost:3,pointsPerGold:10,score:40,gravity:680,shotInterval:.5,refillEvery:20,initialBottle:50,gateSeconds:10,gateMoveSeconds:.45,slotSeconds:1.5,resultSeconds:.65,bonusInterval:.15,maxActive:150,outRadius:35.9,rtp:.92} as const;
+export const GUANYIN={cost:3,pointsPerGold:10,score:40,gravity:680,shotInterval:.5,refillEvery:20,initialBottle:50,gateSeconds:10,gateMoveSeconds:.45,slotSeconds:1.5,resultSeconds:.65,bonusInterval:.15,maxActive:150,outRadius:34.8,rtp:.92} as const;
 export const GUANYIN_SYMBOLS=[{name:'淨瓶',balls:0,color:'#9ff9e6'},{name:'楊柳枝',balls:0,color:'#b2f8a5'},{name:'蓮花',balls:10,color:'#ffbbdf'},{name:'數珠',balls:5,color:'#ffd89a'},{name:'寶珠',balls:3,color:'#8cdefa'},{name:'經卷',balls:2,color:'#fff2cd'}] as const;
 // Outcome weights are calibrated together with physical OUT/slot entry rates.
 export const GUANYIN_WEIGHTS=[.007,.07,.04,.08,.12,.2] as const;
+export const GUANYIN_SCORE={x:512,y:1267,r:24,gap:20};
+export function guanyinBowlY(x:number){return 1266-104*((x-512)/358)**2;}
+export const GUANYIN_LAUNCH={x:122,y:1280,bendX:222,bendY:420,radius:100,vertical:860,length:860+Math.PI*50};
+export function guanyinRailPoint(distance:number){if(distance<=860)return {x:122,y:1280-distance,tx:0,ty:-1};const a=Math.PI+Math.min(Math.PI/2,(distance-860)/100);return {x:222+100*Math.cos(a),y:420+100*Math.sin(a),tx:-Math.sin(a),ty:Math.cos(a)};}
 export const GUANYIN_SLOT={x:512,y:845,r:20};
 export const GUANYIN_OUTS=[220,366,512,658,804].map(x=>({x,y:1135,r:GUANYIN.outRadius}));
 export const GUANYIN_PINS:{x:number;y:number;r:number}[]=[];
