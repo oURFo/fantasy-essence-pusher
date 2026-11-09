@@ -1,3 +1,4 @@
+import {GuanyinGrace} from './guanyin-game.ts';
 import {WonderTrain} from './train-game.ts';
 import {Cultivation} from './cultivation-game.ts';
 import {ThunderForge} from './forge-game.ts';
@@ -11,7 +12,7 @@ import {FruitPinball,FruitProgress} from './fruit-game.ts';
 import {NightMarket} from './ring-game.ts';
 import {FateOrbit} from './fate-game.ts';
 export class ArcadeSession {
-  game:WonderTrain|CoinPusher|FruitPinball|NightMarket|FateOrbit|GoldMine|TempleFortune|ThunderForge|Cultivation|null=null;
+  game:GuanyinGrace|WonderTrain|CoinPusher|FruitPinball|NightMarket|FateOrbit|GoldMine|TempleFortune|ThunderForge|Cultivation|null=null;
   machineId:MachineId|null=null;
   leaveRequested=false;
   readonly wallet:PlayerWallet;
@@ -20,7 +21,7 @@ export class ArcadeSession {
   constructor(wallet:PlayerWallet,fruitProgress=new FruitProgress(),storage?:import('./wallet.ts').WalletStorage){this.storage=storage;this.wallet=wallet;this.fruitProgress=fruitProgress;}
   enter(id:MachineId) {
     if(this.game||!MACHINES.some(m=>m.id===id))return false;
-    this.game=id==='wonder-train'?new WonderTrain(this.wallet,this.storage):id==='cultivation'?new Cultivation(this.wallet,this.storage):id==='thunder-forge'?new ThunderForge(this.wallet,undefined,this.storage):id==='temple-fortune'?new TempleFortune(this.wallet):id==='gold-mine'?new GoldMine(this.wallet):id==='fate-orbit'?new FateOrbit(this.wallet):id==='night-market'?new NightMarket(this.wallet):id==='fruit-banquet'?new FruitPinball(this.wallet,this.fruitProgress):id==='sky-wings'?new SkyWings(this.wallet):new CoinPusher(undefined,undefined,this.wallet);this.machineId=id;return true;
+    this.game=id==='guanyin-grace'?new GuanyinGrace(this.wallet):id==='wonder-train'?new WonderTrain(this.wallet,this.storage):id==='cultivation'?new Cultivation(this.wallet,this.storage):id==='thunder-forge'?new ThunderForge(this.wallet,undefined,this.storage):id==='temple-fortune'?new TempleFortune(this.wallet):id==='gold-mine'?new GoldMine(this.wallet):id==='fate-orbit'?new FateOrbit(this.wallet):id==='night-market'?new NightMarket(this.wallet):id==='fruit-banquet'?new FruitPinball(this.wallet,this.fruitProgress):id==='sky-wings'?new SkyWings(this.wallet):new CoinPusher(undefined,undefined,this.wallet);this.machineId=id;return true;
   }
   requestLeave(){if(!this.game)return false;this.leaveRequested=true;return true;}
   cancelLeave(){this.leaveRequested=false;}

@@ -1,3 +1,4 @@
+import {drawGuanyinCabinet} from './guanyin-rendering.ts';
 import {drawTrainCabinet} from './train-rendering.ts';
 import {MACHINES,type MachineId} from './machines.ts';
 import {LobbyWorld,HALL,paymentLabel} from './lobby-world.ts';
@@ -21,7 +22,7 @@ export function initLobby(storage:WalletStorage|undefined,enter:(id:MachineId)=>
  for(const p of world.layout.placements){const m=MACHINES.find(m=>m.id===p.id)!,o=document.createElement('option');o.value=m.id;o.textContent=`${m.name} · ${paymentLabel(m.id)}`;select.append(o);}
  async function load(){
   error=false;$('hall-loading').hidden=false;$('hall-loading-text').textContent='正在點亮遊樂場…';$('hall-retry').hidden=true;
-  try{const loadedImages=await Promise.all(['hall','cabinets','../cultivation/cabinet','../wonder-train/launcher',...RIG_ASSETS.map(name=>(name==='expressions'?'rig-v2/':'rig-v3/')+name)].map(name=>new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=new URL(`./assets/lobby/${name}.png`,document.baseURI).href;})));images.splice(0,images.length,...loadedImages);artwork=prepareRigArtwork(images.slice(4));loaded=true;$('hall-loading').hidden=true;}catch(errorDetail){error=true;console.error(errorDetail);$('hall-loading-text').textContent='遊樂場素材尚未載入，請重試。';$('hall-retry').hidden=false;}
+  try{const loadedImages=await Promise.all(['hall','cabinets','../cultivation/cabinet','../wonder-train/launcher',...RIG_ASSETS.map(name=>(name==='expressions'?'rig-v2/':'rig-v3/')+name),'../guanyin/cabinet','../guanyin/guanyin'].map(name=>new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=new URL(`./assets/lobby/${name}.png`,document.baseURI).href;})));images.splice(0,images.length,...loadedImages);artwork=prepareRigArtwork(images.slice(4,4+RIG_ASSETS.length));loaded=true;$('hall-loading').hidden=true;}catch(errorDetail){error=true;console.error(errorDetail);$('hall-loading-text').textContent='遊樂場素材尚未載入，請重試。';$('hall-retry').hidden=false;}
  }
  void load();$('hall-retry').addEventListener('click',()=>{if(error)void load();});
  function resize(){const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;scale=r.height/HALL.height;viewWidth=r.width/scale;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);}
@@ -41,7 +42,7 @@ export function initLobby(storage:WalletStorage|undefined,enter:(id:MachineId)=>
    if(p.x<camera-180||p.x>camera+viewWidth+180)continue;
    const near=world.nearby?.id===p.id,m=MACHINES.find(m=>m.id===p.id)!;
    ctx.fillStyle=near?'#ffb64f55':p.section===world.layout.sections-1?'#f8a9c044':'#64cecb44';ctx.beginPath();ctx.ellipse(p.x,466,132,28,0,0,Math.PI*2);ctx.fill();
-   ctx.save();ctx.shadowColor=near?'#fff8a8':'#73482644';ctx.shadowBlur=near?20:8;if(p.id==='wonder-train')drawTrainCabinet(ctx,images[3],p.x,465);else if(p.id==='cultivation')ctx.drawImage(images[2],p.x-135,465-332,270,332);else drawCabinetSprite(ctx,images[1],p.art,p.x,465,250,332);ctx.restore();
+   ctx.save();ctx.shadowColor=near?'#fff8a8':'#73482644';ctx.shadowBlur=near?20:8;if(p.id==='guanyin-grace')drawGuanyinCabinet(ctx,images[images.length-2],images[images.length-1],p.x,465);else if(p.id==='wonder-train')drawTrainCabinet(ctx,images[3],p.x,465);else if(p.id==='cultivation')ctx.drawImage(images[2],p.x-135,465-332,270,332);else drawCabinetSprite(ctx,images[1],p.art,p.x,465,250,332);ctx.restore();
    pill(p.x-132,83,264,36,near?'#fff5cf':'#ffffffef');ctx.fillStyle='#3b4163';ctx.font='700 19px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.fillText(m.name,p.x,107);
    if(!reduced){const glow=(Math.sin(time*.002+p.art)+1)*.5;ctx.globalAlpha=.25+glow*.4;ctx.fillStyle='#fff1a0';for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(p.x-70+i*70,449,3,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;}
   }
